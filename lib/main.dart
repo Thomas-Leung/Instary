@@ -4,9 +4,7 @@ import './viewPage.dart';
 void main() {
   runApp(MaterialApp(
     home: HomePage(),
-    routes: <String, WidgetBuilder>{
-      "/ViewPage": (BuildContext context) => ViewPage()
-    },
+    debugShowCheckedModeBanner: false
   ));
 }
 
@@ -14,10 +12,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: Text("home"),
-        backgroundColor: Colors.deepOrange,
-      ),
       body: Container(
         child: Center(
           child: Column(
@@ -27,7 +21,14 @@ class HomePage extends StatelessWidget {
                   icon: Icon(Icons.favorite, color: Colors.redAccent),
                   iconSize: 70.0,
                   onPressed: () {
-                    Navigator.of(context).pushNamed("/ViewPage");
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ViewPage(
+                          instaryTitle: "Title",
+                          instaryPhoto: "assets/images/cat.png",
+                        ),
+                      ),
+                    );
                   }),
               Text("Home")
             ],

@@ -60,21 +60,7 @@ class _HomePageState extends State<HomePage> {
     return new Scaffold(
       body: SafeArea(
         child: Column(
-          children: <Widget>[
-            _searchBar(context),
-            Padding(
-              padding: EdgeInsets.fromLTRB(25.0, 0, 25.0, 25.0),
-              child: Row(
-                children: <Widget>[
-                  Text(
-                    "Instary",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 32.0),
-                  ),
-                ],
-              ),
-            )
-          ],
+          children: <Widget>[_searchBar(context), _title()],
         ),
       ),
     );
@@ -82,7 +68,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _searchBar(BuildContext context) {
     return Theme(
-          child: Padding(
+      child: Padding(
         padding: EdgeInsets.all(25.0),
         child: TextField(
           onTap: _searchPressed,
@@ -119,6 +105,20 @@ class _HomePageState extends State<HomePage> {
         _filter.clear();
       }
     });
+  }
+
+  Widget _title() {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(25.0, 0, 25.0, 25.0),
+      child: Row(
+        children: <Widget>[
+          Text(
+            "Instary",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32.0),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildList() {

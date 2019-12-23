@@ -18,7 +18,6 @@ class _HomePageState extends State<HomePage> {
   List names = List(); // names we get from API
   List filteredNames = List(); // names filtered by search text
   Icon _searchIcon = Icon(Icons.search);
-  Widget _appBarTitle = new Text('Search Example');
 
   // evaluates whether there is text currently in our search bar, and if so,
   // appropriately sets our _searchText to whatever that input is so we can filter our list accordingly
@@ -56,64 +55,70 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _searchPressed() {
-    setState(() {
-      if (this._searchIcon.icon == Icons.search) {
-        this._searchIcon = new Icon(Icons.close);
-        this._appBarTitle = new TextField(
-          controller: _filter,
-          decoration: new InputDecoration(
-              prefixIcon: new Icon(Icons.search), hintText: 'Search...'),
-        );
-      } else {
-        this._searchIcon = new Icon(Icons.search);
-        this._appBarTitle = new Text('Search Example');
-        filteredNames = names;
-        _filter.clear();
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: Container(
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(25.0),
-            child: TextField(
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.blueGrey[50],
-                hintText: "Search",
-                prefixIcon: Icon(Icons.search),
-                contentPadding:
-                    new EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blueGrey[50]),
-                  borderRadius: BorderRadius.circular(28),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blueGrey[50]),
-                  borderRadius: BorderRadius.circular(28),
-                ),
+      body: SafeArea(
+        child: Column(
+          children: <Widget>[
+            _searchBar(context),
+            Padding(
+              padding: EdgeInsets.fromLTRB(25.0, 0, 25.0, 25.0),
+              child: Row(
+                children: <Widget>[
+                  Text(
+                    "Instary",
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 32.0),
+                  ),
+                ],
               ),
-            ),
-          ),
+            )
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildBar(BuildContext context) {
-    return new AppBar(
-      centerTitle: true,
-      title: _appBarTitle,
-      leading: new IconButton(
-        icon: _searchIcon,
-        onPressed: _searchPressed,
+  Widget _searchBar(BuildContext context) {
+    return Theme(
+          child: Padding(
+        padding: EdgeInsets.all(25.0),
+        child: TextField(
+          onTap: _searchPressed,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.blueGrey[50],
+            hintText: "Search",
+            prefixIcon: _searchIcon,
+            contentPadding:
+                new EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.blueGrey[50]),
+              borderRadius: BorderRadius.circular(28),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.blueGrey[50]),
+              borderRadius: BorderRadius.circular(28),
+            ),
+          ),
+        ),
       ),
+      data: Theme.of(context).copyWith(primaryColor: Colors.grey[600]),
     );
+  }
+
+  void _searchPressed() {
+    setState(() {
+      if (this._searchIcon.icon == Icons.search) {
+        this._searchIcon = new Icon(Icons.close);
+      } else {
+        this._searchIcon = new Icon(Icons.search);
+        FocusScope.of(context).requestFocus(FocusNode());
+        filteredNames = names;
+        _filter.clear();
+      }
+    });
   }
 
   Widget _buildList() {

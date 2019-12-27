@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   // evaluates whether there is text currently in our search bar, and if so,
   // appropriately sets our _searchText to whatever that input is so we can filter our list accordingly
   _HomePageState() {
+    // text controller listener
     _filter.addListener(() {
       if (_filter.text.isEmpty) {
         setState(() {
@@ -58,9 +59,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      // fix overflow when keyboard pops up
+      resizeToAvoidBottomPadding: false,
       body: SafeArea(
         child: Column(
-          children: <Widget>[_searchBar(context), _title()],
+          children: <Widget>[_searchBar(context), _title(), _buildList()],
         ),
       ),
     );
@@ -72,6 +75,7 @@ class _HomePageState extends State<HomePage> {
         padding: EdgeInsets.all(25.0),
         child: TextField(
           onTap: _searchPressed,
+          controller: _filter,
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.blueGrey[50],
@@ -109,7 +113,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _title() {
     return Padding(
-      padding: EdgeInsets.fromLTRB(25.0, 0, 25.0, 25.0),
+      padding: EdgeInsets.fromLTRB(25.0, 0, 25.0, 20.0),
       child: Row(
         children: <Widget>[
           Text(
@@ -133,16 +137,27 @@ class _HomePageState extends State<HomePage> {
       }
       filteredNames = tempList;
     }
-    return ListView.builder(
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      itemCount: names == null ? 0 : filteredNames.length,
-      itemBuilder: (BuildContext context, int index) {
-        return new ListTile(
-          title: Text(filteredNames[index]['name']),
-          onTap: () => print(filteredNames[index]['name']),
-        );
-      },
+    return AspectRatio(
+      aspectRatio: 100 / 105,
+      child: PageView.builder(
+        controller: PageController(viewportFraction: 0.8),
+        itemCount: names == null ? 0 : filteredNames.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(25.0),
+              child: GestureDetector(
+                onTap: () => print(filteredNames[index]['name']),
+                child: Container(
+                  decoration: BoxDecoration(color: Colors.grey),
+                  child: Text(filteredNames[index]['name']),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

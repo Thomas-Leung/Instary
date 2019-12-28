@@ -18,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   List names = List(); // names we get from API
   List filteredNames = List(); // names filtered by search text
   Icon _searchIcon = Icon(Icons.search);
+  Icon _darkModeIcon = Icon(Icons.brightness_5);
 
   // evaluates whether there is text currently in our search bar, and if so,
   // appropriately sets our _searchText to whatever that input is so we can filter our list accordingly
@@ -74,10 +75,23 @@ class _HomePageState extends State<HomePage> {
         shape: CircularNotchedRectangle(),
         notchMargin: 10.0,
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             IconButton(
               icon: Icon(Icons.settings),
               onPressed: () {},
+            ),
+            IconButton(
+              icon: _darkModeIcon,
+              onPressed: () {
+                setState(() {
+                  if (this._darkModeIcon.icon == Icons.brightness_5) {
+                    this._darkModeIcon = new Icon(Icons.brightness_4);
+                  } else {
+                    this._darkModeIcon = new Icon(Icons.brightness_5);
+                  }
+                });
+              },
             )
           ],
         ),
@@ -88,7 +102,7 @@ class _HomePageState extends State<HomePage> {
   Widget _searchBar(BuildContext context) {
     return Theme(
       child: Padding(
-        padding: EdgeInsets.all(25.0),
+        padding: EdgeInsets.fromLTRB(25.0, 25.0, 25.0, 15.0),
         child: TextField(
           onTap: _searchPressed,
           controller: _filter,
@@ -129,7 +143,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _title() {
     return Padding(
-      padding: EdgeInsets.fromLTRB(25.0, 0, 25.0, 20.0),
+      padding: EdgeInsets.fromLTRB(25.0, 0, 25.0, 15.0),
       child: Row(
         children: <Widget>[
           Text(

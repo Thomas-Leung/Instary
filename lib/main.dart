@@ -66,6 +66,22 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[_searchBar(context), _title(), _buildList()],
         ),
       ),
+      // bottom navigation
+      floatingActionButton:
+          FloatingActionButton(onPressed: () {}, child: Icon(Icons.add)),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        notchMargin: 10.0,
+        child: Row(
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {},
+            )
+          ],
+        ),
+      ),
     );
   }
 

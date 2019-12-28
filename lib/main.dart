@@ -84,10 +84,6 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             IconButton(
-              icon: Icon(Icons.settings),
-              onPressed: () {},
-            ),
-            IconButton(
               icon: _darkModeIcon,
               onPressed: () {
                 setState(() {
@@ -184,7 +180,16 @@ class _HomePageState extends State<HomePage> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(25.0),
               child: GestureDetector(
-                onTap: () => print(filteredNames[index]['name']),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ViewPage(
+                        instaryTitle: filteredNames[index]['name'],
+                        instaryPhoto: "assets/images/cat.png",
+                      ),
+                    ),
+                  );
+                },
                 child: Container(
                   decoration: BoxDecoration(color: Colors.grey),
                   child: Text(filteredNames[index]['name']),

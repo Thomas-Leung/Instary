@@ -5,6 +5,11 @@ import './viewPage.dart';
 
 void main() {
   runApp(MaterialApp(
+      theme: ThemeData(
+        brightness: Brightness.light,
+        primaryColor: Colors.blueGrey[100],
+        accentColor: Color(0xff425296),
+      ),
       home: HomePage(),
       routes: {'/createPage': (context) => CreatePage()},
       debugShowCheckedModeBanner: false));
@@ -74,6 +79,7 @@ class _HomePageState extends State<HomePage> {
       // bottom navigation
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
+        elevation: 4.0,
         onPressed: () => Navigator.pushNamed(context, '/createPage'),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

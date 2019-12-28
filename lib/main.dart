@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import './createPage.dart';
 import './viewPage.dart';
 
 void main() {
-  runApp(MaterialApp(home: HomePage(), debugShowCheckedModeBanner: false));
+  runApp(MaterialApp(
+      home: HomePage(),
+      routes: {'/createPage': (context) => CreatePage()},
+      debugShowCheckedModeBanner: false));
 }
 
 class HomePage extends StatefulWidget {
@@ -68,8 +72,10 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       // bottom navigation
-      floatingActionButton:
-          FloatingActionButton(onPressed: () {}, child: Icon(Icons.add)),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => Navigator.pushNamed(context, '/createPage'),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),

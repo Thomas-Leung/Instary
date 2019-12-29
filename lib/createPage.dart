@@ -17,6 +17,7 @@ class _CreatePageState extends State<CreatePage> {
   final contentConrtoller = TextEditingController();
   DateTime dateTime = DateTime.now();
   String date = DateFormat.yMMMd().format(DateTime.now());
+  double happinessVal = 50.0;
 
   @override
   void dispose() {
@@ -36,15 +37,11 @@ class _CreatePageState extends State<CreatePage> {
       child: Scaffold(
         resizeToAvoidBottomPadding: false,
         body: SafeArea(
-          child: Builder(
-            builder: (BuildContext context) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: <Widget>[_backBtn(), _title(), _instaryForm()],
-                ),
-              );
-            },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: <Widget>[_backBtn(), _title(), _instaryForm()],
+            ),
           ),
         ),
       ),
@@ -140,6 +137,7 @@ class _CreatePageState extends State<CreatePage> {
               controller: contentConrtoller,
               maxLines: 6,
               decoration: InputDecoration(
+                hintText: "What have you experienced today?",
                 labelText: "Content",
                 alignLabelWithHint: true,
                 enabledBorder: OutlineInputBorder(
@@ -152,6 +150,40 @@ class _CreatePageState extends State<CreatePage> {
             ),
             Container(
               height: 20.0,
+            ),
+            Card(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text('Rate your feelings'),
+                  SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      valueIndicatorColor: Colors.red,
+                      activeTrackColor: Colors.red,
+                      inactiveTrackColor: Colors.red,
+                      trackHeight: 1.0,
+                      thumbColor: Colors.redAccent,
+                      thumbShape:
+                          RoundSliderThumbShape(enabledThumbRadius: 8.0),
+                      overlayColor: Colors.purple.withAlpha(32),
+                      overlayShape:
+                          RoundSliderOverlayShape(overlayRadius: 14.0),
+                          
+                    ),
+                    child: Slider(
+                      value: happinessVal,
+                      min: 0,
+                      max: 100,
+                      divisions: 100,
+                      onChanged: (value) {
+                        setState(() {
+                          happinessVal = value;
+                        });
+                      },
+                    ),
+                  )
+                ],
+              ),
             ),
             RaisedButton(
               onPressed: () {

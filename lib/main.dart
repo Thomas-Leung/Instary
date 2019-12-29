@@ -7,7 +7,7 @@ void main() {
   runApp(MaterialApp(
       theme: ThemeData(
         brightness: Brightness.light,
-        primaryColor: Colors.blueGrey[100],
+        primaryColor: Colors.grey[900],
         accentColor: Color(0xff425296),
       ),
       home: HomePage(),
@@ -151,7 +151,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _title() {
     return Padding(
-      padding: EdgeInsets.fromLTRB(25.0, 0, 25.0, 15.0),
+      padding: EdgeInsets.fromLTRB(25.0, 0, 25.0, 0),
       child: Row(
         children: <Widget>[
           Text(
@@ -175,14 +175,13 @@ class _HomePageState extends State<HomePage> {
       }
       filteredNames = tempList;
     }
-    return AspectRatio(
-      aspectRatio: 100 / 105,
+    return Expanded(
       child: PageView.builder(
-        controller: PageController(viewportFraction: 0.8),
+        controller: PageController(viewportFraction: 0.85),
         itemCount: names == null ? 0 : filteredNames.length,
         itemBuilder: (BuildContext context, int index) {
           return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            padding: EdgeInsets.all(16.0),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(25.0),
               child: GestureDetector(

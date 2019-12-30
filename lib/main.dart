@@ -68,40 +68,46 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      // fix overflow when keyboard pops up
-      resizeToAvoidBottomPadding: false,
-      body: SafeArea(
-        child: Column(
-          children: <Widget>[_searchBar(context), _title(), _buildList()],
+    return GestureDetector(
+      onTap: () {
+        // hide soft input keyboard when click outside textfield (searchbar)
+        FocusScope.of(context).requestFocus(new FocusNode());
+      },
+      child: new Scaffold(
+        // fix overflow when keyboard pops up
+        resizeToAvoidBottomPadding: false,
+        body: SafeArea(
+          child: Column(
+            children: <Widget>[_searchBar(context), _title(), _buildList()],
+          ),
         ),
-      ),
-      // bottom navigation
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        elevation: 4.0,
-        onPressed: () => Navigator.pushNamed(context, '/createPage'),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        notchMargin: 10.0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            IconButton(
-              icon: _darkModeIcon,
-              onPressed: () {
-                setState(() {
-                  if (this._darkModeIcon.icon == Icons.brightness_5) {
-                    this._darkModeIcon = new Icon(Icons.brightness_4);
-                  } else {
-                    this._darkModeIcon = new Icon(Icons.brightness_5);
-                  }
-                });
-              },
-            )
-          ],
+        // bottom navigation
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          elevation: 4.0,
+          onPressed: () => Navigator.pushNamed(context, '/createPage'),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: BottomAppBar(
+          shape: CircularNotchedRectangle(),
+          notchMargin: 10.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              IconButton(
+                icon: _darkModeIcon,
+                onPressed: () {
+                  setState(() {
+                    if (this._darkModeIcon.icon == Icons.brightness_5) {
+                      this._darkModeIcon = new Icon(Icons.brightness_4);
+                    } else {
+                      this._darkModeIcon = new Icon(Icons.brightness_5);
+                    }
+                  });
+                },
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -219,7 +225,8 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 32.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 32.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.end,

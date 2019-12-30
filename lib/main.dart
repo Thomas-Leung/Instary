@@ -195,10 +195,55 @@ class _HomePageState extends State<HomePage> {
                     ),
                   );
                 },
-                child: Container(
-                  decoration: BoxDecoration(color: Colors.grey),
-                  child: Text(filteredNames[index]['name']),
-                ),
+                child: Stack(fit: StackFit.expand, children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/img2.jpg'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: [0.0, 0.6, 1.0],
+                        colors: [
+                          Colors.transparent,
+                          Colors.transparent,
+                          Colors.black87,
+                        ],
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 32.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            filteredNames[index]['name'],
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 32.0,
+                                color: Colors.white),
+                          ),
+                          Text(
+                            "Dec 30, 2019",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16.0,
+                                color: Colors.grey[400]),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ]),
               ),
             ),
           );

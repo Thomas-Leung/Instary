@@ -95,8 +95,10 @@ class _CreatePageState extends State<CreatePage> {
                     DatePicker.showDatePicker(context,
                         showTitleActions: true,
                         onChanged: (date) {}, onConfirm: (date) {
-                      this.date = DateFormat.yMMMd().format(date);
-                      dateTime = date;
+                      setState(() {
+                        this.date = DateFormat.yMMMd().format(date);
+                        dateTime = date;
+                      });
                     }, currentTime: dateTime);
                   },
                   child: Align(

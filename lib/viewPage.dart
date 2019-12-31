@@ -8,24 +8,35 @@ class ViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(
-          title: Text("Second Page"),
-          backgroundColor: Colors.deepOrange,
-        ),
-        body: ListView(
-          children: <Widget>[
-            Container(
-              height: 300.0,
-              child: GridTile(
-                child: Container(
-                  color: Colors.white,
-                  child: Image.asset(instaryPhoto),
+    return Scaffold(
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.elliptical(60.0, 60.0)),
+              ),
+              expandedHeight: MediaQuery.of(context).size.height / 2.5,
+              floating: false,
+              pinned: false,
+              flexibleSpace: FlexibleSpaceBar(
+                background: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.elliptical(60.0, 60.0)),
+                  child: Image.asset(
+                    'assets/images/img1.png',
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
-            Text(instaryTitle)
+            SliverFillRemaining(
+              child: Image.asset(instaryPhoto),
+            )
           ],
-        ));
+        ),
+      ),
+    );
   }
 }

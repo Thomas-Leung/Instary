@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import './editPage.dart';
 
 class ViewPage extends StatelessWidget {
   final instaryTitle;
@@ -88,10 +89,11 @@ class EditWidget extends StatelessWidget {
     return IconButton(
       icon: Icon(Icons.edit),
       onPressed: () {
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text('Coming Soon'),
-          duration: Duration(seconds: 3),
-        ));
+       Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => EditPage(),
+          ),
+        );
       },
       color: Colors.grey[500],
     );

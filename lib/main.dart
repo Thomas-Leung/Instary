@@ -104,6 +104,7 @@ class _HomePageState extends State<HomePage> {
       for (int i = 0; i < instaryBox.length; i++) {
         final instary = instaryBox.getAt(i);
         print("new");
+        print(instary.dateTime);
         print(instary.title);
         print(instary.content);
       }

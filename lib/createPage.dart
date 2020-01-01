@@ -19,9 +19,9 @@ class _CreatePageState extends State<CreatePage> {
   final contentController = TextEditingController();
   DateTime dateTime = DateTime.now();
   String date = DateFormat.yMMMd().format(DateTime.now());
-  double _happinessLv = 50.0;
-  double _tirednessLv = 50.0;
-  double _stressfulnessLv = 50.0;
+  double happinessLv = 50.0;
+  double tirednessLv = 50.0;
+  double stressfulnessLv = 50.0;
 
   @override
   void dispose() {
@@ -177,11 +177,13 @@ class _CreatePageState extends State<CreatePage> {
                       // Validate returns true if the form is valid, or false
                       // otherwise.
                       if (_formKey.currentState.validate()) {
-                        // print(titleController.text);
-                        // print("Tiredness: $_tirednessLv");
-                        // print("Happyness: $_happinessLv");
-                        // print("Streefulness: $_stressfulnessLv");
-                        final newInstary = Instary(titleController.text, contentController.text);
+                        final newInstary = Instary(
+                            dateTime,
+                            titleController.text,
+                            contentController.text,
+                            tirednessLv,
+                            happinessLv,
+                            stressfulnessLv);
                         addInstary(newInstary);
                       }
                     },
@@ -201,6 +203,7 @@ class _CreatePageState extends State<CreatePage> {
     print('Title: ${instary.title}');
     final instaryBox = Hive.box('instary');
     instaryBox.add(instary);
+    Navigator.pop(context);
   }
 
   Widget _feelingCard() {
@@ -242,13 +245,13 @@ class _CreatePageState extends State<CreatePage> {
                             RoundSliderOverlayShape(overlayRadius: 16.0),
                       ),
                       child: Slider(
-                        value: _happinessLv,
+                        value: happinessLv,
                         min: 0,
                         max: 100,
                         divisions: 100,
                         onChanged: (value) {
                           setState(() {
-                            _happinessLv = value;
+                            happinessLv = value;
                           });
                         },
                       ),
@@ -281,13 +284,13 @@ class _CreatePageState extends State<CreatePage> {
                             RoundSliderOverlayShape(overlayRadius: 16.0),
                       ),
                       child: Slider(
-                        value: _tirednessLv,
+                        value: tirednessLv,
                         min: 0,
                         max: 100,
                         divisions: 100,
                         onChanged: (value) {
                           setState(() {
-                            _tirednessLv = value;
+                            tirednessLv = value;
                           });
                         },
                       ),
@@ -320,13 +323,13 @@ class _CreatePageState extends State<CreatePage> {
                             RoundSliderOverlayShape(overlayRadius: 16.0),
                       ),
                       child: Slider(
-                        value: _stressfulnessLv,
+                        value: stressfulnessLv,
                         min: 0,
                         max: 100,
                         divisions: 100,
                         onChanged: (value) {
                           setState(() {
-                            _stressfulnessLv = value;
+                            stressfulnessLv = value;
                           });
                         },
                       ),

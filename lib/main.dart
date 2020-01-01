@@ -1,16 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 import './createPage.dart';
 import './viewPage.dart';
+import 'models/instary.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // fixes iOS flutter error
+  final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
+  Hive.init(appDocumentDir.path);
+  // you need to register before you use the adapter
+  Hive.registerAdapter(InstaryAdapter(), 0);
   runApp(MaterialApp(
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: Colors.grey[900],
         accentColor: Color(0xff425296),
       ),
-      home: HomePage(),
+      home: FutureBuilder(
+          // use future builder to open hive boxes
+          future: Hive.openBox(
+            'instary',
+            compactionStrategy: (int total, int deleted) {
+              return deleted > 20;
+            },
+          ),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasError)
+                return Text(snapshot.error.toString());
+              else
+                return HomePage();
+            } else
+              return Scaffold(); // when loading hive
+          }),
       routes: {'/createPage': (context) => CreatePage()},
       debugShowCheckedModeBanner: false));
 }
@@ -50,7 +74,14 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     this._getNames();
+    this._getInstary();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    Hive.close(); // close all boxes when leave page
+    super.dispose();
   }
 
   void _getNames() async {
@@ -63,6 +94,19 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       names = tempList;
       filteredNames = names;
+    });
+  }
+
+  void _getInstary() {
+    List tempList = new List();
+    final instaryBox = Hive.box('instary');
+    instaryBox.watch().listen((event) {
+      for (int i = 0; i < instaryBox.length; i++) {
+        final instary = instaryBox.getAt(i);
+        print("new");
+        print(instary.title);
+        print(instary.content);
+      }
     });
   }
 
@@ -206,7 +250,7 @@ class _HomePageState extends State<HomePage> {
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
                       image: const DecorationImage(
-                        image: AssetImage('assets/images/img2.jpg'),
+                        image: AssetImage('assets/images/img1.png'),
                         fit: BoxFit.cover,
                       ),
                     ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'models/instary.dart';
 
 class CreatePage extends StatefulWidget {
   State<StatefulWidget> createState() {
@@ -13,8 +15,8 @@ class _CreatePageState extends State<CreatePage> {
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   final _formKey = GlobalKey<FormState>();
-  final titleConrtoller = TextEditingController();
-  final contentConrtoller = TextEditingController();
+  final titleController = TextEditingController();
+  final contentController = TextEditingController();
   DateTime dateTime = DateTime.now();
   String date = DateFormat.yMMMd().format(DateTime.now());
   double _happinessLv = 50.0;
@@ -24,8 +26,8 @@ class _CreatePageState extends State<CreatePage> {
   @override
   void dispose() {
     // clean up the controllers when the widget is disposed
-    titleConrtoller.dispose();
-    contentConrtoller.dispose();
+    titleController.dispose();
+    contentController.dispose();
     super.dispose();
   }
 
@@ -117,7 +119,7 @@ class _CreatePageState extends State<CreatePage> {
                 height: 10.0,
               ),
               TextFormField(
-                controller: titleConrtoller,
+                controller: titleController,
                 // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value.isEmpty) {
@@ -140,7 +142,7 @@ class _CreatePageState extends State<CreatePage> {
                 height: 20.0,
               ),
               TextFormField(
-                controller: contentConrtoller,
+                controller: contentController,
                 maxLines: 6,
                 decoration: InputDecoration(
                   hintText: "What have you experienced today?",
@@ -175,10 +177,12 @@ class _CreatePageState extends State<CreatePage> {
                       // Validate returns true if the form is valid, or false
                       // otherwise.
                       if (_formKey.currentState.validate()) {
-                        print(titleConrtoller.text);
-                        print("Tiredness: $_tirednessLv");
-                        print("Happyness: $_happinessLv");
-                        print("Streefulness: $_stressfulnessLv");
+                        // print(titleController.text);
+                        // print("Tiredness: $_tirednessLv");
+                        // print("Happyness: $_happinessLv");
+                        // print("Streefulness: $_stressfulnessLv");
+                        final newInstary = Instary(titleController.text, contentController.text);
+                        addInstary(newInstary);
                       }
                     },
                     icon: Icon(Icons.add),
@@ -191,6 +195,12 @@ class _CreatePageState extends State<CreatePage> {
         ),
       ),
     );
+  }
+
+  void addInstary(Instary instary) {
+    print('Title: ${instary.title}');
+    final instaryBox = Hive.box('instary');
+    instaryBox.add(instary);
   }
 
   Widget _feelingCard() {

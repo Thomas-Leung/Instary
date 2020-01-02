@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import './createPage.dart';
 import './viewPage.dart';
@@ -10,7 +10,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // fixes iOS flutter error
   final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
   Hive.init(appDocumentDir.path);
-  // you need to register before you use the adapter
+  // you need to register before you use the adapter, 0 is just a random ID
   Hive.registerAdapter(InstaryAdapter(), 0);
   runApp(MaterialApp(
       theme: ThemeData(
@@ -46,10 +46,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // controls the text label we use as a search bar
   final TextEditingController _filter = TextEditingController();
-  final dio = Dio(); // for http requests
   String _searchText = "";
-  List names = List(); // names we get from API
-  List filteredNames = List(); // names filtered by search text
+  List instaries = List(); // Instaries we get from Hive NoSQL
+  List filteredInstaries = List(); // Instaries filtered by search text
   Icon _searchIcon = Icon(Icons.search);
   Icon _darkModeIcon = Icon(Icons.brightness_5);
 
@@ -61,7 +60,7 @@ class _HomePageState extends State<HomePage> {
       if (_filter.text.isEmpty) {
         setState(() {
           _searchText = "";
-          filteredNames = names;
+          filteredInstaries = instaries;
         });
       } else {
         setState(() {
@@ -73,7 +72,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    this._getNames();
     this._getInstary();
     super.initState();
   }
@@ -84,30 +82,26 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void _getNames() async {
-    final response = await dio.get('https://swapi.co/api/people');
-    List tempList = new List();
-    for (int i = 0; i < response.data['results'].length; i++) {
-      tempList.add(response.data['results'][i]);
-    }
-
-    setState(() {
-      names = tempList;
-      filteredNames = names;
-    });
-  }
-
   void _getInstary() {
     List tempList = new List();
     final instaryBox = Hive.box('instary');
+    // to initialize instaries when start
+    for (int i = 0; i < instaryBox.length; i++) {
+      final instary = instaryBox.getAt(i);
+      tempList.add(instary);
+      print(tempList[i].title);
+    }
+    // to update instaries when changes
     instaryBox.watch().listen((event) {
       for (int i = 0; i < instaryBox.length; i++) {
         final instary = instaryBox.getAt(i);
-        print("new");
-        print(instary.dateTime);
-        print(instary.title);
-        print(instary.content);
+        tempList.add(instary);
+        print(tempList[i].title);
       }
+    });
+    setState(() {
+      instaries = tempList.reversed.toList(); // latest at top
+      filteredInstaries = instaries;
     });
   }
 
@@ -194,7 +188,7 @@ class _HomePageState extends State<HomePage> {
       } else {
         this._searchIcon = new Icon(Icons.search);
         FocusScope.of(context).requestFocus(FocusNode());
-        filteredNames = names;
+        filteredInstaries = instaries;
         _filter.clear();
       }
     });
@@ -217,19 +211,20 @@ class _HomePageState extends State<HomePage> {
   Widget _buildList() {
     if (_searchText != "") {
       List tempList = new List();
-      for (int i = 0; i < filteredNames.length; i++) {
-        if (filteredNames[i]['name']
+      for (int i = 0; i < filteredInstaries.length; i++) {
+        if (filteredInstaries[i]
+            .title
             .toLowerCase()
             .contains(_searchText.toLowerCase())) {
-          tempList.add(filteredNames[i]);
+          tempList.add(filteredInstaries[i]);
         }
       }
-      filteredNames = tempList;
+      filteredInstaries = tempList;
     }
     return Expanded(
       child: PageView.builder(
         controller: PageController(viewportFraction: 0.85),
-        itemCount: names == null ? 0 : filteredNames.length,
+        itemCount: instaries == null ? 0 : filteredInstaries.length,
         itemBuilder: (BuildContext context, int index) {
           return Padding(
             padding: EdgeInsets.all(16.0),
@@ -240,7 +235,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => ViewPage(
-                        instaryTitle: filteredNames[index]['name'],
+                        instaryTitle: filteredInstaries[index].title,
                         instaryPhoto: "assets/images/cat.png",
                       ),
                     ),
@@ -278,14 +273,15 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            filteredNames[index]['name'],
+                            filteredInstaries[index].title,
                             style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 32.0,
                                 color: Colors.white),
                           ),
                           Text(
-                            "Dec 30, 2019",
+                            DateFormat.yMMMd()
+                                .format(filteredInstaries[index].dateTime),
                             style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16.0,

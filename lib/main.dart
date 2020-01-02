@@ -91,6 +91,10 @@ class _HomePageState extends State<HomePage> {
       tempList.add(instary);
       print(tempList[i].title);
     }
+    setState(() {
+      instaries = tempList.reversed.toList(); // latest at top
+      filteredInstaries = instaries;
+    });
     // to update instaries when changes
     instaryBox.watch().listen((event) {
       for (int i = 0; i < instaryBox.length; i++) {
@@ -98,10 +102,10 @@ class _HomePageState extends State<HomePage> {
         tempList.add(instary);
         print(tempList[i].title);
       }
-    });
-    setState(() {
-      instaries = tempList.reversed.toList(); // latest at top
-      filteredInstaries = instaries;
+      setState(() {
+        instaries = tempList.reversed.toList(); // latest at top
+        filteredInstaries = instaries;
+      });
     });
   }
 
@@ -235,8 +239,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => ViewPage(
-                        instaryTitle: filteredInstaries[index].title,
-                        instaryPhoto: "assets/images/cat.png",
+                        instary: filteredInstaries[index],
                       ),
                     ),
                   );

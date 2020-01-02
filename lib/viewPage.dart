@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 import './editPage.dart';
 
 class ViewPage extends StatelessWidget {
-  final instaryTitle;
-  final instaryPhoto;
+  final instary;
 
-  ViewPage({this.instaryTitle, this.instaryPhoto});
+  ViewPage({this.instary});
 
   @override
   Widget build(BuildContext context) {
@@ -44,18 +44,18 @@ class ViewPage extends StatelessWidget {
                       children: <Widget>[
                         Flexible(
                           child: Text(
-                            instaryTitle,
+                            instary.title,
                             style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 30.0,
                                 color: Colors.black),
                           ),
                         ),
-                        EditWidget()
+                        editWidget(context)
                       ],
                     ),
                     Text(
-                      "Dec 30, 2019",
+                      DateFormat.yMMMd().format(instary.dateTime),
                       style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 18.0,
@@ -65,13 +65,13 @@ class ViewPage extends StatelessWidget {
                       height: 20.0,
                     ),
                     Text(
-                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+                      instary.content,
                       style: TextStyle(fontSize: 15.0),
                     ),
                     Container(
                       height: 20.0,
                     ),
-                    FeelingsWidget()
+                    feelingsWidget()
                   ],
                 ),
               ),
@@ -81,28 +81,8 @@ class ViewPage extends StatelessWidget {
       ),
     );
   }
-}
 
-class EditWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.edit),
-      onPressed: () {
-       Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => EditPage(),
-          ),
-        );
-      },
-      color: Colors.grey[500],
-    );
-  }
-}
-
-class FeelingsWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
+  Widget feelingsWidget() {
     return Card(
       elevation: 4.0,
       color: const Color(0xfff1f1f1),
@@ -182,17 +162,20 @@ class FeelingsWidget extends StatelessWidget {
                   ),
                   barGroups: [
                     BarChartGroupData(x: 0, barRods: [
-                      BarChartRodData(y: 75, color: Colors.indigo[400])
+                      BarChartRodData(
+                          y: instary.happinessLv, color: Colors.indigo[400])
                     ], showingTooltipIndicators: [
                       0
                     ]),
                     BarChartGroupData(x: 1, barRods: [
-                      BarChartRodData(y: 10, color: Colors.indigo[400])
+                      BarChartRodData(
+                          y: instary.tirednessLv, color: Colors.indigo[400])
                     ], showingTooltipIndicators: [
                       0
                     ]),
                     BarChartGroupData(x: 2, barRods: [
-                      BarChartRodData(y: 14, color: Colors.indigo[400])
+                      BarChartRodData(
+                          y: instary.stressfulnessLv, color: Colors.indigo[400])
                     ], showingTooltipIndicators: [
                       0
                     ]),
@@ -201,6 +184,20 @@ class FeelingsWidget extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget editWidget(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.edit),
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => EditPage(),
+          ),
+        );
+      },
+      color: Colors.grey[500],
     );
   }
 }

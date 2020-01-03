@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
+import 'models/instary.dart';
+
 class EditPage extends StatefulWidget {
+  final instary;
+  EditPage({this.instary});
+
   State<StatefulWidget> createState() {
     return _EditPageState();
   }
@@ -13,19 +19,31 @@ class _EditPageState extends State<EditPage> {
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   final _formKey = GlobalKey<FormState>();
-  final titleConrtoller = TextEditingController();
-  final contentConrtoller = TextEditingController();
-  DateTime dateTime = DateTime.now();
-  String date = DateFormat.yMMMd().format(DateTime.now());
-  double _happinessLv = 50.0;
-  double _tirednessLv = 50.0;
-  double _stressfulnessLv = 50.0;
+  final titleController = TextEditingController();
+  final contentController = TextEditingController();
+  DateTime dateTime;
+  String date;
+  double happinessLv;
+  double tirednessLv;
+  double stressfulnessLv;
+
+  @override
+  void initState() {
+    dateTime = widget.instary.dateTime;
+    date = DateFormat.yMMMd().format(dateTime);
+    titleController.text = widget.instary.title;
+    contentController.text = widget.instary.content;
+    happinessLv = widget.instary.happinessLv;
+    tirednessLv = widget.instary.tirednessLv;
+    stressfulnessLv = widget.instary.stressfulnessLv;
+    super.initState();
+  }
 
   @override
   void dispose() {
     // clean up the controllers when the widget is disposed
-    titleConrtoller.dispose();
-    contentConrtoller.dispose();
+    titleController.dispose();
+    contentController.dispose();
     super.dispose();
   }
 
@@ -126,7 +144,7 @@ class _EditPageState extends State<EditPage> {
                 height: 10.0,
               ),
               TextFormField(
-                controller: titleConrtoller,
+                controller: titleController,
                 // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value.isEmpty) {
@@ -149,7 +167,7 @@ class _EditPageState extends State<EditPage> {
                 height: 20.0,
               ),
               TextFormField(
-                controller: contentConrtoller,
+                controller: contentController,
                 maxLines: 6,
                 decoration: InputDecoration(
                   hintText: "What have you experienced today?",
@@ -184,10 +202,14 @@ class _EditPageState extends State<EditPage> {
                       // Validate returns true if the form is valid, or false
                       // otherwise.
                       if (_formKey.currentState.validate()) {
-                        print(titleConrtoller.text);
-                        print("Tiredness: $_tirednessLv");
-                        print("Happyness: $_happinessLv");
-                        print("Streefulness: $_stressfulnessLv");
+                        final newInstary = Instary(
+                            dateTime,
+                            titleController.text,
+                            contentController.text,
+                            tirednessLv,
+                            happinessLv,
+                            stressfulnessLv);
+                        updateInstary(newInstary);
                       }
                     },
                     icon: Icon(Icons.save),
@@ -200,6 +222,13 @@ class _EditPageState extends State<EditPage> {
         ),
       ),
     );
+  }
+
+  void updateInstary(Instary instary) {
+    print('Title: ${instary.title}');
+    // final instaryBox = Hive.box('instary');
+    // instaryBox.put(this.widget.instary.hashCode, instary);
+    // Navigator.pop(context);
   }
 
   Widget _feelingCard() {
@@ -241,13 +270,13 @@ class _EditPageState extends State<EditPage> {
                             RoundSliderOverlayShape(overlayRadius: 16.0),
                       ),
                       child: Slider(
-                        value: _happinessLv,
+                        value: happinessLv,
                         min: 0,
                         max: 100,
                         divisions: 100,
                         onChanged: (value) {
                           setState(() {
-                            _happinessLv = value;
+                            happinessLv = value;
                           });
                         },
                       ),
@@ -280,13 +309,13 @@ class _EditPageState extends State<EditPage> {
                             RoundSliderOverlayShape(overlayRadius: 16.0),
                       ),
                       child: Slider(
-                        value: _tirednessLv,
+                        value: tirednessLv,
                         min: 0,
                         max: 100,
                         divisions: 100,
                         onChanged: (value) {
                           setState(() {
-                            _tirednessLv = value;
+                            tirednessLv = value;
                           });
                         },
                       ),
@@ -319,13 +348,13 @@ class _EditPageState extends State<EditPage> {
                             RoundSliderOverlayShape(overlayRadius: 16.0),
                       ),
                       child: Slider(
-                        value: _stressfulnessLv,
+                        value: stressfulnessLv,
                         min: 0,
                         max: 100,
                         divisions: 100,
                         onChanged: (value) {
                           setState(() {
-                            _stressfulnessLv = value;
+                            stressfulnessLv = value;
                           });
                         },
                       ),

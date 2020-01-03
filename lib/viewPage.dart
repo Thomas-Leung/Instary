@@ -193,7 +193,7 @@ class ViewPage extends StatelessWidget {
       onPressed: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => EditPage(),
+            builder: (context) => EditPage(instary: this.instary),
           ),
         );
       },

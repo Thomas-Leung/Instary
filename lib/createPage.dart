@@ -200,7 +200,6 @@ class _CreatePageState extends State<CreatePage> {
   }
 
   void addInstary(Instary instary) {
-    print('Title: ${instary.title}');
     final instaryBox = Hive.box('instary');
     instaryBox.add(instary);
     Navigator.pop(context);

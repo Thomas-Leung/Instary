@@ -248,7 +248,6 @@ class _HomePageState extends State<HomePage> {
               borderRadius: BorderRadius.circular(25.0),
               child: GestureDetector(
                 onTap: () {
-                  print(index);
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => ViewPage(

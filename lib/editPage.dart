@@ -97,11 +97,41 @@ class _EditPageState extends State<EditPage> {
             icon: Icon(Icons.delete, size: 30.0),
             color: Colors.red[800],
             onPressed: () {
-              print("Deleting");
+              _showDeleteDialog();
             },
           )
         ],
       ),
+    );
+  }
+
+  void _showDeleteDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+          title: Text("Delete Instary"),
+          content: Text("Are you sure you want to delete this Instary?"),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Cancel", style: TextStyle(color: Colors.grey[600])),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text("Delete", style: TextStyle(color: Colors.red[800])),
+              onPressed: () {
+                final instaryBox = Hive.box('instary');
+                instaryBox.delete(this.widget.instary.id);
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+            )
+          ],
+        );
+      },
     );
   }
 
@@ -230,8 +260,7 @@ class _EditPageState extends State<EditPage> {
     final instaryBox = Hive.box('instary');
     instaryBox.put(instary.id, instary);
     // hacky way for now, pop back to main page and update ViewPage
-    Navigator.pop(context);
-    Navigator.pop(context);
+    Navigator.of(context).popUntil((route) => route.isFirst);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ViewPage(instary: instary),

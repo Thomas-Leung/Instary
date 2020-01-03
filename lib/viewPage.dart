@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:instary/viewPhotoPage.dart';
 import 'package:intl/intl.dart';
 import './editPage.dart';
 
@@ -21,13 +22,22 @@ class ViewPage extends StatelessWidget {
             expandedHeight: MediaQuery.of(context).size.height / 2.5,
             floating: false,
             pinned: false,
-            flexibleSpace: FlexibleSpaceBar(
-              background: ClipRRect(
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.elliptical(60.0, 60.0)),
-                child: Image.asset(
-                  'assets/images/img1.png',
-                  fit: BoxFit.cover,
+            flexibleSpace: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ViewPhotoPage(),
+                  ),
+                );
+              },
+              child: FlexibleSpaceBar(
+                background: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.elliptical(60.0, 60.0)),
+                  child: Image.asset(
+                    'assets/images/img1.png',
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),

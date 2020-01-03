@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:instary/viewPage.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
@@ -226,10 +227,16 @@ class _EditPageState extends State<EditPage> {
   }
 
   void updateInstary(Instary instary) {
-    print('Title: ${instary.title}');
     final instaryBox = Hive.box('instary');
     instaryBox.put(instary.id, instary);
+    // hacky way for now, pop back to main page and update ViewPage
     Navigator.pop(context);
+    Navigator.pop(context);
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ViewPage(instary: instary),
+      ),
+    );
   }
 
   Widget _feelingCard() {

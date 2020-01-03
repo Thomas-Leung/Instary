@@ -203,11 +203,12 @@ class _EditPageState extends State<EditPage> {
                       // otherwise.
                       if (_formKey.currentState.validate()) {
                         final newInstary = Instary(
+                            this.widget.instary.id,
                             dateTime,
                             titleController.text,
                             contentController.text,
-                            tirednessLv,
                             happinessLv,
+                            tirednessLv,
                             stressfulnessLv);
                         updateInstary(newInstary);
                       }
@@ -226,9 +227,9 @@ class _EditPageState extends State<EditPage> {
 
   void updateInstary(Instary instary) {
     print('Title: ${instary.title}');
-    // final instaryBox = Hive.box('instary');
-    // instaryBox.put(this.widget.instary.hashCode, instary);
-    // Navigator.pop(context);
+    final instaryBox = Hive.box('instary');
+    instaryBox.put(instary.id, instary);
+    Navigator.pop(context);
   }
 
   Widget _feelingCard() {

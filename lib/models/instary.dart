@@ -7,21 +7,20 @@ part 'instary.g.dart';
 @HiveType()
 class Instary {
   @HiveField(0)
-  DateTime dateTime;
-
+  String id;
   @HiveField(1)
-  String title;
-
+  DateTime dateTime;
   @HiveField(2)
-  String content;
-
+  String title;
   @HiveField(3)
-  double happinessLv;
+  String content;
   @HiveField(4)
-  double tirednessLv;
+  double happinessLv;
   @HiveField(5)
+  double tirednessLv;
+  @HiveField(6)
   double stressfulnessLv;
 
-  Instary(this.dateTime, this.title, this.content, this.happinessLv,
+  Instary(this.id, this.dateTime, this.title, this.content, this.happinessLv,
       this.tirednessLv, this.stressfulnessLv);
 }

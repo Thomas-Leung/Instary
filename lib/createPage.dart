@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:uuid/uuid.dart';
 import 'models/instary.dart';
 
 class CreatePage extends StatefulWidget {
@@ -177,12 +178,15 @@ class _CreatePageState extends State<CreatePage> {
                       // Validate returns true if the form is valid, or false
                       // otherwise.
                       if (_formKey.currentState.validate()) {
+                        var uuid = Uuid();
+                        String id = uuid.v1();
                         final newInstary = Instary(
+                            id,
                             dateTime,
                             titleController.text,
                             contentController.text,
-                            tirednessLv,
                             happinessLv,
+                            tirednessLv,
                             stressfulnessLv);
                         addInstary(newInstary);
                       }
@@ -201,7 +205,7 @@ class _CreatePageState extends State<CreatePage> {
 
   void addInstary(Instary instary) {
     final instaryBox = Hive.box('instary');
-    instaryBox.add(instary);
+    instaryBox.put(instary.id, instary);
     Navigator.pop(context);
   }
 

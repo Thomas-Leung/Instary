@@ -89,7 +89,6 @@ class _HomePageState extends State<HomePage> {
     for (int i = 0; i < instaryBox.length; i++) {
       final instary = instaryBox.getAt(i);
       tempList.add(instary);
-      print(tempList[i].title);
     }
     setState(() {
       instaries = tempList.reversed.toList(); // latest at top
@@ -97,13 +96,13 @@ class _HomePageState extends State<HomePage> {
     });
     // to update instaries when changes
     instaryBox.watch().listen((event) {
+      List updateList = new List();
       for (int i = 0; i < instaryBox.length; i++) {
         final instary = instaryBox.getAt(i);
-        tempList.add(instary);
-        print(tempList[i].title);
+        updateList.add(instary);
       }
       setState(() {
-        instaries = tempList.reversed.toList(); // latest at top
+        instaries = updateList.reversed.toList(); // latest at top
         filteredInstaries = instaries;
       });
     });
@@ -225,6 +224,19 @@ class _HomePageState extends State<HomePage> {
       }
       filteredInstaries = tempList;
     }
+    if (instaries.length == 0 || filteredInstaries.length == 0) {
+      return Expanded(
+        child: Center(
+          child: Text(
+            "No instary :(",
+            style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 18.0,
+                color: Colors.grey[400]),
+          ),
+        ),
+      );
+    }
     return Expanded(
       child: PageView.builder(
         controller: PageController(viewportFraction: 0.85),
@@ -236,6 +248,7 @@ class _HomePageState extends State<HomePage> {
               borderRadius: BorderRadius.circular(25.0),
               child: GestureDetector(
                 onTap: () {
+                  print(index);
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => ViewPage(

@@ -160,6 +160,10 @@ class _CreatePageState extends State<CreatePage> {
               Container(
                 height: 20.0,
               ),
+              _imageCard(),
+              Container(
+                height: 20.0,
+              ),
               _feelingCard(),
               Container(
                 height: 20.0,
@@ -207,6 +211,27 @@ class _CreatePageState extends State<CreatePage> {
     final instaryBox = Hive.box('instary');
     instaryBox.put(instary.id, instary);
     Navigator.pop(context);
+  }
+
+  Widget _imageCard() {
+    return Card(
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: <Widget>[
+            FlatButton.icon(
+              icon: Icon(Icons.image),
+              label: Text("Pick an Image"),
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _feelingCard() {

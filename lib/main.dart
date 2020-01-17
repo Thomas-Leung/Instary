@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:permission_handler/permission_handler.dart';
 import './createPage.dart';
 import './viewPage.dart';
 import 'models/instary.dart';
@@ -72,6 +75,31 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    final myDir = new Directory('/storage/emulated/0/Instary/pictures');
+    myDir.exists().then((isDir) async {
+      if (!isDir) {
+        PermissionStatus permission = await PermissionHandler()
+            .checkPermissionStatus(PermissionGroup.storage);
+        if (permission != PermissionStatus.granted) {
+          print("No Storage Permission yet");
+          await PermissionHandler()
+              .requestPermissions([PermissionGroup.storage]);
+        }
+        if (await PermissionHandler()
+                .checkPermissionStatus(PermissionGroup.storage) ==
+            PermissionStatus.granted) {
+          print("Got permission, create directory");
+          new Directory('/storage/emulated/0/Instary/pictures')
+              .create(recursive: true)
+              // The created directory is returned as a Future.
+              .then((Directory directory) {
+            print(directory.path);
+          });
+        } else {
+          SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        }
+      }
+    });
     this._getInstary();
     super.initState();
   }

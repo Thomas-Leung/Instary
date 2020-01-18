@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:uuid/uuid.dart';
@@ -23,6 +26,7 @@ class _CreatePageState extends State<CreatePage> {
   double happinessLv = 50.0;
   double tirednessLv = 50.0;
   double stressfulnessLv = 50.0;
+  File _pickedImage;
 
   @override
   void dispose() {
@@ -221,17 +225,128 @@ class _CreatePageState extends State<CreatePage> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            FlatButton.icon(
-              icon: Icon(Icons.image),
-              label: Text("Pick an Image"),
-              onPressed: () {},
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Text('You image of the day: ',
+                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20)),
+            ),
+            GestureDetector(
+              child: Center(
+                child: _pickedImage == null
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment
+                            .center, // Center Row contents horizontally,
+                        crossAxisAlignment: CrossAxisAlignment
+                            .center, // Center Row contents vertically,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 2.0),
+                            child: Icon(Icons.add_photo_alternate,
+                                color: Colors.grey),
+                          ),
+                          Text("Add Image",
+                              style: TextStyle(color: Colors.grey)),
+                        ],
+                      )
+                    : Column(
+                        children: <Widget>[
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: Image(
+                              image: FileImage(_pickedImage),
+                            ),
+                          ),
+                          FlatButton.icon(
+                            icon: Icon(
+                              Icons.delete_outline,
+                              color: Colors.red[800],
+                            ),
+                            label: Text(
+                              "Remove Image",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.red[800]),
+                            ),
+                            onPressed: () {
+                              setState(() => _pickedImage = null);
+                            },
+                          ),
+                        ],
+                      ),
+              ),
+              onTap: () => _pickImage(),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _pickImage() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => SimpleDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(10.0),
+                ),
+              ),
+              title: Text("Select an image source"),
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context, ImageSource.camera),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 20.0, 30.0, 20.0),
+                        child: Column(
+                          children: <Widget>[
+                            Icon(
+                              Icons.camera_alt,
+                              color: Colors.grey,
+                            ),
+                            Text("Camera",
+                                style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 1,
+                      height: 40.0,
+                      color: Colors.grey,
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context, ImageSource.gallery),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(30.0, 20.0, 0, 20.0),
+                        child: Column(
+                          children: <Widget>[
+                            Icon(
+                              Icons.photo,
+                              color: Colors.grey,
+                            ),
+                            Text("Gallery",
+                                style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ));
+
+    if (imageSource != null) {
+      final file = await ImagePicker.pickImage(source: imageSource);
+      if (file != null) {
+        setState(() => _pickedImage = file);
+      }
+    }
   }
 
   Widget _feelingCard() {

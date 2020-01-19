@@ -186,8 +186,10 @@ class _CreatePageState extends State<CreatePage> {
                       // Validate returns true if the form is valid, or false
                       // otherwise.
                       if (_formKey.currentState.validate()) {
+                        // create unique id
                         var uuid = Uuid();
                         String id = uuid.v1();
+                        List<String> imagePaths = _createImagePaths();
                         final newInstary = Instary(
                             id,
                             dateTime,
@@ -195,7 +197,8 @@ class _CreatePageState extends State<CreatePage> {
                             contentController.text,
                             happinessLv,
                             tirednessLv,
-                            stressfulnessLv);
+                            stressfulnessLv,
+                            imagePaths);
                         addInstary(newInstary);
                       }
                     },
@@ -215,6 +218,25 @@ class _CreatePageState extends State<CreatePage> {
     final instaryBox = Hive.box('instary');
     instaryBox.put(instary.id, instary);
     Navigator.pop(context);
+  }
+
+  List<String> _createImagePaths() {
+    List<String> imagePaths = new List();
+    if (_pickedImage == null) {
+      // create 1 item in list for empty image
+      imagePaths.add(null);
+      return imagePaths;
+    } else {
+      RegExp regex = new RegExp(r'([^\/]+$)');
+      String fileName = regex.stringMatch(_pickedImage.path);
+      imagePaths.add("/storage/emulated/0/Instary/pictures/$fileName");
+      _saveImage(fileName);
+      return imagePaths;
+    }
+  }
+
+  Future<void> _saveImage(String fileName) async {
+    await _pickedImage.copy("/storage/emulated/0/Instary/pictures/$fileName");
   }
 
   Widget _imageCard() {

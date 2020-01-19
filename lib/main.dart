@@ -77,14 +77,11 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     final myDir = new Directory('/storage/emulated/0/Instary/pictures');
     myDir.exists().then((isDir) async {
-      if (!isDir) {
-        PermissionStatus permission = await PermissionHandler()
-            .checkPermissionStatus(PermissionGroup.storage);
-        if (permission != PermissionStatus.granted) {
-          print("No Storage Permission yet");
-          await PermissionHandler()
-              .requestPermissions([PermissionGroup.storage]);
-        }
+      PermissionStatus permission = await PermissionHandler()
+          .checkPermissionStatus(PermissionGroup.storage);
+      if (!isDir || permission != PermissionStatus.granted) {
+        print("No Storage Permission yet");
+        await PermissionHandler().requestPermissions([PermissionGroup.storage]);
         if (await PermissionHandler()
                 .checkPermissionStatus(PermissionGroup.storage) ==
             PermissionStatus.granted) {
@@ -270,6 +267,11 @@ class _HomePageState extends State<HomePage> {
         controller: PageController(viewportFraction: 0.85),
         itemCount: instaries == null ? 0 : filteredInstaries.length,
         itemBuilder: (BuildContext context, int index) {
+          // get imagePath
+          File imagePath;
+          if (filteredInstaries[index].imagePaths[0] != null) {
+            imagePath = new File(filteredInstaries[index].imagePaths[0]);
+          }
           return Padding(
             padding: EdgeInsets.all(16.0),
             child: ClipRRect(
@@ -288,8 +290,10 @@ class _HomePageState extends State<HomePage> {
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/img1.png'),
+                      image: DecorationImage(
+                        image: imagePath != null
+                            ? FileImage(imagePath)
+                            : AssetImage('assets/images/img_not_found.png'),
                         fit: BoxFit.cover,
                       ),
                     ),

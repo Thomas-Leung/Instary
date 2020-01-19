@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:instary/viewPhotoPage.dart';
@@ -11,6 +13,11 @@ class ViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // get imagePath
+    File imagePath;
+    if (instary.imagePaths[0] != null) {
+      imagePath = new File(instary.imagePaths[0]);
+    }
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
@@ -26,7 +33,7 @@ class ViewPage extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ViewPhotoPage(),
+                    builder: (context) => ViewPhotoPage(imagePath: imagePath),
                   ),
                 );
               },
@@ -34,10 +41,10 @@ class ViewPage extends StatelessWidget {
                 background: ClipRRect(
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.elliptical(60.0, 60.0)),
-                  child: Image.asset(
-                    'assets/images/img1.png',
-                    fit: BoxFit.cover,
-                  ),
+                  child: imagePath != null
+                      ? Image.file(imagePath, fit: BoxFit.cover)
+                      : Image.asset('assets/images/img_not_found.png',
+                          fit: BoxFit.cover),
                 ),
               ),
             ),

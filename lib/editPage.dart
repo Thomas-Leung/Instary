@@ -240,7 +240,8 @@ class _EditPageState extends State<EditPage> {
                             contentController.text,
                             happinessLv,
                             tirednessLv,
-                            stressfulnessLv);
+                            stressfulnessLv,
+                            ["FIXEDINFUTURE"]);
                         updateInstary(newInstary);
                       }
                     },

@@ -21,13 +21,14 @@ class InstaryAdapter extends TypeAdapter<Instary> {
       fields[4] as double,
       fields[5] as double,
       fields[6] as double,
+      (fields[7] as List)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Instary obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,6 +42,8 @@ class InstaryAdapter extends TypeAdapter<Instary> {
       ..writeByte(5)
       ..write(obj.tirednessLv)
       ..writeByte(6)
-      ..write(obj.stressfulnessLv);
+      ..write(obj.stressfulnessLv)
+      ..writeByte(7)
+      ..write(obj.imagePaths);
   }
 }

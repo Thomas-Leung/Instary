@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:instary/viewPage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import './viewPage.dart';
 
 import 'models/instary.dart';
 
@@ -27,6 +30,7 @@ class _EditPageState extends State<EditPage> {
   double happinessLv;
   double tirednessLv;
   double stressfulnessLv;
+  File _pickedImage;
 
   @override
   void initState() {
@@ -37,6 +41,10 @@ class _EditPageState extends State<EditPage> {
     happinessLv = widget.instary.happinessLv;
     tirednessLv = widget.instary.tirednessLv;
     stressfulnessLv = widget.instary.stressfulnessLv;
+    // check if image exist
+    if (widget.instary.imagePaths[0] != null) {
+      _pickedImage = new File(widget.instary.imagePaths[0]);
+    }
     super.initState();
   }
 
@@ -125,6 +133,9 @@ class _EditPageState extends State<EditPage> {
               child: Text("Delete", style: TextStyle(color: Colors.red[800])),
               onPressed: () {
                 final instaryBox = Hive.box('instary');
+                if (widget.instary.imagePaths[0] != null) {
+                  _deleteImage(widget.instary.imagePaths[0]);
+                }
                 instaryBox.delete(this.widget.instary.id);
                 Navigator.of(context).popUntil((route) => route.isFirst);
               },
@@ -215,6 +226,10 @@ class _EditPageState extends State<EditPage> {
               Container(
                 height: 20.0,
               ),
+              _imageCard(),
+              Container(
+                height: 20.0,
+              ),
               _feelingCard(),
               Container(
                 height: 20.0,
@@ -228,10 +243,13 @@ class _EditPageState extends State<EditPage> {
                       borderRadius: BorderRadius.circular(8.0)),
                   textTheme: ButtonTextTheme.primary,
                   child: RaisedButton.icon(
+                    label: Text('Save'),
+                    icon: Icon(Icons.save),
                     onPressed: () {
                       FocusScope.of(context).requestFocus(new FocusNode());
                       // Validate returns true if the form is valid, or false
                       // otherwise.
+                      List<String> imagePaths = _updateImagePaths();
                       if (_formKey.currentState.validate()) {
                         final newInstary = Instary(
                             this.widget.instary.id,
@@ -240,12 +258,11 @@ class _EditPageState extends State<EditPage> {
                             contentController.text,
                             happinessLv,
                             tirednessLv,
-                            stressfulnessLv);
+                            stressfulnessLv,
+                            imagePaths);
                         updateInstary(newInstary);
                       }
                     },
-                    icon: Icon(Icons.save),
-                    label: Text('Save'),
                   ),
                 ),
               ),
@@ -266,6 +283,174 @@ class _EditPageState extends State<EditPage> {
         builder: (context) => ViewPage(instary: instary),
       ),
     );
+  }
+
+  List<String> _updateImagePaths() {
+    List<String> imagePaths = new List();
+    if (_pickedImage == null) {
+      // create 1 item in list for empty image
+      imagePaths.add(null);
+      if (widget.instary.imagePaths[0] != null) {
+        _deleteImage(widget.instary.imagePaths[0]);
+      }
+      return imagePaths;
+    } else {
+      if (widget.instary.imagePaths[0] != _pickedImage.path) {
+        RegExp regex = new RegExp(r'([^\/]+$)');
+        String fileName = regex.stringMatch(_pickedImage.path);
+        imagePaths.add("/storage/emulated/0/Instary/pictures/$fileName");
+        _updateImage(widget.instary.imagePaths[0], fileName);
+      } else {
+        imagePaths.add(widget.instary.imagePaths[0]);
+      }
+      return imagePaths;
+    }
+  }
+
+  Future<void> _saveImage(String fileName) async {
+    await _pickedImage.copy("/storage/emulated/0/Instary/pictures/$fileName");
+  }
+
+  void _deleteImage(String imagePath) {
+    final imagefile = File(imagePath);
+    imagefile.delete();
+  }
+
+  void _updateImage(String oldImagePath, String newImageFile) {
+    _deleteImage(oldImagePath);
+    _saveImage(newImageFile);
+  }
+
+  Widget _imageCard() {
+    return Card(
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Text('You image of the day: ',
+                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20)),
+            ),
+            GestureDetector(
+              child: Center(
+                child: _pickedImage == null
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment
+                            .center, // Center Row contents horizontally,
+                        crossAxisAlignment: CrossAxisAlignment
+                            .center, // Center Row contents vertically,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 2.0),
+                            child: Icon(Icons.add_photo_alternate,
+                                color: Colors.grey),
+                          ),
+                          Text("Add Image",
+                              style: TextStyle(color: Colors.grey)),
+                        ],
+                      )
+                    : Column(
+                        children: <Widget>[
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: Image(
+                              image: FileImage(_pickedImage),
+                            ),
+                          ),
+                          FlatButton.icon(
+                            icon: Icon(
+                              Icons.delete_outline,
+                              color: Colors.red[800],
+                            ),
+                            label: Text(
+                              "Remove Image",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.red[800]),
+                            ),
+                            onPressed: () {
+                              setState(() => _pickedImage = null);
+                            },
+                          ),
+                        ],
+                      ),
+              ),
+              onTap: () => _pickImage(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _pickImage() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => SimpleDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(10.0),
+                ),
+              ),
+              title: Text("Select an image source"),
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context, ImageSource.camera),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 20.0, 30.0, 20.0),
+                        child: Column(
+                          children: <Widget>[
+                            Icon(
+                              Icons.camera_alt,
+                              color: Colors.grey,
+                            ),
+                            Text("Camera",
+                                style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 1,
+                      height: 40.0,
+                      color: Colors.grey,
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context, ImageSource.gallery),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(30.0, 20.0, 0, 20.0),
+                        child: Column(
+                          children: <Widget>[
+                            Icon(
+                              Icons.photo,
+                              color: Colors.grey,
+                            ),
+                            Text("Gallery",
+                                style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ));
+
+    if (imageSource != null) {
+      final file = await ImagePicker.pickImage(source: imageSource);
+      if (file != null) {
+        setState(() => _pickedImage = file);
+      }
+    }
   }
 
   Widget _feelingCard() {

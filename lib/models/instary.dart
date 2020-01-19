@@ -20,7 +20,9 @@ class Instary {
   double tirednessLv;
   @HiveField(6)
   double stressfulnessLv;
+  @HiveField(7)
+  List<String> imagePaths;
 
   Instary(this.id, this.dateTime, this.title, this.content, this.happinessLv,
-      this.tirednessLv, this.stressfulnessLv);
+      this.tirednessLv, this.stressfulnessLv, this.imagePaths);
 }

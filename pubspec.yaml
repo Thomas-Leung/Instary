@@ -1,5 +1,5 @@
-name: instary
-description: A new Flutter project.
+name: Instary
+description: An offline diary that keeps your thought, photos, mood and feelings all in one place.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -28,6 +28,9 @@ dependencies:
   path_provider: ^1.5.1
   uuid: ^2.0.4
   photo_view: ^0.9.0
+  # ***Need additional work for iOS***
+  permission_handler: '^4.2.0+hotfix.1'
+  image_picker: ^0.6.3+1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

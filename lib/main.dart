@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:permission_handler/permission_handler.dart';
 import './createPage.dart';
 import './viewPage.dart';
 import 'models/instary.dart';
@@ -72,6 +75,28 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    final myDir = new Directory('/storage/emulated/0/Instary/pictures');
+    myDir.exists().then((isDir) async {
+      PermissionStatus permission = await PermissionHandler()
+          .checkPermissionStatus(PermissionGroup.storage);
+      if (!isDir || permission != PermissionStatus.granted) {
+        print("No Storage Permission yet");
+        await PermissionHandler().requestPermissions([PermissionGroup.storage]);
+        if (await PermissionHandler()
+                .checkPermissionStatus(PermissionGroup.storage) ==
+            PermissionStatus.granted) {
+          print("Got permission, create directory");
+          new Directory('/storage/emulated/0/Instary/pictures')
+              .create(recursive: true)
+              // The created directory is returned as a Future.
+              .then((Directory directory) {
+            print(directory.path);
+          });
+        } else {
+          SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        }
+      }
+    });
     this._getInstary();
     super.initState();
   }
@@ -242,6 +267,11 @@ class _HomePageState extends State<HomePage> {
         controller: PageController(viewportFraction: 0.85),
         itemCount: instaries == null ? 0 : filteredInstaries.length,
         itemBuilder: (BuildContext context, int index) {
+          // get imagePath
+          File imagePath;
+          if (filteredInstaries[index].imagePaths[0] != null) {
+            imagePath = new File(filteredInstaries[index].imagePaths[0]);
+          }
           return Padding(
             padding: EdgeInsets.all(16.0),
             child: ClipRRect(
@@ -260,8 +290,10 @@ class _HomePageState extends State<HomePage> {
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/img1.png'),
+                      image: DecorationImage(
+                        image: imagePath != null
+                            ? FileImage(imagePath)
+                            : AssetImage('assets/images/img_not_found.png'),
                         fit: BoxFit.cover,
                       ),
                     ),

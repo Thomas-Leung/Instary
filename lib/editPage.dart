@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:instary/viewPage.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -27,6 +30,7 @@ class _EditPageState extends State<EditPage> {
   double happinessLv;
   double tirednessLv;
   double stressfulnessLv;
+  File _pickedImage;
 
   @override
   void initState() {
@@ -37,6 +41,10 @@ class _EditPageState extends State<EditPage> {
     happinessLv = widget.instary.happinessLv;
     tirednessLv = widget.instary.tirednessLv;
     stressfulnessLv = widget.instary.stressfulnessLv;
+    // check if image exist
+    if (widget.instary.imagePaths[0] != null) {
+      _pickedImage = new File(widget.instary.imagePaths[0]);
+    }
     super.initState();
   }
 
@@ -215,6 +223,10 @@ class _EditPageState extends State<EditPage> {
               Container(
                 height: 20.0,
               ),
+              _imageCard(),
+              Container(
+                height: 20.0,
+              ),
               _feelingCard(),
               Container(
                 height: 20.0,
@@ -267,6 +279,138 @@ class _EditPageState extends State<EditPage> {
         builder: (context) => ViewPage(instary: instary),
       ),
     );
+  }
+
+  Widget _imageCard() {
+    return Card(
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Text('You image of the day: ',
+                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20)),
+            ),
+            GestureDetector(
+              child: Center(
+                child: _pickedImage == null
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment
+                            .center, // Center Row contents horizontally,
+                        crossAxisAlignment: CrossAxisAlignment
+                            .center, // Center Row contents vertically,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 2.0),
+                            child: Icon(Icons.add_photo_alternate,
+                                color: Colors.grey),
+                          ),
+                          Text("Add Image",
+                              style: TextStyle(color: Colors.grey)),
+                        ],
+                      )
+                    : Column(
+                        children: <Widget>[
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: Image(
+                              image: FileImage(_pickedImage),
+                            ),
+                          ),
+                          FlatButton.icon(
+                            icon: Icon(
+                              Icons.delete_outline,
+                              color: Colors.red[800],
+                            ),
+                            label: Text(
+                              "Remove Image",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.red[800]),
+                            ),
+                            onPressed: () {
+                              setState(() => _pickedImage = null);
+                            },
+                          ),
+                        ],
+                      ),
+              ),
+              onTap: () => _pickImage(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _pickImage() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => SimpleDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(10.0),
+                ),
+              ),
+              title: Text("Select an image source"),
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context, ImageSource.camera),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 20.0, 30.0, 20.0),
+                        child: Column(
+                          children: <Widget>[
+                            Icon(
+                              Icons.camera_alt,
+                              color: Colors.grey,
+                            ),
+                            Text("Camera",
+                                style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 1,
+                      height: 40.0,
+                      color: Colors.grey,
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context, ImageSource.gallery),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(30.0, 20.0, 0, 20.0),
+                        child: Column(
+                          children: <Widget>[
+                            Icon(
+                              Icons.photo,
+                              color: Colors.grey,
+                            ),
+                            Text("Gallery",
+                                style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ));
+
+    if (imageSource != null) {
+      final file = await ImagePicker.pickImage(source: imageSource);
+      if (file != null) {
+        setState(() => _pickedImage = file);
+      }
+    }
   }
 
   Widget _feelingCard() {

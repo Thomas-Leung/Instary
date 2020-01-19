@@ -133,6 +133,9 @@ class _EditPageState extends State<EditPage> {
               child: Text("Delete", style: TextStyle(color: Colors.red[800])),
               onPressed: () {
                 final instaryBox = Hive.box('instary');
+                if (widget.instary.imagePaths[0] != null) {
+                  _deleteImage(widget.instary.imagePaths[0]);
+                }
                 instaryBox.delete(this.widget.instary.id);
                 Navigator.of(context).popUntil((route) => route.isFirst);
               },
@@ -288,7 +291,7 @@ class _EditPageState extends State<EditPage> {
       // create 1 item in list for empty image
       imagePaths.add(null);
       if (widget.instary.imagePaths[0] != null) {
-        _deleteOldImage(widget.instary.imagePaths[0]);
+        _deleteImage(widget.instary.imagePaths[0]);
       }
       return imagePaths;
     } else {
@@ -308,13 +311,13 @@ class _EditPageState extends State<EditPage> {
     await _pickedImage.copy("/storage/emulated/0/Instary/pictures/$fileName");
   }
 
-  void _deleteOldImage(String imagePath) {
-    final oldImagefile = File(imagePath);
-    oldImagefile.delete();
+  void _deleteImage(String imagePath) {
+    final imagefile = File(imagePath);
+    imagefile.delete();
   }
 
   void _updateImage(String oldImagePath, String newImageFile) {
-    _deleteOldImage(oldImagePath);
+    _deleteImage(oldImagePath);
     _saveImage(newImageFile);
   }
 

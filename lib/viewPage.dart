@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:instary/viewPhotoPage.dart';
 import 'package:intl/intl.dart';
+import './viewPhotoPage.dart';
 import './editPage.dart';
 
 class ViewPage extends StatelessWidget {

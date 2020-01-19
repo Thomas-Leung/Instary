@@ -240,10 +240,13 @@ class _EditPageState extends State<EditPage> {
                       borderRadius: BorderRadius.circular(8.0)),
                   textTheme: ButtonTextTheme.primary,
                   child: RaisedButton.icon(
+                    label: Text('Save'),
+                    icon: Icon(Icons.save),
                     onPressed: () {
                       FocusScope.of(context).requestFocus(new FocusNode());
                       // Validate returns true if the form is valid, or false
                       // otherwise.
+                      List<String> imagePaths = _updateImagePaths();
                       if (_formKey.currentState.validate()) {
                         final newInstary = Instary(
                             this.widget.instary.id,
@@ -253,12 +256,10 @@ class _EditPageState extends State<EditPage> {
                             happinessLv,
                             tirednessLv,
                             stressfulnessLv,
-                            ["FIXEDINFUTURE"]);
+                            imagePaths);
                         updateInstary(newInstary);
                       }
                     },
-                    icon: Icon(Icons.save),
-                    label: Text('Save'),
                   ),
                 ),
               ),
@@ -279,6 +280,42 @@ class _EditPageState extends State<EditPage> {
         builder: (context) => ViewPage(instary: instary),
       ),
     );
+  }
+
+  List<String> _updateImagePaths() {
+    List<String> imagePaths = new List();
+    if (_pickedImage == null) {
+      // create 1 item in list for empty image
+      imagePaths.add(null);
+      if (widget.instary.imagePaths[0] != null) {
+        _deleteOldImage(widget.instary.imagePaths[0]);
+      }
+      return imagePaths;
+    } else {
+      if (widget.instary.imagePaths[0] != _pickedImage.path) {
+        RegExp regex = new RegExp(r'([^\/]+$)');
+        String fileName = regex.stringMatch(_pickedImage.path);
+        imagePaths.add("/storage/emulated/0/Instary/pictures/$fileName");
+        _updateImage(widget.instary.imagePaths[0], fileName);
+      } else {
+        imagePaths.add(widget.instary.imagePaths[0]);
+      }
+      return imagePaths;
+    }
+  }
+
+  Future<void> _saveImage(String fileName) async {
+    await _pickedImage.copy("/storage/emulated/0/Instary/pictures/$fileName");
+  }
+
+  void _deleteOldImage(String imagePath) {
+    final oldImagefile = File(imagePath);
+    oldImagefile.delete();
+  }
+
+  void _updateImage(String oldImagePath, String newImageFile) {
+    _deleteOldImage(oldImagePath);
+    _saveImage(newImageFile);
   }
 
   Widget _imageCard() {

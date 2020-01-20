@@ -11,16 +11,16 @@ An offline diary that keeps your thought, photos, mood and feelings all in one p
 p.s. Android version is in beta, iOS version is still in development
 
 ## Screenshot
-|<img src="screenshots/OriginalMainPage.png"/>|<img src="screenshots/mainPage.png" width="80%"/>|
+|<img src="Screenshots/OriginalMainPage.png"/>|<img src="Screenshots/MainPage.png" width="80%"/>|
 | :---: | :---: |
 | Original Main Page Design | Current Main Page Design |
 
-|<img src="screenshots/CreatePage.png" />|<img src="screenshots/ViewPage.png" />|<img src="screenshots/ViewPage2.png" />|
+|<img src="Screenshots/CreatePage.png" />|<img src="Screenshots/ViewPage.png" />|<img src="Screenshots/ViewPage2.png" />|
 | :---: | :---: | :---: |
 | Create Page | View Page | View Page with details |
 
 ## Usage
-Instary is an item that includes a picture, a description, and how you feel of the day.
+**Instary** is an item that includes a picture, a description, and how you feel of the day.
 
 ### Create an Instary
 Tap on the + button located at the bottom of the main page. Fill out the information on the create instary page and click submit. Your instary will save locally.

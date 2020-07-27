@@ -317,7 +317,10 @@ class _EditPageState extends State<EditPage> {
   }
 
   void _updateImage(String oldImagePath, String newImageFile) {
-    _deleteImage(oldImagePath);
+    // delete image if oldImage exist
+    if (oldImagePath != null) {
+      _deleteImage(oldImagePath);
+    }
     _saveImage(newImageFile);
   }
 

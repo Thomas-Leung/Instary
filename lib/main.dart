@@ -116,7 +116,12 @@ class _HomePageState extends State<HomePage> {
       tempList.add(instary);
     }
     setState(() {
-      instaries = tempList.reversed.toList(); // latest at top
+      instaries = tempList.toList();
+      instaries.sort((a, b) {
+        var adate = a.dateTime;
+        var bdate = b.dateTime;
+        return bdate.compareTo(adate);
+      }); // latest at top
       filteredInstaries = instaries;
     });
     // to update instaries when changes
@@ -127,7 +132,12 @@ class _HomePageState extends State<HomePage> {
         updateList.add(instary);
       }
       setState(() {
-        instaries = updateList.reversed.toList(); // latest at top
+        instaries = updateList.toList();
+        instaries.sort((a, b) {
+          var adate = a.dateTime;
+          var bdate = b.dateTime;
+          return bdate.compareTo(adate);
+        }); // latest at top
         filteredInstaries = instaries;
       });
     });

@@ -501,7 +501,7 @@ class _EditPageState extends State<EditPage> {
                         divisions: 100,
                         onChanged: (value) {
                           setState(() {
-                            happinessLv = value;
+                            happinessLv = value.roundToDouble();
                           });
                         },
                       ),
@@ -540,7 +540,7 @@ class _EditPageState extends State<EditPage> {
                         divisions: 100,
                         onChanged: (value) {
                           setState(() {
-                            tirednessLv = value;
+                            tirednessLv = value.roundToDouble();
                           });
                         },
                       ),
@@ -579,7 +579,7 @@ class _EditPageState extends State<EditPage> {
                         divisions: 100,
                         onChanged: (value) {
                           setState(() {
-                            stressfulnessLv = value;
+                            stressfulnessLv = value.roundToDouble();
                           });
                         },
                       ),

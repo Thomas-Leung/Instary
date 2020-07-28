@@ -180,19 +180,19 @@ class ViewPage extends StatelessWidget {
                   barGroups: [
                     BarChartGroupData(x: 0, barRods: [
                       BarChartRodData(
-                          y: instary.happinessLv, color: Colors.indigo[400])
+                          y: instary.happinessLv.roundToDouble(), color: Colors.indigo[400])
                     ], showingTooltipIndicators: [
                       0
                     ]),
                     BarChartGroupData(x: 1, barRods: [
                       BarChartRodData(
-                          y: instary.tirednessLv, color: Colors.indigo[400])
+                          y: instary.tirednessLv.roundToDouble(), color: Colors.indigo[400])
                     ], showingTooltipIndicators: [
                       0
                     ]),
                     BarChartGroupData(x: 2, barRods: [
                       BarChartRodData(
-                          y: instary.stressfulnessLv, color: Colors.indigo[400])
+                          y: instary.stressfulnessLv.roundToDouble(), color: Colors.indigo[400])
                     ], showingTooltipIndicators: [
                       0
                     ]),

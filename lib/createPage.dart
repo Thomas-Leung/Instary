@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Instary/widgets/duplicate_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
@@ -366,7 +367,17 @@ class _CreatePageState extends State<CreatePage> {
     if (imageSource != null) {
       final file = await ImagePicker.pickImage(source: imageSource);
       if (file != null) {
-        setState(() => _pickedImage = file);
+        // check if file already exist in Instary folder, if so notify user to pick again
+        RegExp regex = new RegExp(r'([^\/]+$)');
+        String fileName = regex.stringMatch(file.path);
+        String filePath = "/storage/emulated/0/Instary/pictures/$fileName";
+        bool fileExist = await File(filePath).exists();
+        if (fileExist) {
+          var dialog = new DuplicateDialog();
+          dialog.showDuplicateFileDialog(context);
+        } else {
+          setState(() => _pickedImage = file);
+        }
       }
     }
   }

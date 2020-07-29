@@ -427,7 +427,7 @@ class _CreatePageState extends State<CreatePage> {
                         divisions: 100,
                         onChanged: (value) {
                           setState(() {
-                            happinessLv = value;
+                            happinessLv = value.roundToDouble();
                           });
                         },
                       ),
@@ -466,7 +466,7 @@ class _CreatePageState extends State<CreatePage> {
                         divisions: 100,
                         onChanged: (value) {
                           setState(() {
-                            tirednessLv = value;
+                            tirednessLv = value.roundToDouble();
                           });
                         },
                       ),
@@ -505,7 +505,7 @@ class _CreatePageState extends State<CreatePage> {
                         divisions: 100,
                         onChanged: (value) {
                           setState(() {
-                            stressfulnessLv = value;
+                            stressfulnessLv = value.roundToDouble();
                           });
                         },
                       ),

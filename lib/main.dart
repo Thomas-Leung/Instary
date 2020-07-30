@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
@@ -11,6 +12,7 @@ import 'models/instary.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // fixes iOS flutter error
+  await GlobalConfiguration().loadFromAsset("app_settings");
   final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
   Hive.init(appDocumentDir.path);
   // you need to register before you use the adapter, 0 is just a random ID
@@ -86,7 +88,7 @@ class _HomePageState extends State<HomePage> {
                 .checkPermissionStatus(PermissionGroup.storage) ==
             PermissionStatus.granted) {
           print("Got permission, create directory");
-          new Directory('/storage/emulated/0/Instary/pictures')
+          new Directory(GlobalConfiguration().getString("androidImagePath"))
               .create(recursive: true)
               // The created directory is returned as a Future.
               .then((Directory directory) {

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Instary/widgets/duplicate_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -299,7 +300,8 @@ class _EditPageState extends State<EditPage> {
       if (widget.instary.imagePaths[0] != _pickedImage.path) {
         RegExp regex = new RegExp(r'([^\/]+$)');
         String fileName = regex.stringMatch(_pickedImage.path);
-        imagePaths.add("/storage/emulated/0/Instary/pictures/$fileName");
+        imagePaths.add(
+            GlobalConfiguration().getString("androidImagePath") + fileName);
         _updateImage(widget.instary.imagePaths[0], fileName);
       } else {
         imagePaths.add(widget.instary.imagePaths[0]);
@@ -309,7 +311,8 @@ class _EditPageState extends State<EditPage> {
   }
 
   Future<void> _saveImage(String fileName) async {
-    await _pickedImage.copy("/storage/emulated/0/Instary/pictures/$fileName");
+    await _pickedImage
+        .copy(GlobalConfiguration().getString("androidImagePath") + fileName);
   }
 
   void _deleteImage(String imagePath) {
@@ -455,7 +458,8 @@ class _EditPageState extends State<EditPage> {
         // check if file already exist in Instary folder, if so notify user to pick again
         RegExp regex = new RegExp(r'([^\/]+$)');
         String fileName = regex.stringMatch(file.path);
-        String filePath = "/storage/emulated/0/Instary/pictures/$fileName";
+        String filePath =
+            GlobalConfiguration().getString("androidImagePath") + fileName;
         bool fileExist = await File(filePath).exists();
         if (fileExist) {
           var dialog = new DuplicateDialog();

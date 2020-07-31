@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:Instary/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:global_configuration/global_configuration.dart';
@@ -40,7 +41,10 @@ void main() async {
             } else
               return Scaffold(); // when loading hive
           }),
-      routes: {'/createPage': (context) => CreatePage()},
+      routes: {
+        '/createPage': (context) => CreatePage(),
+        '/settingsPage': (context) => SettingsPage()
+      },
       debugShowCheckedModeBanner: false));
 }
 
@@ -55,7 +59,7 @@ class _HomePageState extends State<HomePage> {
   List instaries = List(); // Instaries we get from Hive NoSQL
   List filteredInstaries = List(); // Instaries filtered by search text
   Icon _searchIcon = Icon(Icons.search);
-  Icon _darkModeIcon = Icon(Icons.brightness_5);
+  Icon _settingsIcon = Icon(Icons.settings);
 
   // evaluates whether there is text currently in our search bar, and if so,
   // appropriately sets our _searchText to whatever that input is so we can filter our list accordingly
@@ -174,16 +178,8 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               IconButton(
-                icon: _darkModeIcon,
-                onPressed: () {
-                  setState(() {
-                    if (this._darkModeIcon.icon == Icons.brightness_5) {
-                      this._darkModeIcon = new Icon(Icons.brightness_4);
-                    } else {
-                      this._darkModeIcon = new Icon(Icons.brightness_5);
-                    }
-                  });
-                },
+                icon: _settingsIcon,
+                onPressed: () => Navigator.pushNamed(context, '/settingsPage'),
               )
             ],
           ),

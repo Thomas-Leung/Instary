@@ -1,4 +1,4 @@
-import 'package:Instary/themes/app_state_notifier.dart';
+import 'package:instary/themes/app_state_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'themes/app_state_notifier.dart';
@@ -20,9 +20,11 @@ class _SettingsPageState extends State<SettingsPage> {
           child: Column(children: <Widget>[
             SwitchListTile(
               title: const Text('Dark Mode'),
-              value: Provider.of<AppStateNotifier>(context, listen: false).isDarkModeOn,
+              value: Provider.of<AppStateNotifier>(context, listen: false)
+                  .isDarkModeOn,
               onChanged: (bool value) {
-                Provider.of<AppStateNotifier>(context, listen: false).updateTheme(value);
+                Provider.of<AppStateNotifier>(context, listen: false)
+                    .updateTheme(value);
                 setState(() {
                   // if (isDarkModeOn) {
                   //   this._darkModeIcon = new Icon(Icons.brightness_2);

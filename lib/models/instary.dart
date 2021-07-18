@@ -4,7 +4,7 @@ part 'instary.g.dart';
 
 // create hive adapter
 // flutter packages pub run build_runner build
-@HiveType()
+@HiveType(typeId: 1)
 class Instary {
   @HiveField(0)
   String id;

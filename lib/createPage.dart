@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:Instary/widgets/duplicate_dialog.dart';
+import 'package:instary/widgets/duplicate_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
@@ -46,7 +46,7 @@ class _CreatePageState extends State<CreatePage> {
         FocusScope.of(context).requestFocus(new FocusNode());
       },
       child: Scaffold(
-        resizeToAvoidBottomPadding: false,
+        // resizeToAvoidBottomPadding: false,
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -64,7 +64,7 @@ class _CreatePageState extends State<CreatePage> {
       width: double.infinity,
       child: Align(
         alignment: Alignment.centerLeft,
-        child: FlatButton.icon(
+        child: TextButton.icon(
           icon: Icon(Icons.arrow_back_ios),
           label: Text("back"),
           onPressed: () {

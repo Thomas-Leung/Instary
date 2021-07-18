@@ -1,5 +1,5 @@
-import 'package:Instary/themes/app_state_notifier.dart';
-import 'package:Instary/themes/app_theme.dart';
+import 'package:instary/themes/app_state_notifier.dart';
+import 'package:instary/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
@@ -16,8 +16,7 @@ void main() async {
   await GlobalConfiguration().loadFromAsset("app_settings");
   final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
   Hive.init(appDocumentDir.path);
-  // you need to register before you use the adapter, 0 is just a random ID
-  Hive.registerAdapter(InstaryAdapter(), 0);
+  Hive.registerAdapter(InstaryAdapter());
   runApp(
     FutureBuilder(
       // use future builder to open hive boxes

@@ -12,7 +12,7 @@ class DuplicateDialog {
           title: Text("The image is already in Instary."),
           content: Text("Please pick another image that is not repeated."),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
                 child: Text("OK"), onPressed: () => Navigator.of(context).pop())
           ],
           elevation: 0.0,

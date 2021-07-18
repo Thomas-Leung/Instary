@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:Instary/viewPage.dart';
+import 'package:instary/viewPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:global_configuration/global_configuration.dart';
@@ -16,8 +16,8 @@ class _HomePageState extends State<HomePage> {
   // controls the text label we use as a search bar
   final TextEditingController _filter = TextEditingController();
   String _searchText = "";
-  List instaries = List(); // Instaries we get from Hive NoSQL
-  List filteredInstaries = List(); // Instaries filtered by search text
+  List instaries = []; // Instaries we get from Hive NoSQL
+  List filteredInstaries = []; // Instaries filtered by search text
   Icon _searchIcon = Icon(Icons.search);
   Icon _settingsIcon = Icon(Icons.settings);
 
@@ -43,16 +43,13 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     final myDir = new Directory('/storage/emulated/0/Instary/pictures');
     myDir.exists().then((isDir) async {
-      PermissionStatus permission = await PermissionHandler()
-          .checkPermissionStatus(PermissionGroup.storage);
-      if (!isDir || permission != PermissionStatus.granted) {
+      PermissionStatus permission = await Permission.storage.status;
+      if (!isDir || permission.isDenied) {
         print("No Storage Permission yet");
-        await PermissionHandler().requestPermissions([PermissionGroup.storage]);
-        if (await PermissionHandler()
-                .checkPermissionStatus(PermissionGroup.storage) ==
-            PermissionStatus.granted) {
+        var request = await Permission.storage.request();
+        if (request.isGranted) {
           print("Got permission, create directory");
-          new Directory(GlobalConfiguration().getString("androidImagePath"))
+          new Directory(GlobalConfiguration().getValue("androidImagePath"))
               .create(recursive: true)
               // The created directory is returned as a Future.
               .then((Directory directory) {
@@ -74,7 +71,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _getInstary() {
-    List tempList = new List();
+    List tempList = [];
     final instaryBox = Hive.box('instary');
     // to initialize instaries when start
     for (int i = 0; i < instaryBox.length; i++) {
@@ -92,7 +89,7 @@ class _HomePageState extends State<HomePage> {
     });
     // to update instaries when changes
     instaryBox.watch().listen((event) {
-      List updateList = new List();
+      List updateList = [];
       for (int i = 0; i < instaryBox.length; i++) {
         final instary = instaryBox.getAt(i);
         updateList.add(instary);
@@ -118,7 +115,7 @@ class _HomePageState extends State<HomePage> {
       },
       child: new Scaffold(
         // fix overflow when keyboard pops up
-        resizeToAvoidBottomPadding: false,
+        // resizeToAvoidBottomPadding: false,
         body: SafeArea(
           child: Column(
             children: <Widget>[_searchBar(context), _title(), _buildList()],
@@ -206,7 +203,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildList() {
     if (_searchText != "") {
-      List tempList = new List();
+      List tempList = [];
       for (int i = 0; i < filteredInstaries.length; i++) {
         if (filteredInstaries[i]
             .title

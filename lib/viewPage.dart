@@ -129,10 +129,12 @@ class ViewPage extends StatelessWidget {
                     show: true,
                     bottomTitles: SideTitles(
                       showTitles: true,
-                      textStyle: TextStyle(
-                          color: const Color(0xff7589a2),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14),
+                      getTextStyles: (double value) {
+                        return TextStyle(
+                            color: const Color(0xff7589a2),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14);
+                      },
                       margin: 10,
                       getTitles: (double value) {
                         switch (value.toInt()) {
@@ -149,10 +151,12 @@ class ViewPage extends StatelessWidget {
                     ),
                     leftTitles: SideTitles(
                       showTitles: true,
-                      textStyle: TextStyle(
-                          color: const Color(0xff7589a2),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14),
+                      getTextStyles: (double value) {
+                        return TextStyle(
+                            color: const Color(0xff7589a2),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14);
+                      },
                       margin: 15,
                       reservedSize: 30,
                       getTitles: (value) {
@@ -180,19 +184,22 @@ class ViewPage extends StatelessWidget {
                   barGroups: [
                     BarChartGroupData(x: 0, barRods: [
                       BarChartRodData(
-                          y: instary.happinessLv.roundToDouble(), color: Colors.indigo[400])
+                          y: instary.happinessLv.roundToDouble(),
+                          colors: [Colors.indigo[400]])
                     ], showingTooltipIndicators: [
                       0
                     ]),
                     BarChartGroupData(x: 1, barRods: [
                       BarChartRodData(
-                          y: instary.tirednessLv.roundToDouble(), color: Colors.indigo[400])
+                          y: instary.tirednessLv.roundToDouble(),
+                          colors: [Colors.indigo[400]])
                     ], showingTooltipIndicators: [
                       0
                     ]),
                     BarChartGroupData(x: 2, barRods: [
                       BarChartRodData(
-                          y: instary.stressfulnessLv.roundToDouble(), color: Colors.indigo[400])
+                          y: instary.stressfulnessLv.roundToDouble(),
+                          colors: [Colors.indigo[400]])
                     ], showingTooltipIndicators: [
                       0
                     ]),

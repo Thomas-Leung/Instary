@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:Instary/widgets/duplicate_dialog.dart';
+import 'package:instary/widgets/duplicate_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
@@ -66,7 +66,8 @@ class _EditPageState extends State<EditPage> {
         FocusScope.of(context).requestFocus(new FocusNode());
       },
       child: Scaffold(
-        resizeToAvoidBottomPadding: false,
+        // resizeToAvoidBottomPadding: false,
+        // resizeToAvoidBottomInset: false, maybe use this line
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(8.0),

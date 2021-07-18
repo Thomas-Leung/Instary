@@ -1,4 +1,4 @@
-name: Instary
+name: instary
 description: An offline diary that keeps your thought, photos, mood and feelings all in one place.
 
 # The following defines the version and build number for your application.
@@ -19,35 +19,35 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.16.0
-  fl_chart: ^0.6.2
-  flutter_datetime_picker: ^1.3.8
-  hive: ^1.2.0
-  hive_flutter: ^0.2.1
-  global_configuration: ^1.5.0
-  provider: ^4.3.1
-  shared_preferences: ^0.5.8
+  intl: ^0.17.0
+  fl_chart: ^0.36.2
+  flutter_datetime_picker: ^1.5.1
+  hive: ^2.0.4
+  hive_flutter: ^1.1.0
+  global_configuration: ^1.6.0
+  provider: ^5.0.0
+  shared_preferences: ^2.0.6
   # For OS-specific directory paths
-  path_provider: ^1.6.11
-  uuid: ^2.0.4
-  photo_view: ^0.9.0
+  path_provider: ^2.0.2
+  uuid: ^3.0.4
+  photo_view: ^0.11.1
   # ***Need additional work for iOS***
-  permission_handler: '^4.2.0+hotfix.1'
+  permission_handler: ^8.1.3
   image_picker: ^0.6.3+1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
+  cupertino_icons: ^1.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  hive_generator: ^0.6.0
-  build_runner: ^1.7.2
-  flutter_launcher_icons: ^0.7.4
+  hive_generator: ^1.1.0
+  build_runner: ^2.0.5
+  flutter_launcher_icons: ^0.9.0
 
 dependency_overrides:
-  dartx: ^0.3.0
+  http_parser: ^4.0.0
 
 # To generate icon: flutter pub run flutter_launcher_icons:main
 flutter_icons:

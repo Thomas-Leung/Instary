@@ -8,7 +8,10 @@
     <!-- Permissions options for the `storage` group -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!-- requestLegacyExternalStorage attribute is "false" by default on apps targeting
+     Android 10 or higher. -->
     <application
+        android:requestLegacyExternalStorage="true"
         android:name="io.flutter.app.FlutterApplication"
         android:label="instary"
         android:icon="@mipmap/ic_launcher">

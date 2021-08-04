@@ -41,23 +41,43 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    final myDir = new Directory('/storage/emulated/0/Instary/pictures');
-    myDir.exists().then((isDir) async {
-      PermissionStatus permission = await Permission.storage.status;
-      if (!isDir || permission.isDenied) {
+    final imageDir =
+        new Directory(GlobalConfiguration().getValue("androidImagePath"));
+    imageDir.exists().then((isDir) async {
+      PermissionStatus storageStatus = await Permission.storage.status;
+      if (!storageStatus.isGranted) {
         print("No Storage Permission yet");
-        var request = await Permission.storage.request();
-        if (request.isGranted) {
-          print("Got permission, create directory");
-          new Directory(GlobalConfiguration().getValue("androidImagePath"))
-              .create(recursive: true)
-              // The created directory is returned as a Future.
-              .then((Directory directory) {
-            print(directory.path);
-          });
-        } else {
+        storageStatus = await Permission.storage.request();
+        if (storageStatus.isPermanentlyDenied) {
+          // tell user to go to settings to allow permission
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) => AlertDialog(
+              title: Text("Storage Permission"),
+              content: Text(
+                  'This app needs storage access save and display images.'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text("Open Settings"),
+                  onPressed: () {
+                    openAppSettings();
+                  },
+                )
+              ],
+            ),
+          );
+        } else if (storageStatus.isDenied) {
           SystemChannels.platform.invokeMethod('SystemNavigator.pop');
         }
+      }
+      if (!isDir && storageStatus.isGranted) {
+        new Directory(GlobalConfiguration().getValue("androidImagePath"))
+            .create(recursive: true)
+            // The created directory is returned as a Future.
+            .then((Directory directory) {
+          print(directory.path);
+        });
       }
     });
     this._getInstary();

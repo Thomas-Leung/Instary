@@ -85,7 +85,7 @@ class _EditPageState extends State<EditPage> {
       width: double.infinity,
       child: Align(
         alignment: Alignment.centerLeft,
-        child: FlatButton.icon(
+        child: TextButton.icon(
           icon: Icon(Icons.arrow_back_ios),
           label: Text("Cancel"),
           onPressed: () {
@@ -126,13 +126,13 @@ class _EditPageState extends State<EditPage> {
           title: Text("Delete Instary"),
           content: Text("Are you sure you want to delete this Instary?"),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text("Cancel", style: TextStyle(color: Colors.grey[600])),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text("Delete", style: TextStyle(color: Colors.red[800])),
               onPressed: () {
                 final instaryBox = Hive.box('instary');
@@ -161,8 +161,10 @@ class _EditPageState extends State<EditPage> {
             children: <Widget>[
               SizedBox(
                 width: double.maxFinite,
-                child: FlatButton(
-                  padding: EdgeInsets.all(0),
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                  ),
                   onPressed: () {
                     DatePicker.showDatePicker(context,
                         showTitleActions: true,
@@ -245,7 +247,7 @@ class _EditPageState extends State<EditPage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0)),
                   textTheme: ButtonTextTheme.primary,
-                  child: RaisedButton.icon(
+                  child: ElevatedButton.icon(
                     label: Text('Save'),
                     icon: Icon(Icons.save),
                     onPressed: () {
@@ -289,7 +291,7 @@ class _EditPageState extends State<EditPage> {
   }
 
   List<String> _updateImagePaths() {
-    List<String> imagePaths = new List();
+    List<String> imagePaths = [];
     if (_pickedImage == null) {
       // create 1 item in list for empty image
       imagePaths.add(null);
@@ -301,8 +303,8 @@ class _EditPageState extends State<EditPage> {
       if (widget.instary.imagePaths[0] != _pickedImage.path) {
         RegExp regex = new RegExp(r'([^\/]+$)');
         String fileName = regex.stringMatch(_pickedImage.path);
-        imagePaths.add(
-            GlobalConfiguration().getString("androidImagePath") + fileName);
+        imagePaths
+            .add(GlobalConfiguration().getValue("androidImagePath") + fileName);
         _updateImage(widget.instary.imagePaths[0], fileName);
       } else {
         imagePaths.add(widget.instary.imagePaths[0]);
@@ -313,7 +315,7 @@ class _EditPageState extends State<EditPage> {
 
   Future<void> _saveImage(String fileName) async {
     await _pickedImage
-        .copy(GlobalConfiguration().getString("androidImagePath") + fileName);
+        .copy(GlobalConfiguration().getValue("androidImagePath") + fileName);
   }
 
   void _deleteImage(String imagePath) {
@@ -371,7 +373,7 @@ class _EditPageState extends State<EditPage> {
                               image: FileImage(_pickedImage),
                             ),
                           ),
-                          FlatButton.icon(
+                          TextButton.icon(
                             icon: Icon(
                               Icons.delete_outline,
                               color: Colors.red[800],
@@ -460,7 +462,7 @@ class _EditPageState extends State<EditPage> {
         RegExp regex = new RegExp(r'([^\/]+$)');
         String fileName = regex.stringMatch(file.path);
         String filePath =
-            GlobalConfiguration().getString("androidImagePath") + fileName;
+            GlobalConfiguration().getValue("androidImagePath") + fileName;
         bool fileExist = await File(filePath).exists();
         if (fileExist) {
           var dialog = new DuplicateDialog();

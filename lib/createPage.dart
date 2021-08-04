@@ -98,8 +98,10 @@ class _CreatePageState extends State<CreatePage> {
             children: <Widget>[
               SizedBox(
                 width: double.maxFinite,
-                child: FlatButton(
-                  padding: EdgeInsets.all(0),
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                  ),
                   onPressed: () {
                     DatePicker.showDatePicker(context,
                         showTitleActions: true,
@@ -182,7 +184,7 @@ class _CreatePageState extends State<CreatePage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0)),
                   textTheme: ButtonTextTheme.primary,
-                  child: RaisedButton.icon(
+                  child: ElevatedButton.icon(
                     onPressed: () {
                       FocusScope.of(context).requestFocus(new FocusNode());
                       // Validate returns true if the form is valid, or false
@@ -223,7 +225,7 @@ class _CreatePageState extends State<CreatePage> {
   }
 
   List<String> _createImagePaths() {
-    List<String> imagePaths = new List();
+    List<String> imagePaths = [];
     if (_pickedImage == null) {
       // create 1 item in list for empty image
       imagePaths.add(null);
@@ -232,7 +234,7 @@ class _CreatePageState extends State<CreatePage> {
       RegExp regex = new RegExp(r'([^\/]+$)');
       String fileName = regex.stringMatch(_pickedImage.path);
       imagePaths
-          .add(GlobalConfiguration().getString("androidImagePath") + fileName);
+          .add(GlobalConfiguration().getValue("androidImagePath") + fileName);
       _saveImage(fileName);
       return imagePaths;
     }
@@ -240,7 +242,7 @@ class _CreatePageState extends State<CreatePage> {
 
   Future<void> _saveImage(String fileName) async {
     await _pickedImage
-        .copy(GlobalConfiguration().getString("androidImagePath") + fileName);
+        .copy(GlobalConfiguration().getValue("androidImagePath") + fileName);
   }
 
   Widget _imageCard() {
@@ -285,7 +287,7 @@ class _CreatePageState extends State<CreatePage> {
                               image: FileImage(_pickedImage),
                             ),
                           ),
-                          FlatButton.icon(
+                          TextButton.icon(
                             icon: Icon(
                               Icons.delete_outline,
                               color: Colors.red[800],
@@ -374,7 +376,7 @@ class _CreatePageState extends State<CreatePage> {
         RegExp regex = new RegExp(r'([^\/]+$)');
         String fileName = regex.stringMatch(file.path);
         String filePath =
-            GlobalConfiguration().getString("androidImagePath") + fileName;
+            GlobalConfiguration().getValue("androidImagePath") + fileName;
         bool fileExist = await File(filePath).exists();
         if (fileExist) {
           var dialog = new DuplicateDialog();

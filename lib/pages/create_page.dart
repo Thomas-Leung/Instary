@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:uuid/uuid.dart';
-import 'models/instary.dart';
+import '../models/instary.dart';
 
 class CreatePage extends StatefulWidget {
   State<StatefulWidget> createState() {

@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
-import './createPage.dart';
-import 'home_page.dart';
-import 'settings_page.dart';
+import 'pages/create_page.dart';
+import 'pages/home_page.dart';
+import 'pages/settings_page.dart';
 import 'package:provider/provider.dart';
 
 import 'models/instary.dart';

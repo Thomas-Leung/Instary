@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:instary/viewPage.dart';
+import 'package:instary/pages/view_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:global_configuration/global_configuration.dart';

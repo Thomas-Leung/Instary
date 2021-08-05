@@ -119,7 +119,7 @@ class _CreatePageState extends State<CreatePage> {
                       style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 25,
-                          color: Theme.of(context).accentColor),
+                          color: Theme.of(context).colorScheme.secondary),
                     ),
                   ),
                 ),
@@ -140,11 +140,15 @@ class _CreatePageState extends State<CreatePage> {
                   labelText: "Title",
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                        color: Theme.of(context).accentColor, width: 1.5),
+                        color: Theme.of(context).colorScheme.secondary,
+                        width: 1.5),
                   ),
-                  // when focused
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0)),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.secondary,
+                        width: 1.5),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
                 ),
               ),
               Container(
@@ -159,10 +163,15 @@ class _CreatePageState extends State<CreatePage> {
                   alignLabelWithHint: true,
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                        color: Theme.of(context).accentColor, width: 1.5),
+                        color: Theme.of(context).colorScheme.secondary,
+                        width: 1.5),
                   ),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0)),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.secondary,
+                        width: 1.5),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
                 ),
               ),
               Container(

@@ -9,7 +9,11 @@ class AppTheme {
     appBarTheme: AppBarTheme(
       color: Color.fromRGBO(250, 250, 250, 1),
       iconTheme: IconThemeData(
-        color: Colors.white,
+        color: Colors.black,
+      ),
+      textTheme: TextTheme(
+        headline6: TextStyle(
+            fontSize: 20.0, color: Colors.black, fontWeight: FontWeight.bold),
       ),
     ),
     colorScheme: ThemeData().colorScheme.copyWith(

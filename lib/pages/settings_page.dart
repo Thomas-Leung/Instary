@@ -14,6 +14,9 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings'),
+      ),
       // WHEN WORKING ON UI, REFERENCE CREATE PAGE
       body: SafeArea(
         child: SingleChildScrollView(

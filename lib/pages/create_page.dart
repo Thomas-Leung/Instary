@@ -189,7 +189,7 @@ class _CreatePageState extends State<CreatePage> {
                 child: ButtonTheme(
                   minWidth: 250.0,
                   height: 42.0,
-                  buttonColor: Colors.indigo[700],
+                  buttonColor: Theme.of(context).accentColor,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0)),
                   textTheme: ButtonTextTheme.primary,
@@ -267,7 +267,7 @@ class _CreatePageState extends State<CreatePage> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(bottom: 16.0),
-              child: Text('You image of the day: ',
+              child: Text('Your image of the day: ',
                   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20)),
             ),
             GestureDetector(
@@ -425,10 +425,11 @@ class _CreatePageState extends State<CreatePage> {
                   Expanded(
                     child: SliderTheme(
                       data: SliderTheme.of(context).copyWith(
-                        activeTrackColor: Colors.indigo[700],
+                        activeTrackColor:
+                            Theme.of(context).sliderTheme.activeTrackColor,
                         inactiveTrackColor: Colors.grey,
                         trackHeight: 4.0,
-                        thumbColor: Colors.indigo,
+                        thumbColor: Theme.of(context).sliderTheme.thumbColor,
                         thumbShape:
                             RoundSliderThumbShape(enabledThumbRadius: 8.0),
                         overlayColor: Colors.purple.withAlpha(60),
@@ -464,10 +465,11 @@ class _CreatePageState extends State<CreatePage> {
                   Expanded(
                     child: SliderTheme(
                       data: SliderTheme.of(context).copyWith(
-                        activeTrackColor: Colors.indigo[700],
+                        activeTrackColor:
+                            Theme.of(context).sliderTheme.activeTrackColor,
                         inactiveTrackColor: Colors.grey,
                         trackHeight: 4.0,
-                        thumbColor: Colors.indigo,
+                        thumbColor: Theme.of(context).sliderTheme.thumbColor,
                         thumbShape:
                             RoundSliderThumbShape(enabledThumbRadius: 8.0),
                         overlayColor: Colors.purple.withAlpha(60),
@@ -503,10 +505,11 @@ class _CreatePageState extends State<CreatePage> {
                   Expanded(
                     child: SliderTheme(
                       data: SliderTheme.of(context).copyWith(
-                        activeTrackColor: Colors.indigo[700],
+                        activeTrackColor:
+                            Theme.of(context).sliderTheme.activeTrackColor,
                         inactiveTrackColor: Colors.grey,
                         trackHeight: 4.0,
-                        thumbColor: Colors.indigo,
+                        thumbColor: Theme.of(context).sliderTheme.thumbColor,
                         thumbShape:
                             RoundSliderThumbShape(enabledThumbRadius: 8.0),
                         overlayColor: Colors.purple.withAlpha(60),

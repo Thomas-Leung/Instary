@@ -22,6 +22,9 @@ class ViewPage extends StatelessWidget {
       body: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
+            leading: BackButton(
+              color: Colors.white,
+            ),
             shape: RoundedRectangleBorder(
               borderRadius:
                   BorderRadius.only(bottomLeft: Radius.elliptical(60.0, 60.0)),
@@ -64,7 +67,8 @@ class ViewPage extends StatelessWidget {
                           style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 30.0,
-                              color: Colors.black),
+                              color:
+                                  Theme.of(context).textTheme.bodyText2.color),
                         ),
                       ),
                       editWidget(context)
@@ -87,7 +91,7 @@ class ViewPage extends StatelessWidget {
                   Container(
                     height: 20.0,
                   ),
-                  feelingsWidget()
+                  feelingsWidget(context)
                 ],
               ),
             ),
@@ -97,126 +101,125 @@ class ViewPage extends StatelessWidget {
     );
   }
 
-  Widget feelingsWidget() {
+  Widget feelingsWidget(BuildContext context) {
     return Card(
       elevation: 4.0,
-      color: const Color(0xfff1f1f1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Text(
-                'Your Feelings',
-                style: TextStyle(
-                    color: Colors.blueGrey[700],
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                height: 60.0,
-              ),
-              AspectRatio(
-                aspectRatio: 1.35 / 1,
-                child: BarChart(
-                  BarChartData(
-                    alignment: BarChartAlignment.spaceAround,
-                    maxY: 100,
-                    titlesData: FlTitlesData(
-                      show: true,
-                      bottomTitles: SideTitles(
-                        showTitles: true,
-                        getTextStyles: (double value) {
-                          return TextStyle(
-                              color: const Color(0xff7589a2),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14);
-                        },
-                        margin: 10,
-                        getTitles: (double value) {
-                          switch (value.toInt()) {
-                            case 0:
-                              return 'Happiness';
-                            case 1:
-                              return 'Tiredness';
-                            case 2:
-                              return 'Stressfulness';
-                            default:
-                              return '';
-                          }
-                        },
-                      ),
-                      leftTitles: SideTitles(
-                        showTitles: true,
-                        getTextStyles: (double value) {
-                          return TextStyle(
-                              color: const Color(0xff7589a2),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14);
-                        },
-                        margin: 15,
-                        reservedSize: 30,
-                        getTitles: (value) {
-                          if (value == 0) {
-                            return '0';
-                          } else if (value == 20) {
-                            return '20';
-                          } else if (value == 40) {
-                            return '40';
-                          } else if (value == 60) {
-                            return '60';
-                          } else if (value == 80) {
-                            return '80';
-                          } else if (value == 100) {
-                            return '100';
-                          } else {
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Text(
+              'Your Feelings',
+              style: TextStyle(
+                  color: Theme.of(context).textTheme.subtitle1.color,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 60.0,
+            ),
+            AspectRatio(
+              aspectRatio: 1.35 / 1,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  maxY: 100,
+                  titlesData: FlTitlesData(
+                    show: true,
+                    bottomTitles: SideTitles(
+                      showTitles: true,
+                      getTextStyles: (double value) {
+                        return TextStyle(
+                            color: Theme.of(context).textTheme.overline.color,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14);
+                      },
+                      margin: 10,
+                      getTitles: (double value) {
+                        switch (value.toInt()) {
+                          case 0:
+                            return 'Happiness';
+                          case 1:
+                            return 'Tiredness';
+                          case 2:
+                            return 'Stressfulness';
+                          default:
                             return '';
-                          }
-                        },
-                      ),
+                        }
+                      },
                     ),
-                    borderData: FlBorderData(
-                      show: false,
+                    leftTitles: SideTitles(
+                      showTitles: true,
+                      getTextStyles: (double value) {
+                        return TextStyle(
+                            color: Theme.of(context).textTheme.overline.color,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14);
+                      },
+                      margin: 15,
+                      reservedSize: 30,
+                      getTitles: (value) {
+                        if (value == 0) {
+                          return '0';
+                        } else if (value == 20) {
+                          return '20';
+                        } else if (value == 40) {
+                          return '40';
+                        } else if (value == 60) {
+                          return '60';
+                        } else if (value == 80) {
+                          return '80';
+                        } else if (value == 100) {
+                          return '100';
+                        } else {
+                          return '';
+                        }
+                      },
                     ),
-                    barGroups: [
-                      BarChartGroupData(
-                        x: 0,
-                        barRods: [
-                          BarChartRodData(
-                              y: instary.happinessLv.roundToDouble(),
-                              colors: [Colors.indigo[400]])
-                        ],
-                        showingTooltipIndicators: [0],
-                      ),
-                      BarChartGroupData(
-                        x: 1,
-                        barRods: [
-                          BarChartRodData(
-                              y: instary.tirednessLv.roundToDouble(),
-                              colors: [Colors.indigo[400]])
-                        ],
-                        showingTooltipIndicators: [0],
-                      ),
-                      BarChartGroupData(
-                        x: 2,
-                        barRods: [
-                          BarChartRodData(
-                              y: instary.stressfulnessLv.roundToDouble(),
-                              colors: [Colors.indigo[400]])
-                        ],
-                        showingTooltipIndicators: [0],
-                      ),
-                    ],
                   ),
+                  borderData: FlBorderData(
+                    show: false,
+                  ),
+                  barGroups: [
+                    BarChartGroupData(
+                      x: 0,
+                      barRods: [
+                        BarChartRodData(
+                          y: instary.happinessLv.roundToDouble(),
+                          colors: [Theme.of(context).indicatorColor],
+                        ),
+                      ],
+                      showingTooltipIndicators: [0],
+                    ),
+                    BarChartGroupData(
+                      x: 1,
+                      barRods: [
+                        BarChartRodData(
+                          y: instary.tirednessLv.roundToDouble(),
+                          colors: [Theme.of(context).indicatorColor],
+                        ),
+                      ],
+                      showingTooltipIndicators: [0],
+                    ),
+                    BarChartGroupData(
+                      x: 2,
+                      barRods: [
+                        BarChartRodData(
+                          y: instary.stressfulnessLv.roundToDouble(),
+                          colors: [Theme.of(context).indicatorColor],
+                        ),
+                      ],
+                      showingTooltipIndicators: [0],
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

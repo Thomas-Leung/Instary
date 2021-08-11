@@ -174,17 +174,19 @@ class _HomePageState extends State<HomePage> {
           controller: _filter,
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.blueGrey[50],
+            fillColor: Theme.of(context).bannerTheme.backgroundColor,
             hintText: "Search",
             prefixIcon: _searchIcon,
             contentPadding:
                 new EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.blueGrey[50]),
+              borderSide: BorderSide(
+                  color: Theme.of(context).bannerTheme.backgroundColor),
               borderRadius: BorderRadius.circular(28),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.blueGrey[50]),
+              borderSide: BorderSide(
+                  color: Theme.of(context).bannerTheme.backgroundColor),
               borderRadius: BorderRadius.circular(28),
             ),
           ),

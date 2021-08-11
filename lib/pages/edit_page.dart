@@ -252,7 +252,7 @@ class _EditPageState extends State<EditPage> {
                 child: ButtonTheme(
                   minWidth: 250.0,
                   height: 42.0,
-                  buttonColor: Colors.indigo[700],
+                  buttonColor: Theme.of(context).accentColor,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0)),
                   textTheme: ButtonTextTheme.primary,
@@ -511,10 +511,11 @@ class _EditPageState extends State<EditPage> {
                   Expanded(
                     child: SliderTheme(
                       data: SliderTheme.of(context).copyWith(
-                        activeTrackColor: Colors.indigo[700],
+                        activeTrackColor:
+                            Theme.of(context).sliderTheme.activeTrackColor,
                         inactiveTrackColor: Colors.grey,
                         trackHeight: 4.0,
-                        thumbColor: Colors.indigo,
+                        thumbColor: Theme.of(context).sliderTheme.thumbColor,
                         thumbShape:
                             RoundSliderThumbShape(enabledThumbRadius: 8.0),
                         overlayColor: Colors.purple.withAlpha(60),
@@ -550,10 +551,11 @@ class _EditPageState extends State<EditPage> {
                   Expanded(
                     child: SliderTheme(
                       data: SliderTheme.of(context).copyWith(
-                        activeTrackColor: Colors.indigo[700],
+                        activeTrackColor:
+                            Theme.of(context).sliderTheme.activeTrackColor,
                         inactiveTrackColor: Colors.grey,
                         trackHeight: 4.0,
-                        thumbColor: Colors.indigo,
+                        thumbColor: Theme.of(context).sliderTheme.thumbColor,
                         thumbShape:
                             RoundSliderThumbShape(enabledThumbRadius: 8.0),
                         overlayColor: Colors.purple.withAlpha(60),
@@ -589,10 +591,11 @@ class _EditPageState extends State<EditPage> {
                   Expanded(
                     child: SliderTheme(
                       data: SliderTheme.of(context).copyWith(
-                        activeTrackColor: Colors.indigo[700],
+                        activeTrackColor:
+                            Theme.of(context).sliderTheme.activeTrackColor,
                         inactiveTrackColor: Colors.grey,
                         trackHeight: 4.0,
-                        thumbColor: Colors.indigo,
+                        thumbColor: Theme.of(context).sliderTheme.thumbColor,
                         thumbShape:
                             RoundSliderThumbShape(enabledThumbRadius: 8.0),
                         overlayColor: Colors.purple.withAlpha(60),

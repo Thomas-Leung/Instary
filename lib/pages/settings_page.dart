@@ -20,25 +20,47 @@ class _SettingsPageState extends State<SettingsPage> {
       // WHEN WORKING ON UI, REFERENCE CREATE PAGE
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(children: <Widget>[
-            SwitchListTile(
-              title: const Text('Dark Mode'),
-              value: Provider.of<AppStateNotifier>(context, listen: false)
-                  .isDarkModeOn,
-              onChanged: (bool value) {
-                Provider.of<AppStateNotifier>(context, listen: false)
-                    .updateTheme(value);
-                setState(() {
-                  // if (isDarkModeOn) {
-                  //   this._darkModeIcon = new Icon(Icons.brightness_2);
-                  // } else {
-                  //   this._darkModeIcon = new Icon(Icons.brightness_5);
-                  // }
-                });
-              },
-              secondary: _darkModeIcon,
-            ),
-          ]),
+          child: Column(
+            children: <Widget>[
+              SwitchListTile(
+                title: const Text('Dark Mode'),
+                value: Provider.of<AppStateNotifier>(context, listen: false)
+                    .isDarkModeOn,
+                onChanged: (bool value) {
+                  Provider.of<AppStateNotifier>(context, listen: false)
+                      .updateTheme(value);
+                  setState(() {
+                    // if (isDarkModeOn) {
+                    //   this._darkModeIcon = new Icon(Icons.brightness_2);
+                    // } else {
+                    //   this._darkModeIcon = new Icon(Icons.brightness_5);
+                    // }
+                  });
+                },
+                activeTrackColor:
+                    Theme.of(context).sliderTheme.activeTrackColor,
+                activeColor: Theme.of(context).sliderTheme.thumbColor,
+                secondary: _darkModeIcon,
+              ),
+              Divider(),
+              ListTile(
+                title: Text('Export Instary'),
+                onTap: () {
+                  print("You pressed Export Instary");
+                },
+                leading: Icon(
+                  Icons.add_to_photos,
+                ),
+              ),
+              ListTile(
+                title: Text('Import existing Instary'),
+                onTap: () {
+                  print("You pressed Import existing Instary");
+                },
+                leading: Icon(Icons.file_download),
+              ),
+            ],
+          ),
         ),
       ),
     );

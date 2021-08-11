@@ -4,6 +4,7 @@ part 'instary.g.dart';
 
 // create hive adapter
 // flutter packages pub run build_runner build
+// typeId is used to identify the class (so you can change class name)
 @HiveType(typeId: 1)
 class Instary {
   @HiveField(0)

@@ -143,7 +143,10 @@ class _HomePageState extends State<HomePage> {
         ),
         // bottom navigation
         floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
+          child: Icon(
+            Icons.add,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           elevation: 4.0,
           onPressed: () => Navigator.pushNamed(context, '/createPage'),
         ),

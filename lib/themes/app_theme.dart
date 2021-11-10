@@ -8,8 +8,9 @@ class AppTheme {
     brightness: Brightness.light,
     // primaryColor: Colors.grey[900],
 
-    // BUTTONS
-    accentColor: Color(0xff425296),
+    // +(ADD) BUTTONS
+    colorScheme: ColorScheme.light(
+        secondary: Color(0xff425296), onSurface: Colors.white),
 
     // SEARCH BAR
     bannerTheme: MaterialBannerThemeData(backgroundColor: Colors.blueGrey[50]),
@@ -20,10 +21,9 @@ class AppTheme {
       iconTheme: IconThemeData(
         color: Colors.black,
       ),
-      textTheme: TextTheme(
-        headline6: TextStyle(
-            fontSize: 20.0, color: Colors.black, fontWeight: FontWeight.bold),
-      ),
+      // APP BAR TITLE
+      titleTextStyle: TextStyle(
+          fontSize: 20.0, color: Colors.black, fontWeight: FontWeight.bold),
     ),
 
     // SWITCH, SLIDER
@@ -64,7 +64,7 @@ class AppTheme {
         side: MaterialStateProperty.resolveWith<BorderSide>(
             (states) => BorderSide(color: Colors.indigo[700])),
         backgroundColor: MaterialStateProperty.resolveWith<Color>(
-            (states) => lightTheme.accentColor),
+            (states) => lightTheme.colorScheme.secondary),
         shape: MaterialStateProperty.resolveWith<OutlinedBorder>((_) {
           return RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.0));
@@ -77,7 +77,12 @@ class AppTheme {
 
   static final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
-    accentColor: Colors.deepPurple[300],
+
+    // +(ADD and SUBMIT) BUTTON
+    colorScheme: ColorScheme.dark(
+        secondary: Colors.deepPurple[300],
+        onPrimary: Colors.white,
+        onSurface: Colors.white),
     bannerTheme: MaterialBannerThemeData(backgroundColor: Colors.grey[800]),
     appBarTheme: AppBarTheme(
       elevation: 0,
@@ -105,13 +110,11 @@ class AppTheme {
         side: MaterialStateProperty.resolveWith<BorderSide>(
             (states) => BorderSide(color: Colors.deepPurple[300])),
         backgroundColor: MaterialStateProperty.resolveWith<Color>(
-            (states) => lightTheme.accentColor),
+            (states) => darkTheme.colorScheme.secondary),
         shape: MaterialStateProperty.resolveWith<OutlinedBorder>((_) {
           return RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.0));
         }),
-        textStyle: MaterialStateProperty.resolveWith<TextStyle>(
-            (states) => TextStyle(color: Colors.white)),
       ),
     ),
   );

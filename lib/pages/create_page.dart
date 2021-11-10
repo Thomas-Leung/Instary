@@ -189,7 +189,7 @@ class _CreatePageState extends State<CreatePage> {
                 child: ButtonTheme(
                   minWidth: 250.0,
                   height: 42.0,
-                  buttonColor: Theme.of(context).accentColor,
+                  buttonColor: Theme.of(context).colorScheme.secondary,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0)),
                   textTheme: ButtonTextTheme.primary,

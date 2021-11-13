@@ -25,6 +25,8 @@ class _EditPageState extends State<EditPage> {
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   final _formKey = GlobalKey<FormState>();
+  // _parentFormKey fixed textField generate many warnings: https://github.com/flutter/flutter/issues/9471#issuecomment-864352277
+  final _parentFormKey = GlobalKey<FormState>();
   final titleController = TextEditingController();
   final contentController = TextEditingController();
   DateTime dateTime;
@@ -154,6 +156,7 @@ class _EditPageState extends State<EditPage> {
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+        key: _parentFormKey,
         child: Form(
           key: _formKey,
           child: Column(

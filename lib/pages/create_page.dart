@@ -214,7 +214,8 @@ class _CreatePageState extends State<CreatePage> {
                             happinessLv,
                             tirednessLv,
                             stressfulnessLv,
-                            imagePaths);
+                            imagePaths,
+                            null);
                         addInstary(newInstary);
                       }
                     },

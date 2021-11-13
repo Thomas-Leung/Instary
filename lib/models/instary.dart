@@ -23,7 +23,34 @@ class Instary {
   double stressfulnessLv;
   @HiveField(7)
   List<String> imagePaths;
+  @HiveField(8)
+  List<String> videoPaths;
 
   Instary(this.id, this.dateTime, this.title, this.content, this.happinessLv,
-      this.tirednessLv, this.stressfulnessLv, this.imagePaths);
+      this.tirednessLv, this.stressfulnessLv, this.imagePaths, this.videoPaths);
+
+  Instary.fromJson(Map<String, dynamic> json)
+      : id = json["id"],
+        dateTime = new DateTime.fromMillisecondsSinceEpoch(json["dateTime"]),
+        title = json["title"],
+        content = json["content"],
+        happinessLv = json["happinessLv"],
+        tirednessLv = json["tirednessLv"],
+        stressfulnessLv = json["stressfulnessLv"],
+        imagePaths = json["imagePaths"],
+        videoPaths = json["videoPaths"];
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": this.id,
+      "dateTime": this.dateTime.millisecondsSinceEpoch,
+      "title": this.title,
+      "content": this.content,
+      "happinessLv": this.happinessLv,
+      "tirednessLv": this.tirednessLv,
+      "stressfulnessLv": this.stressfulnessLv,
+      "imagePaths": this.imagePaths,
+      "videoPaths": this.videoPaths
+    };
+  }
 }

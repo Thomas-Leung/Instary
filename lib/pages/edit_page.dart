@@ -276,7 +276,8 @@ class _EditPageState extends State<EditPage> {
                             happinessLv,
                             tirednessLv,
                             stressfulnessLv,
-                            imagePaths);
+                            imagePaths,
+                            null);
                         updateInstary(newInstary);
                       }
                     },

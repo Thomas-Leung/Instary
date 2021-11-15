@@ -34,6 +34,7 @@ dependencies:
   # ***Need additional work for iOS***
   permission_handler: ^8.1.3
   image_picker: ^0.6.3+1
+  encrypt: ^5.0.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

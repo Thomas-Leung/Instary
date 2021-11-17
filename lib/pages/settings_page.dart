@@ -1,6 +1,11 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:instary/themes/app_state_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:path/path.dart' as path;
 import '../themes/app_state_notifier.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -45,8 +50,17 @@ class _SettingsPageState extends State<SettingsPage> {
               Divider(),
               ListTile(
                 title: Text('Export Instary'),
-                onTap: () {
+                onTap: () async {
                   print("You pressed Export Instary");
+                  final fileName = "test.txt";
+                  final directory = await path_provider.getTemporaryDirectory();
+                  final filePath = path.join(directory.path, fileName);
+                  File tempFile =
+                      await File(filePath).writeAsString("HELLO WORLD!");
+
+                  MediaStore().addItem(file: tempFile, name: "test.txt");
+
+                  await tempFile.delete();
                 },
                 leading: Icon(
                   Icons.add_to_photos,
@@ -64,5 +78,15 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       ),
     );
+  }
+}
+
+/// Using MethodChannel to pass data to Android 11's media store
+/// Reference: <https://www.evertop.pl/en/mediastore-in-flutter/>
+class MediaStore {
+  static const _channel = MethodChannel('flutter_media_store');
+
+  Future<void> addItem({required File file, required String name}) async {
+    await _channel.invokeMethod('addItem', {'path': file.path, 'name': name});
   }
 }

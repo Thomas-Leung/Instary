@@ -29,12 +29,13 @@ class _EditPageState extends State<EditPage> {
   final _parentFormKey = GlobalKey<FormState>();
   final titleController = TextEditingController();
   final contentController = TextEditingController();
-  DateTime dateTime;
-  String date;
-  double happinessLv;
-  double tirednessLv;
-  double stressfulnessLv;
-  File _pickedImage;
+  // late means it is null for now but it will never be null after initialized
+  late DateTime dateTime;
+  late String date;
+  late double happinessLv;
+  late double tirednessLv;
+  late double stressfulnessLv;
+  File? _pickedImage;
 
   @override
   void initState() {
@@ -197,7 +198,7 @@ class _EditPageState extends State<EditPage> {
                 controller: titleController,
                 // The validator receives the text that the user has entered.
                 validator: (value) {
-                  if (value.isEmpty) {
+                  if (value!.isEmpty) {
                     return 'Please enter title';
                   }
                   return null;
@@ -267,7 +268,7 @@ class _EditPageState extends State<EditPage> {
                       // Validate returns true if the form is valid, or false
                       // otherwise.
                       List<String> imagePaths = _updateImagePaths();
-                      if (_formKey.currentState.validate()) {
+                      if (_formKey.currentState!.validate()) {
                         final newInstary = Instary(
                             this.widget.instary.id,
                             dateTime,
@@ -277,7 +278,7 @@ class _EditPageState extends State<EditPage> {
                             tirednessLv,
                             stressfulnessLv,
                             imagePaths,
-                            null);
+                            List.empty());
                         updateInstary(newInstary);
                       }
                     },
@@ -307,18 +308,18 @@ class _EditPageState extends State<EditPage> {
     List<String> imagePaths = [];
     if (_pickedImage == null) {
       // create 1 item in list for empty image
-      imagePaths.add(null);
+      // imagePaths.add(null);
       if (widget.instary.imagePaths[0] != null) {
         _deleteImage(widget.instary.imagePaths[0]);
       }
       return imagePaths;
     } else {
-      if (widget.instary.imagePaths[0] != _pickedImage.path) {
+      if (widget.instary.imagePaths[0] != _pickedImage!.path) {
         RegExp regex = new RegExp(r'([^\/]+$)');
-        String fileName = regex.stringMatch(_pickedImage.path);
+        String? fileName = regex.stringMatch(_pickedImage!.path);
         imagePaths
             .add(GlobalConfiguration().getValue("androidImagePath") + fileName);
-        _updateImage(widget.instary.imagePaths[0], fileName);
+        _updateImage(widget.instary.imagePaths[0], fileName!);
       } else {
         imagePaths.add(widget.instary.imagePaths[0]);
       }
@@ -326,8 +327,11 @@ class _EditPageState extends State<EditPage> {
     }
   }
 
-  Future<void> _saveImage(String fileName) async {
-    await _pickedImage
+  Future<void> _saveImage(String? fileName) async {
+    if (fileName == null) {
+      return;
+    }
+    await _pickedImage!
         .copy(GlobalConfiguration().getValue("androidImagePath") + fileName);
   }
 
@@ -383,7 +387,7 @@ class _EditPageState extends State<EditPage> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10.0),
                             child: Image(
-                              image: FileImage(_pickedImage),
+                              image: FileImage(_pickedImage!),
                             ),
                           ),
                           TextButton.icon(
@@ -473,7 +477,7 @@ class _EditPageState extends State<EditPage> {
       if (file != null) {
         // check if file already exist in Instary folder, if so notify user to pick again
         RegExp regex = new RegExp(r'([^\/]+$)');
-        String fileName = regex.stringMatch(file.path);
+        String? fileName = regex.stringMatch(file.path);
         String filePath =
             GlobalConfiguration().getValue("androidImagePath") + fileName;
         bool fileExist = await File(filePath).exists();

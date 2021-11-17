@@ -24,8 +24,8 @@ class InstaryAdapter extends TypeAdapter<Instary> {
       fields[4] as double,
       fields[5] as double,
       fields[6] as double,
-      (fields[7] as List)?.cast<String>(),
-      (fields[8] as List)?.cast<String>(),
+      (fields[7] as List).cast<String>(),
+      (fields[8] as List).cast<String>(),
     );
   }
 

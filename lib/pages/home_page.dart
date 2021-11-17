@@ -184,12 +184,12 @@ class _HomePageState extends State<HomePage> {
                 new EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                  color: Theme.of(context).bannerTheme.backgroundColor),
+                  color: Theme.of(context).bannerTheme.backgroundColor!),
               borderRadius: BorderRadius.circular(28),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                  color: Theme.of(context).bannerTheme.backgroundColor),
+                  color: Theme.of(context).bannerTheme.backgroundColor!),
               borderRadius: BorderRadius.circular(28),
             ),
           ),
@@ -258,7 +258,7 @@ class _HomePageState extends State<HomePage> {
         itemCount: instaries == null ? 0 : filteredInstaries.length,
         itemBuilder: (BuildContext context, int index) {
           // get imagePath
-          File imagePath;
+          File? imagePath;
           if (filteredInstaries[index].imagePaths[0] != null) {
             imagePath = new File(filteredInstaries[index].imagePaths[0]);
           }
@@ -283,7 +283,8 @@ class _HomePageState extends State<HomePage> {
                       image: DecorationImage(
                         image: imagePath != null
                             ? FileImage(imagePath)
-                            : AssetImage('assets/images/img_not_found.png'),
+                            : AssetImage('assets/images/img_not_found.png')
+                                as ImageProvider,
                         fit: BoxFit.cover,
                       ),
                     ),

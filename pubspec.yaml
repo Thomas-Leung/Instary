@@ -14,7 +14,7 @@ description: An offline diary that keeps your thought, photos, mood and feelings
 version: 1.1.0+1
 
 environment:
-  sdk: ">=2.3.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -48,7 +48,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.9.0
 
 dependency_overrides:
-  http_parser: ^4.0.0
+  http_parser: ^4.0.0 # global_configuration and build_runner uses different version of http_parser
 
 # To generate icon: flutter pub run flutter_launcher_icons:main
 flutter_icons:

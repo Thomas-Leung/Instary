@@ -62,7 +62,8 @@ class AppTheme {
         minimumSize: MaterialStateProperty.resolveWith<Size>(
             (states) => Size(250.0, 42)),
         side: MaterialStateProperty.resolveWith<BorderSide>(
-            (states) => BorderSide(color: Colors.indigo[700])),
+            // Reference: https://stackoverflow.com/a/67717268
+            (states) => BorderSide(color: Colors.indigo[700]!)),
         backgroundColor: MaterialStateProperty.resolveWith<Color>(
             (states) => lightTheme.colorScheme.secondary),
         shape: MaterialStateProperty.resolveWith<OutlinedBorder>((_) {
@@ -80,7 +81,7 @@ class AppTheme {
 
     // +(ADD and SUBMIT) BUTTON
     colorScheme: ColorScheme.dark(
-        secondary: Colors.deepPurple[300],
+        secondary: Colors.deepPurple[300]!,
         onPrimary: Colors.white,
         onSurface: Colors.white),
     bannerTheme: MaterialBannerThemeData(backgroundColor: Colors.grey[800]),
@@ -108,7 +109,7 @@ class AppTheme {
         minimumSize: MaterialStateProperty.resolveWith<Size>(
             (states) => Size(250.0, 42)),
         side: MaterialStateProperty.resolveWith<BorderSide>(
-            (states) => BorderSide(color: Colors.deepPurple[300])),
+            (states) => BorderSide(color: Colors.deepPurple[300]!)),
         backgroundColor: MaterialStateProperty.resolveWith<Color>(
             (states) => darkTheme.colorScheme.secondary),
         shape: MaterialStateProperty.resolveWith<OutlinedBorder>((_) {

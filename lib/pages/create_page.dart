@@ -30,7 +30,8 @@ class _CreatePageState extends State<CreatePage> {
   double happinessLv = 50.0;
   double tirednessLv = 50.0;
   double stressfulnessLv = 50.0;
-  File _pickedImage;
+  // ? means the value could be null
+  File? _pickedImage;
 
   @override
   void dispose() {
@@ -134,7 +135,8 @@ class _CreatePageState extends State<CreatePage> {
                 controller: titleController,
                 // The validator receives the text that the user has entered.
                 validator: (value) {
-                  if (value.isEmpty) {
+                  // ! means it will never be null, it will throw an error if it is null
+                  if (value!.isEmpty) {
                     return 'Please enter title';
                   }
                   return null;
@@ -201,7 +203,7 @@ class _CreatePageState extends State<CreatePage> {
                       FocusScope.of(context).requestFocus(new FocusNode());
                       // Validate returns true if the form is valid, or false
                       // otherwise.
-                      if (_formKey.currentState.validate()) {
+                      if (_formKey.currentState!.validate()) {
                         // create unique id
                         var uuid = Uuid();
                         String id = uuid.v1();
@@ -215,7 +217,7 @@ class _CreatePageState extends State<CreatePage> {
                             tirednessLv,
                             stressfulnessLv,
                             imagePaths,
-                            null);
+                            List.empty());
                         addInstary(newInstary);
                       }
                     },
@@ -241,11 +243,11 @@ class _CreatePageState extends State<CreatePage> {
     List<String> imagePaths = [];
     if (_pickedImage == null) {
       // create 1 item in list for empty image
-      imagePaths.add(null);
+      // imagePaths.add(null);
       return imagePaths;
     } else {
       RegExp regex = new RegExp(r'([^\/]+$)');
-      String fileName = regex.stringMatch(_pickedImage.path);
+      String? fileName = regex.stringMatch(_pickedImage!.path);
       imagePaths
           .add(GlobalConfiguration().getValue("androidImagePath") + fileName);
       _saveImage(fileName);
@@ -253,8 +255,11 @@ class _CreatePageState extends State<CreatePage> {
     }
   }
 
-  Future<void> _saveImage(String fileName) async {
-    await _pickedImage
+  Future<void> _saveImage(String? fileName) async {
+    if (fileName == null) {
+      return;
+    }
+    await _pickedImage!
         .copy(GlobalConfiguration().getValue("androidImagePath") + fileName);
   }
 
@@ -297,7 +302,7 @@ class _CreatePageState extends State<CreatePage> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10.0),
                             child: Image(
-                              image: FileImage(_pickedImage),
+                              image: FileImage(_pickedImage!),
                             ),
                           ),
                           TextButton.icon(
@@ -387,7 +392,7 @@ class _CreatePageState extends State<CreatePage> {
       if (file != null) {
         // check if file already exist in Instary folder, if so notify user to pick again
         RegExp regex = new RegExp(r'([^\/]+$)');
-        String fileName = regex.stringMatch(file.path);
+        String? fileName = regex.stringMatch(file.path);
         String filePath =
             GlobalConfiguration().getValue("androidImagePath") + fileName;
         bool fileExist = await File(filePath).exists();

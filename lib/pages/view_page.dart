@@ -14,7 +14,7 @@ class ViewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // get imagePath
-    File imagePath;
+    File? imagePath;
     if (instary.imagePaths[0] != null) {
       imagePath = new File(instary.imagePaths[0]);
     }
@@ -68,7 +68,7 @@ class ViewPage extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                               fontSize: 30.0,
                               color:
-                                  Theme.of(context).textTheme.bodyText2.color),
+                                  Theme.of(context).textTheme.bodyText2!.color),
                         ),
                       ),
                       editWidget(context)
@@ -115,7 +115,7 @@ class ViewPage extends StatelessWidget {
             Text(
               'Your Feelings',
               style: TextStyle(
-                  color: Theme.of(context).textTheme.subtitle1.color,
+                  color: Theme.of(context).textTheme.subtitle1!.color,
                   fontSize: 20,
                   fontWeight: FontWeight.bold),
             ),
@@ -132,9 +132,9 @@ class ViewPage extends StatelessWidget {
                     show: true,
                     bottomTitles: SideTitles(
                       showTitles: true,
-                      getTextStyles: (double value) {
+                      getTextStyles: (BuildContext context, double value) {
                         return TextStyle(
-                            color: Theme.of(context).textTheme.overline.color,
+                            color: Theme.of(context).textTheme.overline!.color,
                             fontWeight: FontWeight.bold,
                             fontSize: 14);
                       },
@@ -154,9 +154,9 @@ class ViewPage extends StatelessWidget {
                     ),
                     leftTitles: SideTitles(
                       showTitles: true,
-                      getTextStyles: (double value) {
+                      getTextStyles: (BuildContext context, double value) {
                         return TextStyle(
-                            color: Theme.of(context).textTheme.overline.color,
+                            color: Theme.of(context).textTheme.overline!.color,
                             fontWeight: FontWeight.bold,
                             fontSize: 14);
                       },

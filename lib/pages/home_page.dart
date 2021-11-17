@@ -255,7 +255,7 @@ class _HomePageState extends State<HomePage> {
     return Expanded(
       child: PageView.builder(
         controller: PageController(viewportFraction: 0.85),
-        itemCount: instaries == null ? 0 : filteredInstaries.length,
+        itemCount: instaries.isEmpty ? 0 : filteredInstaries.length,
         itemBuilder: (BuildContext context, int index) {
           // get imagePath
           File? imagePath;

@@ -388,7 +388,8 @@ class _CreatePageState extends State<CreatePage> {
             ));
 
     if (imageSource != null) {
-      final file = await ImagePicker.pickImage(source: imageSource);
+      final ImagePicker _imagePicker = ImagePicker();
+      final XFile? file = await _imagePicker.pickImage(source: imageSource);
       if (file != null) {
         // check if file already exist in Instary folder, if so notify user to pick again
         RegExp regex = new RegExp(r'([^\/]+$)');
@@ -400,7 +401,7 @@ class _CreatePageState extends State<CreatePage> {
           var dialog = new DuplicateDialog();
           dialog.showDuplicateFileDialog(context);
         } else {
-          setState(() => _pickedImage = file);
+          setState(() => _pickedImage = File(file.path));
         }
       }
     }

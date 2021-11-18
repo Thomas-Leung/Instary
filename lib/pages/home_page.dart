@@ -259,7 +259,7 @@ class _HomePageState extends State<HomePage> {
         itemBuilder: (BuildContext context, int index) {
           // get imagePath
           File? imagePath;
-          if (filteredInstaries[index].imagePaths[0] != null) {
+          if ((filteredInstaries[index].imagePaths as List).isNotEmpty) {
             imagePath = new File(filteredInstaries[index].imagePaths[0]);
           }
           return Padding(

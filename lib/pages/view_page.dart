@@ -15,7 +15,7 @@ class ViewPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // get imagePath
     File? imagePath;
-    if (instary.imagePaths[0] != null) {
+    if ((instary.imagePaths as List).isNotEmpty) {
       imagePath = new File(instary.imagePaths[0]);
     }
     return Scaffold(

@@ -47,7 +47,7 @@ class _EditPageState extends State<EditPage> {
     tirednessLv = widget.instary.tirednessLv;
     stressfulnessLv = widget.instary.stressfulnessLv;
     // check if image exist
-    if (widget.instary.imagePaths[0] != null) {
+    if ((widget.instary.imagePaths as List).isNotEmpty) {
       _pickedImage = new File(widget.instary.imagePaths[0]);
     }
     super.initState();
@@ -309,17 +309,18 @@ class _EditPageState extends State<EditPage> {
     if (_pickedImage == null) {
       // create 1 item in list for empty image
       // imagePaths.add(null);
-      if (widget.instary.imagePaths[0] != null) {
+      if ((widget.instary.imagePaths as List).isNotEmpty) {
         _deleteImage(widget.instary.imagePaths[0]);
       }
       return imagePaths;
     } else {
-      if (widget.instary.imagePaths[0] != _pickedImage!.path) {
+      // TODO: This code assumes one picture only, need to change in the future.
+      if ((widget.instary.imagePaths as List).isEmpty || widget.instary.imagePaths[0] != _pickedImage!.path) {
         RegExp regex = new RegExp(r'([^\/]+$)');
         String? fileName = regex.stringMatch(_pickedImage!.path);
         imagePaths
             .add(GlobalConfiguration().getValue("androidImagePath") + fileName);
-        _updateImage(widget.instary.imagePaths[0], fileName!);
+        _updateImage((widget.instary.imagePaths as List).isEmpty? "" : widget.instary.imagePaths[0], fileName!);
       } else {
         imagePaths.add(widget.instary.imagePaths[0]);
       }
@@ -342,7 +343,7 @@ class _EditPageState extends State<EditPage> {
 
   void _updateImage(String oldImagePath, String newImageFile) {
     // delete image if oldImage exist
-    if (oldImagePath != null) {
+    if (oldImagePath != "") {
       _deleteImage(oldImagePath);
     }
     _saveImage(newImageFile);
@@ -473,7 +474,8 @@ class _EditPageState extends State<EditPage> {
             ));
 
     if (imageSource != null) {
-      final file = await ImagePicker.pickImage(source: imageSource);
+      final ImagePicker _imagePicker = ImagePicker();
+      final XFile? file = await _imagePicker.pickImage(source: imageSource);
       if (file != null) {
         // check if file already exist in Instary folder, if so notify user to pick again
         RegExp regex = new RegExp(r'([^\/]+$)');
@@ -485,7 +487,7 @@ class _EditPageState extends State<EditPage> {
           var dialog = new DuplicateDialog();
           dialog.showDuplicateFileDialog(context);
         } else {
-          setState(() => _pickedImage = file);
+          setState(() => _pickedImage = File(file.path));
         }
       }
     }

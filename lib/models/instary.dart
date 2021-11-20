@@ -53,40 +53,4 @@ class Instary {
       "videoPaths": this.videoPaths
     };
   }
-
-  //   // use file_picker 1.13.3 to get the file path
-  // void ReadFile() async {
-  //   File file = File('backup/data.iry');
-  //   var contents;
-  //   if (await file.exists()) {
-  //     print("Path: " + file.path);
-  //     contents = await file.readAsString();
-  //     print("Content: " + contents);
-  //   } else {
-  //     print("File not found");
-  //   }
-  // }
-
-  // void WriteFile(String contents) async {
-  //   // // Creates dir/ and dir/subdir/.
-  //   // new Directory('backup/').create(recursive: true)
-  //   //     // The created directory is returned as a Future.
-  //   //     .then((Directory directory) {
-  //   //   var fileCopy =
-  //   //       File('backup/data.iry').writeAsString(contents).then((File fileCopy) {
-  //   //     print(fileCopy.exists());
-  //   //   });
-  //   //   print(directory.path);
-  //   // });
-
-  //   new File('backup/data.iry').create(recursive: true).then((File file) async {
-  //     // Stuff to do after file has been created...
-  //     file
-  //         .writeAsString(contents)
-  //         .whenComplete(() => print(File('backup/data.iry').lengthSync()));
-  //     print(await file.exists());
-  //   });
-  //   // print(await fileCopy.exists());
-  //   // print(await fileCopy.length());
-  // }
 }

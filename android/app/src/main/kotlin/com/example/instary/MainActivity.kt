@@ -24,15 +24,15 @@ class MainActivity : FlutterActivity() {
             // Note: this method is invoked on the main thread.
                 call, result ->
             when (call.method) { // "when" is like "switch" in java
-                "addItem" -> {
-                    addItem(call.argument("path")!!, call.argument("name")!!)
+                "downloadBackup" -> {
+                    downloadBackup(call.argument("path")!!, call.argument("name")!!)
                     result.success(null)
                 }
             }
         }
     }
 
-    private fun addItem(path: String, name: String) {
+    private fun downloadBackup(path: String, name: String) {
         val extension = MimeTypeMap.getFileExtensionFromUrl(path)
         val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)!!
 
@@ -53,7 +53,7 @@ class MainActivity : FlutterActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 put(
                     MediaStore.MediaColumns.RELATIVE_PATH,
-                    Environment.DIRECTORY_DOWNLOADS + File.separator + "TestHAHA"
+                    Environment.DIRECTORY_DOWNLOADS + File.separator + "Instary Backup"
                 )
                 put(MediaStore.Downloads.IS_PENDING, 1)
             }

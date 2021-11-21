@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
+import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
@@ -9,16 +11,42 @@ import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:instary/models/instary.dart';
 
 class FileImportExport {
-  // TODO: use file_picker 1.13.3 to get the file path
   void readFile() async {
-    File file = File('backup/data.iry');
-    var contents;
-    if (await file.exists()) {
-      print("Path: " + file.path);
-      contents = await file.readAsString();
-      print("Content: " + contents);
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['zip'],
+    );
+
+    if (result != null) {
+      File file = File(result.files.single.path!);
+      print(file.path);
+      // Read the Zip file from disk.
+      final bytes = file.readAsBytesSync();
+
+      // Decode the Zip file
+      final archive = ZipDecoder().decodeBytes(bytes);
+
+      // Extract the contents of the Zip archive to disk.
+      for (final file in archive) {
+        final filename = file.name;
+        if (file.isFile) {
+          final data = file.content as List<int>;
+          if (file.name == "instary.json") {
+            // do other stuff
+          } else {
+            File(
+                '/storage/emulated/0/Android/media/com.example.instary/Images/' +
+                    filename)
+              ..createSync(recursive: true)
+              ..writeAsBytesSync(data);
+          }
+        } else {
+          // In the future, we can just put image and video directory directly.
+          // Directory('out/' + filename).create(recursive: true);
+        }
+      }
     } else {
-      print("File not found");
+      // User canceled the picker
     }
   }
 
@@ -26,8 +54,7 @@ class FileImportExport {
     List jsonContent = _backupInstary();
 
     // convert json Instary to a File
-    final fileName =
-        "${DateFormat('yyyy-MM-dd_HH-MM').format(DateTime.now())}.json";
+    final fileName = "instary.json";
     final directory = await path_provider.getTemporaryDirectory();
     final filePath = path.join(directory.path, fileName);
     File tempFile = await File(filePath).writeAsString(jsonContent.toString());
@@ -38,15 +65,14 @@ class FileImportExport {
     encoder.create(zipTempFilePath);
     encoder.addFile(tempFile);
 
-    // Add images to Zip
-    final instaryBox = Hive.box('instary');
-    for (int i = 0; i < instaryBox.length; i++) {
-      Instary instary = instaryBox.getAt(i);
-      for (int j = 0; j < instary.imagePaths.length; j++) {
-        File image = new File(instary.imagePaths[j]);
-        encoder.addFile(image);
+    // Add Images Directory to Zip
+    Directory imageDir =
+        Directory(GlobalConfiguration().getValue("androidImagePath"));
+    await imageDir.exists().then((isDir) {
+      if (isDir) {
+        encoder.addDirectory(imageDir);
       }
-    }
+    });
     encoder.close();
 
     // Save Zip file to download folder in Android

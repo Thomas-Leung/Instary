@@ -51,15 +51,16 @@ class _SettingsPageState extends State<SettingsPage> {
                   FileImportExport().writeBackup();
                 },
                 leading: Icon(
-                  Icons.add_to_photos,
+                  Icons.drive_folder_upload_outlined,
                 ),
               ),
               ListTile(
                 title: Text('Import existing Instary'),
                 onTap: () {
                   print("You pressed Import existing Instary");
+                  FileImportExport().readFile();
                 },
-                leading: Icon(Icons.file_download),
+                leading: Icon(Icons.file_download_outlined),
               ),
             ],
           ),

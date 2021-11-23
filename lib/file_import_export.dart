@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:archive/archive_io.dart';
 import 'package:file_picker/file_picker.dart';
@@ -19,7 +20,8 @@ class FileImportExport {
 
     if (result != null) {
       File file = File(result.files.single.path!);
-      print(file.path);
+      print("Import file location" + file.path);
+      Directory tempDir = await path_provider.getTemporaryDirectory();
       // Read the Zip file from disk.
       final bytes = file.readAsBytesSync();
 
@@ -31,18 +33,15 @@ class FileImportExport {
         final filename = file.name;
         if (file.isFile) {
           final data = file.content as List<int>;
-          if (file.name == "instary.json") {
-            // do other stuff
-          } else {
-            File(
-                '/storage/emulated/0/Android/media/com.example.instary/Images/' +
-                    filename)
+          if (filename == "instary.json") {
+            // write to file
+            File('${tempDir.path}/' + filename)
               ..createSync(recursive: true)
               ..writeAsBytesSync(data);
           }
         } else {
           // In the future, we can just put image and video directory directly.
-          // Directory('out/' + filename).create(recursive: true);
+          Directory('${tempDir.path}/' + filename).create(recursive: true);
         }
       }
     } else {
@@ -51,23 +50,24 @@ class FileImportExport {
   }
 
   void writeBackup() async {
-    List jsonContent = _backupInstary();
+    String jsonContent = _encodeToJson();
 
     // convert json Instary to a File
     final fileName = "instary.json";
-    final directory = await path_provider.getTemporaryDirectory();
-    final filePath = path.join(directory.path, fileName);
-    File tempFile = await File(filePath).writeAsString(jsonContent.toString());
+    final tempDir = await path_provider.getTemporaryDirectory();
+    final appDir = await path_provider.getApplicationDocumentsDirectory();
+    final filePath = path.join(tempDir.path, fileName);
+    File tempFile = await File(filePath).writeAsString(jsonContent);
 
     // Add json File to Zip
     var encoder = ZipFileEncoder();
-    String zipTempFilePath = path.join(directory.path, "temp.zip");
+    String zipTempFilePath = path.join(tempDir.path, "temp.zip");
     encoder.create(zipTempFilePath);
     encoder.addFile(tempFile);
 
     // Add Images Directory to Zip
-    Directory imageDir =
-        Directory(GlobalConfiguration().getValue("androidImagePath"));
+    Directory imageDir = Directory(
+        appDir.path + GlobalConfiguration().getValue("androidImagePath"));
     await imageDir.exists().then((isDir) {
       if (isDir) {
         encoder.addDirectory(imageDir);
@@ -87,22 +87,19 @@ class FileImportExport {
     // dir.create(); // This will create the temporary directory again. So temporary files will only be deleted
   }
 
-  List _backupInstary() {
-    List<Instary> temp = [];
+  /// Take all instary and convert to a JSON string
+  String _encodeToJson() {
+    List<Instary> tempList = [];
     final instaryBox = Hive.box('instary');
     // to initialize instaries when start
     for (int i = 0; i < instaryBox.length; i++) {
       final instary = instaryBox.getAt(i);
-      temp.add(instary);
+      tempList.add(instary);
     }
-    print(encondeToJson(temp));
-    return encondeToJson(temp);
-  }
-
-  List encondeToJson(List<Instary> list) {
     List jsonList = [];
-    list.map((item) => jsonList.add(item.toJson())).toList();
-    return jsonList;
+    tempList.map((item) => jsonList.add(item.toJson())).toList();
+    print(jsonEncode(jsonList));
+    return jsonEncode(jsonList); // jsonEncode gives "" to json objects
   }
 
   List<Instary> decodeToInstary(List<dynamic> jsonString) {

@@ -8,6 +8,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:uuid/uuid.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
+
 import '../models/instary.dart';
 
 class CreatePage extends StatefulWidget {
@@ -32,6 +34,19 @@ class _CreatePageState extends State<CreatePage> {
   double stressfulnessLv = 50.0;
   // ? means the value could be null
   File? _pickedImage;
+  late final String appDocumentDirPath;
+
+  @override
+  void initState() {
+    super.initState();
+    setAppDocumentDirPath();
+  }
+
+  Future<void> setAppDocumentDirPath() async {
+    await path_provider
+        .getApplicationDocumentsDirectory()
+        .then((value) => appDocumentDirPath = value.path);
+  }
 
   @override
   void dispose() {
@@ -248,8 +263,9 @@ class _CreatePageState extends State<CreatePage> {
     } else {
       RegExp regex = new RegExp(r'([^\/]+$)');
       String? fileName = regex.stringMatch(_pickedImage!.path);
-      imagePaths
-          .add(GlobalConfiguration().getValue("androidImagePath") + fileName);
+      imagePaths.add(appDocumentDirPath +
+          GlobalConfiguration().getValue("androidImagePath") +
+          fileName!);
       _saveImage(fileName);
       return imagePaths;
     }
@@ -259,8 +275,9 @@ class _CreatePageState extends State<CreatePage> {
     if (fileName == null) {
       return;
     }
-    await _pickedImage!
-        .copy(GlobalConfiguration().getValue("androidImagePath") + fileName);
+    await _pickedImage!.copy(appDocumentDirPath +
+        GlobalConfiguration().getValue("androidImagePath") +
+        fileName);
   }
 
   Widget _imageCard() {
@@ -394,8 +411,9 @@ class _CreatePageState extends State<CreatePage> {
         // check if file already exist in Instary folder, if so notify user to pick again
         RegExp regex = new RegExp(r'([^\/]+$)');
         String? fileName = regex.stringMatch(file.path);
-        String filePath =
-            GlobalConfiguration().getValue("androidImagePath") + fileName;
+        String filePath = appDocumentDirPath +
+            GlobalConfiguration().getValue("androidImagePath") +
+            fileName!;
         bool fileExist = await File(filePath).exists();
         if (fileExist) {
           var dialog = new DuplicateDialog();

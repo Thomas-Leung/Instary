@@ -1,3 +1,5 @@
 {
-    "androidImagePath": "/storage/emulated/0/Android/media/com.example.instary/Images/"
+    "applicationDocumentsDirectory": "/data/user/0/com.example.instary/app_flutter",
+    "androidOldImagePath": "/storage/emulated/0/Android/media/com.example.instary/Images/",
+    "androidImagePath": "/Images/"
 }

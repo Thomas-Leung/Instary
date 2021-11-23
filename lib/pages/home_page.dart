@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
@@ -41,8 +42,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    final imageDir =
-        new Directory(GlobalConfiguration().getValue("androidImagePath"));
+    super.initState();
+    setup();
+  }
+
+  Future<void> setup() async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    final imageDir = new Directory(
+        appDocDir.path + GlobalConfiguration().getValue("androidImagePath"));
     imageDir.exists().then((isDir) async {
       PermissionStatus storageStatus = await Permission.storage.status;
       if (!storageStatus.isGranted) {
@@ -72,7 +79,8 @@ class _HomePageState extends State<HomePage> {
         }
       }
       if (!isDir && storageStatus.isGranted) {
-        new Directory(GlobalConfiguration().getValue("androidImagePath"))
+        new Directory(appDocDir.path +
+                GlobalConfiguration().getValue("androidImagePath"))
             .create(recursive: true)
             // The created directory is returned as a Future.
             .then((Directory directory) {
@@ -81,7 +89,6 @@ class _HomePageState extends State<HomePage> {
       }
     });
     this._getInstary();
-    super.initState();
   }
 
   @override

@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'view_page.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 
 import '../models/instary.dart';
 
@@ -36,6 +37,7 @@ class _EditPageState extends State<EditPage> {
   late double tirednessLv;
   late double stressfulnessLv;
   File? _pickedImage;
+  late final String appDocumentDirPath;
 
   @override
   void initState() {
@@ -50,7 +52,14 @@ class _EditPageState extends State<EditPage> {
     if ((widget.instary.imagePaths as List).isNotEmpty) {
       _pickedImage = new File(widget.instary.imagePaths[0]);
     }
+    setAppDocumentDirPath();
     super.initState();
+  }
+
+  Future<void> setAppDocumentDirPath() async {
+    await path_provider
+        .getApplicationDocumentsDirectory()
+        .then((value) => appDocumentDirPath = value.path);
   }
 
   @override
@@ -315,12 +324,18 @@ class _EditPageState extends State<EditPage> {
       return imagePaths;
     } else {
       // TODO: This code assumes one picture only, need to change in the future.
-      if ((widget.instary.imagePaths as List).isEmpty || widget.instary.imagePaths[0] != _pickedImage!.path) {
+      if ((widget.instary.imagePaths as List).isEmpty ||
+          widget.instary.imagePaths[0] != _pickedImage!.path) {
         RegExp regex = new RegExp(r'([^\/]+$)');
         String? fileName = regex.stringMatch(_pickedImage!.path);
-        imagePaths
-            .add(GlobalConfiguration().getValue("androidImagePath") + fileName);
-        _updateImage((widget.instary.imagePaths as List).isEmpty? "" : widget.instary.imagePaths[0], fileName!);
+        imagePaths.add(appDocumentDirPath +
+            GlobalConfiguration().getValue("androidImagePath") +
+            fileName!);
+        _updateImage(
+            (widget.instary.imagePaths as List).isEmpty
+                ? ""
+                : widget.instary.imagePaths[0],
+            fileName);
       } else {
         imagePaths.add(widget.instary.imagePaths[0]);
       }
@@ -332,8 +347,9 @@ class _EditPageState extends State<EditPage> {
     if (fileName == null) {
       return;
     }
-    await _pickedImage!
-        .copy(GlobalConfiguration().getValue("androidImagePath") + fileName);
+    await _pickedImage!.copy(appDocumentDirPath +
+        GlobalConfiguration().getValue("androidImagePath") +
+        fileName);
   }
 
   void _deleteImage(String imagePath) {
@@ -480,8 +496,9 @@ class _EditPageState extends State<EditPage> {
         // check if file already exist in Instary folder, if so notify user to pick again
         RegExp regex = new RegExp(r'([^\/]+$)');
         String? fileName = regex.stringMatch(file.path);
-        String filePath =
-            GlobalConfiguration().getValue("androidImagePath") + fileName;
+        String filePath = appDocumentDirPath +
+            GlobalConfiguration().getValue("androidImagePath") +
+            fileName!;
         bool fileExist = await File(filePath).exists();
         if (fileExist) {
           var dialog = new DuplicateDialog();

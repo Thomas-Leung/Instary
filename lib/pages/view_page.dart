@@ -101,6 +101,8 @@ class ViewPage extends StatelessWidget {
     );
   }
 
+  // TODO: might need to rebuild using BarToolTipItem to get nice tooltip
+  // https://github.com/imaNNeoFighT/fl_chart/blob/master/example/lib/bar_chart/samples/bar_chart_sample1.dart
   Widget feelingsWidget(BuildContext context) {
     return Card(
       elevation: 4.0,

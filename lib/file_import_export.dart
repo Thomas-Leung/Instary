@@ -75,11 +75,13 @@ class FileImportExport {
     });
     encoder.close();
 
-    // Save Zip file to download folder in Android
+    // Save the Zip file from temp folder to download folder in Android
     File zipFile = File(zipTempFilePath);
     String zipFileName =
         "${DateFormat('yyyy-MM-dd_HH-MM').format(DateTime.now())}.zip";
     MediaStore().downloadBackup(file: zipFile, name: zipFileName);
+
+    tempFile.delete(); // delete Instary json file
 
     // Delete templorary Directory (Might need this in the future)
     // Directory dir = await path_provider.getTemporaryDirectory();
@@ -114,9 +116,9 @@ class MediaStore {
   static const _channel = MethodChannel('flutter_media_store');
   Future<void> downloadBackup(
       {required File file, required String name}) async {
-    print(file.path);
+    print("File from ${file.path} is sending to Android.");
     await _channel
         .invokeMethod('downloadBackup', {'path': file.path, 'name': name});
-    await file.delete();
+    await file.delete(); // delete temp zip file
   }
 }

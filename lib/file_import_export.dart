@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:archive/archive_io.dart';
+import 'package:device_info/device_info.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:global_configuration/global_configuration.dart';
@@ -56,10 +57,6 @@ class FileImportExport {
     } else {
       // User canceled the picker
     }
-    // TODO: Create Instary, also we import image path, we should know if user importing from android or iOS
-    // E.g. When export, we can create a metedata.json to stored if the data is exported from Android or iOS
-    // https://stackoverflow.com/questions/45300661/how-to-check-the-device-os-version-from-flutter
-    // At least, platform (Android or iOS) and app version
   }
 
   void writeBackup() async {
@@ -72,11 +69,19 @@ class FileImportExport {
     final filePath = path.join(tempDir.path, fileName);
     File tempFile = await File(filePath).writeAsString(jsonContent);
 
+    // Create metadata
+    final metadataName = "metadata.json";
+    final metadataPath = path.join(tempDir.path, metadataName);
+    final metedataJsonContent = await createMatadata();
+    File tempMetadata =
+        await File(metadataPath).writeAsString(metedataJsonContent);
+
     // Add json File to Zip
     var encoder = ZipFileEncoder();
     String zipTempFilePath = path.join(tempDir.path, "temp.zip");
     encoder.create(zipTempFilePath);
     encoder.addFile(tempFile);
+    encoder.addFile(tempMetadata);
 
     // Add Images Directory to Zip
     Directory imageDir = Directory(
@@ -95,6 +100,7 @@ class FileImportExport {
     MediaStore().downloadBackup(file: zipFile, name: zipFileName);
 
     tempFile.delete(); // delete Instary json file
+    tempMetadata.delete();
 
     // Delete templorary Directory (Might need this in the future)
     // Directory dir = await path_provider.getTemporaryDirectory();
@@ -120,6 +126,18 @@ class FileImportExport {
   List<Instary> decodeToInstary(List<dynamic> jsonString) {
     final parsed = jsonString.cast<Map<String, dynamic>>();
     return parsed.map<Instary>((json) => Instary.fromJson(json)).toList();
+  }
+
+  Future<String> createMatadata() async {
+    var metadata = {};
+    if (Platform.isAndroid) {
+      var androidInfo = await DeviceInfoPlugin().androidInfo;
+      metadata["AndroidReleaseVersion"] = androidInfo.version.release;
+      metadata["AndroidSDKVersion"] = androidInfo.version.sdkInt;
+      metadata["manufacturer"] = androidInfo.manufacturer;
+      metadata["model"] = androidInfo.model;
+    }
+    return jsonEncode(metadata);
   }
 }
 

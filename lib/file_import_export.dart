@@ -44,7 +44,9 @@ class FileImportExport {
             print("Add to temp folder");
           } else if (filename.toLowerCase().contains("images")) {
             final data = file.content as List<int>;
-            File(appDir.path + filename) // filename already contains "Image/"
+            File(appDir.path +
+                Platform.pathSeparator +
+                filename) // filename already contains "Image/"
               ..createSync(recursive: true)
               ..writeAsBytesSync(data);
             print("Add to Image folder");
@@ -54,9 +56,27 @@ class FileImportExport {
           Directory('${tempDir.path}/' + filename).create(recursive: true);
         }
       }
+
+      createInstaryFromJson('${tempDir.path}/instary.json');
     } else {
       // User canceled the picker
     }
+  }
+
+  /// This method read instary.json, decode to List<Instary> and add them to Hive
+  void createInstaryFromJson(String filePath) {
+    File(filePath).readAsString().then((String jsonString) {
+      print("JSONString: " + jsonString);
+      List<dynamic> content = jsonDecode(jsonString) as List<dynamic>;
+      List<Instary> instaries = decodeToInstary(content);
+      final instaryBox = Hive.box('instary');
+      var existingKeys = instaryBox.keys;
+      for (final instary in instaries) {
+        if (!existingKeys.contains(instary.id)) {
+          instaryBox.put(instary.id, instary);
+        }
+      }
+    });
   }
 
   void writeBackup() async {

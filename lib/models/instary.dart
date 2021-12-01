@@ -37,8 +37,9 @@ class Instary {
         happinessLv = json["happinessLv"],
         tirednessLv = json["tirednessLv"],
         stressfulnessLv = json["stressfulnessLv"],
-        imagePaths = json["imagePaths"],
-        videoPaths = json["videoPaths"];
+        imagePaths = json["imagePaths"]
+            .cast<String>(), // cast from List<dynamic> to List<String>
+        videoPaths = json["videoPaths"].cast<String>();
 
   Map<String, dynamic> toJson() {
     return {

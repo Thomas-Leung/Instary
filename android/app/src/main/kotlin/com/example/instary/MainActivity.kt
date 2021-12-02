@@ -34,7 +34,12 @@ class MainActivity : FlutterActivity() {
 
     private fun downloadBackup(path: String, name: String) {
         val extension = MimeTypeMap.getFileExtensionFromUrl(path)
-        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)!!
+        var mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+        // Because .iry is not mime media types, mimeType will return null
+        // and we need to use a special type
+        if (mimeType == null) {
+            mimeType = "application/octet-stream"
+        }
 
         val collection: Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)

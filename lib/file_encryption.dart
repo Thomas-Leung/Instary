@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:encrypt/encrypt.dart' as encrypt;
 
 class FileEncryption {
@@ -8,16 +10,16 @@ class FileEncryption {
   //encrpyt.IV.fromUtf8('a16bitInitVector')
   static final encrypter = encrypt.Encrypter(encrypt.AES(key));
 
-  static encryptAES(text) {
+  static Uint8List encryptAES(List<int> text) {
     final encrypted = encrypter.encryptBytes(text, iv: iv);
 
     print(encrypted.bytes);
     print(encrypted.base16);
     print(encrypted.base64);
-    return encrypted;
+    return encrypted.bytes;
   }
 
-  static decryptAES(_bytes) {
+  static List<int> decryptAES(Uint8List _bytes) {
     encrypt.Encrypted en = new encrypt.Encrypted(_bytes);
     final decrypted = encrypter.decryptBytes(en, iv: iv);
     print(decrypted);

@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:instary/file_encryption.dart';
 import 'package:instary/file_import_export.dart';
 import 'package:instary/themes/app_state_notifier.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +63,18 @@ class _SettingsPageState extends State<SettingsPage> {
                 onTap: () {
                   print("You pressed Import existing Instary");
                   FileImportExport().readFile();
+                },
+                leading: Icon(Icons.file_download_outlined),
+              ),
+              ListTile(
+                title: Text('Encrypt'),
+                onTap: () {
+                  print("UTF8 encode: ${utf8.encode("hello world")}");
+                  Uint8List result =
+                      FileEncryption.encryptAES(utf8.encode("hello world"));
+                  var bytes = FileEncryption.decryptAES(result);
+                  String bar = utf8.decode(bytes);
+                  print(bar);
                 },
                 leading: Icon(Icons.file_download_outlined),
               ),

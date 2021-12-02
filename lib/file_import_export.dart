@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
 import 'package:device_info/device_info.dart';
@@ -7,6 +8,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
+import 'package:instary/file_encryption.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as path_provider;
@@ -113,11 +115,25 @@ class FileImportExport {
     });
     encoder.close();
 
-    // Save the Zip file from temp folder to download folder in Android
+    // Encrypt the Zip file and sent to download folder in Android
+    // Get Zip File -> Convert zip to byte -> Encrypt the byte -> Create file name and file path
+    // -> Write the encrypted data -> Send to Android using Method Channel
     File zipFile = File(zipTempFilePath);
-    String zipFileName =
-        "${DateFormat('yyyy-MM-dd_HH-MM').format(DateTime.now())}.zip";
-    MediaStore().downloadBackup(file: zipFile, name: zipFileName);
+    Uint8List zipInByte = await zipFile.readAsBytes();
+    Uint8List encryptedByte = FileEncryption.encryptAES(zipInByte);
+    String encryptedFileName =
+        "${DateFormat('yyyy-MM-dd_HH-MM').format(DateTime.now())}.aes";
+    File encryptedFile =
+        File(tempDir.path + Platform.pathSeparator + encryptedFileName);
+    await encryptedFile.writeAsBytes(encryptedByte);
+    MediaStore().downloadBackup(file: encryptedFile, name: encryptedFileName);
+
+    // Save the Zip file from temp folder to download folder in Android
+    // Uncomment below for export without encryption
+    // File zipFile = File(zipTempFilePath);
+    // String zipFileName =
+    //     "${DateFormat('yyyy-MM-dd_HH-MM').format(DateTime.now())}.zip";
+    // MediaStore().downloadBackup(file: zipFile, name: zipFileName);
 
     tempFile.delete(); // delete Instary json file
     tempMetadata.delete();

@@ -87,6 +87,7 @@ class AppTheme {
     bannerTheme: MaterialBannerThemeData(backgroundColor: Colors.grey[800]),
     appBarTheme: AppBarTheme(
       elevation: 0,
+      color: Colors.white38,
     ),
     sliderTheme: SliderThemeData(
         activeTrackColor: Colors.deepPurple[300],
@@ -104,12 +105,14 @@ class AppTheme {
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(primary: Colors.white),
     ),
+    // ButtonStyle > elevatedButtonTheme > ButtonTheme
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
         minimumSize: MaterialStateProperty.resolveWith<Size>(
             (states) => Size(250.0, 42)),
         side: MaterialStateProperty.resolveWith<BorderSide>(
             (states) => BorderSide(color: Colors.deepPurple[300]!)),
+        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
         backgroundColor: MaterialStateProperty.resolveWith<Color>(
             (states) => darkTheme.colorScheme.secondary),
         shape: MaterialStateProperty.resolveWith<OutlinedBorder>((_) {

@@ -82,7 +82,7 @@ class _EditPageState extends State<EditPage> {
         // resizeToAvoidBottomInset: false, maybe use this line
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.only(top: 8.0),
             child: Column(
               children: <Widget>[_backBtn(), _title(), _instaryForm()],
             ),
@@ -93,16 +93,19 @@ class _EditPageState extends State<EditPage> {
   }
 
   Widget _backBtn() {
-    return SizedBox(
-      width: double.infinity,
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: TextButton.icon(
-          icon: Icon(Icons.arrow_back_ios),
-          label: Text("Cancel"),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: SizedBox(
+        width: double.infinity,
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton.icon(
+            icon: Icon(Icons.arrow_back_ios),
+            label: Text("Cancel"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
       ),
     );
@@ -110,7 +113,7 @@ class _EditPageState extends State<EditPage> {
 
   Widget _title() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -164,6 +167,7 @@ class _EditPageState extends State<EditPage> {
   Widget _instaryForm() {
     return Expanded(
       child: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
         scrollDirection: Axis.vertical,
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
         key: _parentFormKey,
@@ -261,38 +265,35 @@ class _EditPageState extends State<EditPage> {
               Container(
                 height: 20.0,
               ),
-              Center(
-                child: ButtonTheme(
-                  minWidth: 250.0,
-                  height: 42.0,
-                  buttonColor: Theme.of(context).colorScheme.secondary,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0)),
-                  textTheme: ButtonTextTheme.primary,
-                  child: ElevatedButton.icon(
-                    label: Text('Save'),
-                    icon: Icon(Icons.save),
-                    onPressed: () {
-                      FocusScope.of(context).requestFocus(new FocusNode());
-                      // Validate returns true if the form is valid, or false
-                      // otherwise.
-                      List<String> imagePaths = _updateImagePaths();
-                      if (_formKey.currentState!.validate()) {
-                        final newInstary = Instary(
-                            this.widget.instary.id,
-                            dateTime,
-                            titleController.text,
-                            contentController.text,
-                            happinessLv,
-                            tirednessLv,
-                            stressfulnessLv,
-                            imagePaths,
-                            List.empty());
-                        updateInstary(newInstary);
-                      }
-                    },
-                  ),
+              SizedBox(
+                width: double.infinity,
+                height: 42,
+                child: ElevatedButton.icon(
+                  label: Text('Save'),
+                  icon: Icon(Icons.save),
+                  onPressed: () {
+                    FocusScope.of(context).requestFocus(new FocusNode());
+                    // Validate returns true if the form is valid, or false
+                    // otherwise.
+                    List<String> imagePaths = _updateImagePaths();
+                    if (_formKey.currentState!.validate()) {
+                      final newInstary = Instary(
+                          this.widget.instary.id,
+                          dateTime,
+                          titleController.text,
+                          contentController.text,
+                          happinessLv,
+                          tirednessLv,
+                          stressfulnessLv,
+                          imagePaths,
+                          List.empty());
+                      updateInstary(newInstary);
+                    }
+                  },
                 ),
+              ),
+              Container(
+                height: 20.0,
               ),
             ],
           ),

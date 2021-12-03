@@ -15,51 +15,59 @@ import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:instary/models/instary.dart';
 
 class FileImportExport {
+  static const instaryExtension = "iry";
+
+  // READ DATA: readAsByte -> Uint8List -> decrypt -> write as byte -> instary
+  // Note: I didn't clean up files created from file Picker and import. They are located in cache.
+  // Also, metadata are not being used for now (might be useful in the future)
   void readFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['zip'],
-    );
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(type: FileType.any);
 
     if (result != null) {
-      File file = File(result.files.single.path!);
-      print("Import file location" + file.path);
-      Directory appDir = await path_provider.getApplicationDocumentsDirectory();
-      Directory tempDir = await path_provider.getTemporaryDirectory();
-      // Read the Zip file from disk.
-      final bytes = file.readAsBytesSync();
+      if (result.files.first.extension == instaryExtension) {
+        File file = File(result.files.single.path!);
+        print("Import file location" + file.path);
+        Directory appDir =
+            await path_provider.getApplicationDocumentsDirectory();
+        Directory tempDir = await path_provider.getTemporaryDirectory();
+        // Read the Zip file from disk.
+        final bytes = FileEncryption.decryptAES(file.readAsBytesSync());
 
-      // Decode the Zip file
-      final archive = ZipDecoder().decodeBytes(bytes);
+        // Decode the Zip file
+        final archive = ZipDecoder().decodeBytes(bytes);
 
-      // Extract the contents of the Zip archive to disk.
-      for (final file in archive) {
-        final filename = file.name;
-        print(file.name);
-        if (file.isFile) {
-          // Images insider the Images folder are also treated as file
-          if (filename == "instary.json") {
-            final data = file.content as List<int>;
-            File('${tempDir.path}/' + filename)
-              ..createSync(recursive: true)
-              ..writeAsBytesSync(data);
-            print("Add to temp folder");
-          } else if (filename.toLowerCase().contains("images")) {
-            final data = file.content as List<int>;
-            File(appDir.path +
-                Platform.pathSeparator +
-                filename) // filename already contains "Image/"
-              ..createSync(recursive: true)
-              ..writeAsBytesSync(data);
-            print("Add to Image folder");
+        // Extract the contents of the Zip archive to disk
+        for (final file in archive) {
+          final filename = file.name;
+          print(file.name);
+          if (file.isFile) {
+            if (filename == "instary.json") {
+              final data = file.content as List<int>;
+              File('${tempDir.path}/' + filename)
+                ..createSync(recursive: true)
+                ..writeAsBytesSync(data);
+              print("Add to temp folder");
+            } else if (filename.toLowerCase().contains("images")) {
+              // Images inside the Images folder somehow are also treated as file
+              final data = file.content as List<int>;
+              File(appDir.path +
+                  Platform.pathSeparator +
+                  filename) // filename already contains "Image/"
+                ..createSync(recursive: true)
+                ..writeAsBytesSync(data);
+              print("Add to Image folder");
+            }
+          } else {
+            // Not sure when it will be treated as Directory, so far everything are files
+            Directory('${tempDir.path}/' + filename).create(recursive: true);
           }
-        } else {
-          // Not sure when it will be treated as Directory, so far everything are files
-          Directory('${tempDir.path}/' + filename).create(recursive: true);
         }
-      }
 
-      createInstaryFromJson('${tempDir.path}/instary.json');
+        createInstaryFromJson('${tempDir.path}/instary.json');
+      } else {
+        print("Select the wrong file type");
+      }
     } else {
       // User canceled the picker
     }
@@ -81,6 +89,7 @@ class FileImportExport {
     });
   }
 
+  // WRITE DATA: Zip -> convert to Byte -> Encrypt -> export
   void writeBackup() async {
     String jsonContent = _encodeToJson();
 
@@ -122,7 +131,7 @@ class FileImportExport {
     Uint8List zipInByte = await zipFile.readAsBytes();
     Uint8List encryptedByte = FileEncryption.encryptAES(zipInByte);
     String encryptedFileName =
-        "${DateFormat('yyyy-MM-dd_HH-MM').format(DateTime.now())}.aes";
+        "${DateFormat('yyyy-MM-dd_HH-MM').format(DateTime.now())}.$instaryExtension";
     File encryptedFile =
         File(tempDir.path + Platform.pathSeparator + encryptedFileName);
     await encryptedFile.writeAsBytes(encryptedByte);
@@ -136,6 +145,7 @@ class FileImportExport {
     // MediaStore().downloadBackup(file: zipFile, name: zipFileName);
 
     tempFile.delete(); // delete Instary json file
+    zipFile.delete();
     tempMetadata.delete();
 
     // Delete templorary Directory (Might need this in the future)

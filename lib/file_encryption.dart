@@ -25,10 +25,4 @@ class FileEncryption {
     print(decrypted);
     return decrypted;
   }
-
-  // convertToBytes
-  // file.writeAsByte("Encrypted Data")
-  // TODO:
-  // WRITE DATA: Zip -> convert to Byte -> Encrypt -> export
-  // READ DATA: readAsByte -> Uint8List -> decrypt -> write as byte -> instary
 }

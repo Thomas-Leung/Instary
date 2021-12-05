@@ -34,13 +34,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 onChanged: (bool value) {
                   Provider.of<AppStateNotifier>(context, listen: false)
                       .updateTheme(value);
-                  setState(() {
-                    // if (isDarkModeOn) {
-                    //   this._darkModeIcon = new Icon(Icons.brightness_2);
-                    // } else {
-                    //   this._darkModeIcon = new Icon(Icons.brightness_5);
-                    // }
-                  });
                 },
                 activeTrackColor:
                     Theme.of(context).sliderTheme.activeTrackColor,
@@ -63,18 +56,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 onTap: () {
                   print("You pressed Import existing Instary");
                   FileImportExport().readFile();
-                },
-                leading: Icon(Icons.file_download_outlined),
-              ),
-              ListTile(
-                title: Text('Encrypt'),
-                onTap: () {
-                  print("UTF8 encode: ${utf8.encode("hello world")}");
-                  Uint8List result =
-                      FileEncryption.encryptAES(utf8.encode("hello world"));
-                  var bytes = FileEncryption.decryptAES(result);
-                  String bar = utf8.decode(bytes);
-                  print(bar);
                 },
                 leading: Icon(Icons.file_download_outlined),
               ),

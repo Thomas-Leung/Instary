@@ -20,8 +20,10 @@ class ViewPage extends StatelessWidget {
     }
     return Scaffold(
       body: CustomScrollView(
+        physics: BouncingScrollPhysics(),
         slivers: <Widget>[
           SliverAppBar(
+            backgroundColor: Colors.transparent,
             leading: BackButton(
               color: Colors.white,
             ),
@@ -128,6 +130,14 @@ class ViewPage extends StatelessWidget {
               aspectRatio: 1.35 / 1,
               child: BarChart(
                 BarChartData(
+                  barTouchData: BarTouchData(
+                    touchTooltipData: BarTouchTooltipData(
+                      tooltipBgColor: Theme.of(context)
+                          .tooltipTheme
+                          .textStyle
+                          ?.backgroundColor,
+                    ),
+                  ),
                   alignment: BarChartAlignment.spaceAround,
                   maxY: 100,
                   titlesData: FlTitlesData(

@@ -20,7 +20,7 @@ class FileImportExport {
   // READ DATA: readAsByte -> Uint8List -> decrypt -> write as byte -> instary
   // Note: I didn't clean up files created from file Picker and import. They are located in cache.
   // Also, metadata are not being used for now (might be useful in the future)
-  void readFile() async {
+  Future<bool> readFile() async {
     FilePickerResult? result =
         await FilePicker.platform.pickFiles(type: FileType.any);
 
@@ -65,12 +65,14 @@ class FileImportExport {
         }
 
         createInstaryFromJson('${tempDir.path}/instary.json');
+        return true;
       } else {
         print("Select the wrong file type");
       }
     } else {
       // User canceled the picker
     }
+    return false;
   }
 
   /// This method read instary.json, decode to List<Instary> and add them to Hive
@@ -90,7 +92,7 @@ class FileImportExport {
   }
 
   // WRITE DATA: Zip -> convert to Byte -> Encrypt -> export
-  void writeBackup() async {
+  Future<bool> writeBackup() async {
     String jsonContent = _encodeToJson();
 
     // convert json Instary to a File
@@ -148,6 +150,7 @@ class FileImportExport {
     zipFile.delete();
     tempMetadata.delete();
 
+    return true;
     // Delete templorary Directory (Might need this in the future)
     // Directory dir = await path_provider.getTemporaryDirectory();
     // dir.deleteSync(recursive: true);

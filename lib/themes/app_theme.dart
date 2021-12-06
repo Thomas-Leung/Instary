@@ -67,6 +67,7 @@ class AppTheme {
         side: MaterialStateProperty.resolveWith<BorderSide>(
             // Reference: https://stackoverflow.com/a/67717268
             (states) => BorderSide(color: Colors.indigo[700]!)),
+        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
         backgroundColor: MaterialStateProperty.resolveWith<Color>(
             (states) => lightTheme.colorScheme.secondary),
         shape: MaterialStateProperty.resolveWith<OutlinedBorder>((_) {
@@ -124,6 +125,8 @@ class AppTheme {
           return RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.0));
         }),
+        textStyle: MaterialStateProperty.resolveWith<TextStyle>(
+            (states) => TextStyle(color: Colors.white)),
       ),
     ),
   );

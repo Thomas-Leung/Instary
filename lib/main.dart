@@ -1,3 +1,4 @@
+import 'package:instary/pages/main_page.dart';
 import 'package:instary/themes/app_state_notifier.dart';
 import 'package:instary/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,6 @@ import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'pages/create_page.dart';
-import 'pages/home_page.dart';
 import 'pages/settings_page.dart';
 import 'package:provider/provider.dart';
 
@@ -53,7 +53,7 @@ class HomeApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: appState.isDarkModeOn ? ThemeMode.dark : ThemeMode.light,
-            home: HomePage(),
+            home: MainPage(),
             routes: {
               '/createPage': (context) => CreatePage(),
               '/settingsPage': (context) => SettingsPage()

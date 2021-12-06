@@ -97,8 +97,11 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void _getInstary() {
+  Future<void> _getInstary() async {
     List tempList = [];
+    if (!Hive.isBoxOpen('instary')) {
+      await Hive.openBox('instary');
+    }
     final instaryBox = Hive.box('instary');
     // to initialize instaries when start
     for (int i = 0; i < instaryBox.length; i++) {

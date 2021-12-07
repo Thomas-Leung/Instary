@@ -10,6 +10,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
+  final PageController mainPageController;
+
+  HomePage({required this.mainPageController});
   _HomePageState createState() => _HomePageState();
 }
 
@@ -148,7 +151,7 @@ class _HomePageState extends State<HomePage> {
         // resizeToAvoidBottomPadding: false,
         body: SafeArea(
           child: Column(
-            children: <Widget>[_searchBar(context), _title(), _buildList()],
+            children: <Widget>[_title(), _buildList(), _searchBar(context)],
           ),
         ),
         // bottom navigation
@@ -168,9 +171,16 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               IconButton(
-                icon: _settingsIcon,
-                onPressed: () => Navigator.pushNamed(context, '/settingsPage'),
-              )
+                  icon: Icon(Icons.photo_camera),
+                  onPressed: () {
+                    if (widget.mainPageController.hasClients) {
+                      widget.mainPageController.animateToPage(
+                        0,
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOut,
+                      );
+                    }
+                  })
             ],
           ),
         ),
@@ -181,7 +191,7 @@ class _HomePageState extends State<HomePage> {
   Widget _searchBar(BuildContext context) {
     return Theme(
       child: Padding(
-        padding: EdgeInsets.fromLTRB(25.0, 25.0, 25.0, 15.0),
+        padding: EdgeInsets.fromLTRB(25.0, 0, 25.0, 15.0),
         child: TextField(
           onTap: _searchPressed,
           controller: _filter,
@@ -224,13 +234,20 @@ class _HomePageState extends State<HomePage> {
 
   Widget _title() {
     return Padding(
-      padding: EdgeInsets.fromLTRB(25.0, 0, 25.0, 0),
+      padding: EdgeInsets.fromLTRB(25.0, 25.0, 25.0, 0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Text(
             "Instary",
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32.0),
           ),
+          IconButton(
+            padding: EdgeInsets.zero,
+            constraints: BoxConstraints(),
+            icon: _settingsIcon,
+            onPressed: () => Navigator.pushNamed(context, '/settingsPage'),
+          )
         ],
       ),
     );
@@ -264,6 +281,7 @@ class _HomePageState extends State<HomePage> {
     }
     return Expanded(
       child: PageView.builder(
+        physics: BouncingScrollPhysics(),
         controller: PageController(viewportFraction: 0.85),
         itemCount: instaries.isEmpty ? 0 : filteredInstaries.length,
         itemBuilder: (BuildContext context, int index) {

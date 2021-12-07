@@ -6,11 +6,11 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final PageController _pageController = PageController(initialPage: 2);
+  final PageController pageController = PageController(initialPage: 1);
 
   @override
   void dispose() {
-    _pageController.dispose();
+    pageController.dispose();
     super.dispose();
   }
 
@@ -18,15 +18,15 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
-        controller: _pageController,
+        controller: pageController,
         children: <Widget>[
           Container(
             color: Colors.red,
             child: Center(
               child: ElevatedButton(
                 onPressed: () {
-                  if (_pageController.hasClients) {
-                    _pageController.animateToPage(
+                  if (pageController.hasClients) {
+                    pageController.animateToPage(
                       1,
                       duration: const Duration(milliseconds: 400),
                       curve: Curves.easeInOut,
@@ -37,7 +37,7 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
           ),
-          HomePage()
+          HomePage(mainPageController: pageController)
         ],
       ),
     );

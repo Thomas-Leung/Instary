@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instary/pages/camera_screen.dart';
 import 'package:instary/pages/home_page.dart';
 
 class MainPage extends StatefulWidget {
@@ -20,23 +21,7 @@ class _MainPageState extends State<MainPage> {
       body: PageView(
         controller: pageController,
         children: <Widget>[
-          Container(
-            color: Colors.red,
-            child: Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  if (pageController.hasClients) {
-                    pageController.animateToPage(
-                      1,
-                      duration: const Duration(milliseconds: 400),
-                      curve: Curves.easeInOut,
-                    );
-                  }
-                },
-                child: const Text('Next'),
-              ),
-            ),
-          ),
+          CameraScreen(),
           HomePage(mainPageController: pageController)
         ],
       ),

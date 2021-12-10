@@ -14,6 +14,7 @@ class _CameraScreenState extends State<CameraScreen>
     with WidgetsBindingObserver {
   CameraController? controller;
   bool _isCameraInitialized = false;
+  bool _isRearCameraSelected = true;
 
   final resolutionPresets = ResolutionPreset.values;
   ResolutionPreset currentResolutionPreset = ResolutionPreset.high;
@@ -26,6 +27,8 @@ class _CameraScreenState extends State<CameraScreen>
   double _minAvailableExposureOffset = 0.0;
   double _maxAvailableExposureOffset = 0.0;
   double _currentExposureOffset = 0.0;
+
+  FlashMode? _currentFlashMode;
 
   @override
   void initState() {
@@ -103,6 +106,8 @@ class _CameraScreenState extends State<CameraScreen>
             .getMinZoomLevel()
             .then((value) => _minAvailableZoom = value),
       ]);
+
+      _currentFlashMode = controller!.value.flashMode;
     } on CameraException catch (e) {
       print('Error initializing camera: $e');
     }
@@ -241,6 +246,79 @@ class _CameraScreenState extends State<CameraScreen>
                             ),
                           ],
                         ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              InkWell(
+                                onTap: () async {
+                                  setState(() {
+                                    _currentFlashMode = FlashMode.off;
+                                  });
+                                  await controller!.setFlashMode(
+                                    FlashMode.off,
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.flash_off,
+                                  color: _currentFlashMode == FlashMode.off
+                                      ? Colors.amber
+                                      : Colors.white,
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () async {
+                                  setState(() {
+                                    _currentFlashMode = FlashMode.auto;
+                                  });
+                                  await controller!.setFlashMode(
+                                    FlashMode.auto,
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.flash_auto,
+                                  color: _currentFlashMode == FlashMode.auto
+                                      ? Colors.amber
+                                      : Colors.white,
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () async {
+                                  setState(() {
+                                    _currentFlashMode = FlashMode.always;
+                                  });
+                                  await controller!.setFlashMode(
+                                    FlashMode.always,
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.flash_on,
+                                  color: _currentFlashMode == FlashMode.always
+                                      ? Colors.amber
+                                      : Colors.white,
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () async {
+                                  setState(() {
+                                    _currentFlashMode = FlashMode.torch;
+                                  });
+                                  await controller!.setFlashMode(
+                                    FlashMode.torch,
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.highlight,
+                                  color: _currentFlashMode == FlashMode.torch
+                                      ? Colors.amber
+                                      : Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   ),

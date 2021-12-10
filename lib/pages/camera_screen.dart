@@ -14,8 +14,18 @@ class _CameraScreenState extends State<CameraScreen>
     with WidgetsBindingObserver {
   CameraController? controller;
   bool _isCameraInitialized = false;
+
   final resolutionPresets = ResolutionPreset.values;
   ResolutionPreset currentResolutionPreset = ResolutionPreset.high;
+
+  // the values will retrieve in onNewCameraSelected()
+  double _minAvailableZoom = 1.0;
+  double _maxAvailableZoom = 1.0;
+  double _currentZoomLevel = 1.0;
+
+  double _minAvailableExposureOffset = 0.0;
+  double _maxAvailableExposureOffset = 0.0;
+  double _currentExposureOffset = 0.0;
 
   @override
   void initState() {
@@ -78,6 +88,21 @@ class _CameraScreenState extends State<CameraScreen>
     // Initialize controller
     try {
       await cameraController.initialize();
+      // get device camera zoom and exposure level
+      await Future.wait([
+        cameraController
+            .getMinExposureOffset()
+            .then((value) => _minAvailableExposureOffset = value),
+        cameraController
+            .getMaxExposureOffset()
+            .then((value) => _maxAvailableExposureOffset = value),
+        cameraController
+            .getMaxZoomLevel()
+            .then((value) => _maxAvailableZoom = value),
+        cameraController
+            .getMinZoomLevel()
+            .then((value) => _minAvailableZoom = value),
+      ]);
     } on CameraException catch (e) {
       print('Error initializing camera: $e');
     }
@@ -103,6 +128,7 @@ class _CameraScreenState extends State<CameraScreen>
                     padding:
                         EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Align(
                           alignment: Alignment.topRight,
@@ -113,45 +139,107 @@ class _CameraScreenState extends State<CameraScreen>
                             ),
                             child: Padding(
                               padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Align(
-                                alignment: Alignment.topRight,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.black87,
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: DropdownButton<ResolutionPreset>(
-                                    dropdownColor: Colors.black87,
-                                    underline: Container(),
-                                    value: currentResolutionPreset,
-                                    items: [
-                                      for (ResolutionPreset preset
-                                          in resolutionPresets)
-                                        DropdownMenuItem(
-                                          child: Text(
-                                            preset
-                                                .toString()
-                                                .split('.')[1]
-                                                .toUpperCase(),
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          value: preset,
-                                        )
-                                    ],
-                                    onChanged: (value) {
-                                      setState(() {
-                                        currentResolutionPreset = value!;
-                                        _isCameraInitialized = false;
-                                      });
-                                      onNewCameraSelected(
-                                          controller!.description);
-                                    },
-                                    hint: Text("Select item"),
-                                  ),
-                                ),
+                              child: DropdownButton<ResolutionPreset>(
+                                dropdownColor: Colors.black87,
+                                underline: Container(),
+                                value: currentResolutionPreset,
+                                items: [
+                                  for (ResolutionPreset preset
+                                      in resolutionPresets)
+                                    DropdownMenuItem(
+                                      child: Text(
+                                        preset
+                                            .toString()
+                                            .split('.')[1]
+                                            .toUpperCase(),
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      value: preset,
+                                    )
+                                ],
+                                onChanged: (value) {
+                                  // When changing the quality of the camera view,
+                                  // we have to reinitialize the camera controller with the new value.
+                                  setState(() {
+                                    currentResolutionPreset = value!;
+                                    _isCameraInitialized = false;
+                                  });
+                                  onNewCameraSelected(controller!.description);
+                                },
+                                hint: Text("Select item"),
                               ),
                             ),
                           ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0, top: 16.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                _currentExposureOffset.toStringAsFixed(1) + 'x',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: RotatedBox(
+                            quarterTurns: 3,
+                            child: Container(
+                              height: 30,
+                              child: Slider(
+                                value: _currentExposureOffset,
+                                min: _minAvailableExposureOffset,
+                                max: _maxAvailableExposureOffset,
+                                activeColor: Colors.white,
+                                inactiveColor: Colors.white30,
+                                onChanged: (value) async {
+                                  setState(() {
+                                    _currentExposureOffset = value;
+                                  });
+                                  await controller!.setExposureOffset(value);
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Slider(
+                                value: _currentZoomLevel,
+                                min: _minAvailableZoom,
+                                max: _maxAvailableZoom,
+                                activeColor: Colors.white,
+                                inactiveColor: Colors.white30,
+                                onChanged: (value) async {
+                                  setState(() {
+                                    _currentZoomLevel = value;
+                                  });
+                                  // set the zoom level of the camera
+                                  await controller!.setZoomLevel(value);
+                                },
+                              ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black87,
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  _currentZoomLevel.toStringAsFixed(1) + 'x',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

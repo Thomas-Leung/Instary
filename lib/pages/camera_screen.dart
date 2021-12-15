@@ -318,7 +318,44 @@ class _CameraScreenState extends State<CameraScreen>
                               ),
                             ],
                           ),
-                        )
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _isCameraInitialized = false;
+                                });
+                                // need to reinitialize camera to toggle front and back camera
+                                onNewCameraSelected(
+                                  cameras[_isRearCameraSelected ? 0 : 1],
+                                );
+                                setState(() {
+                                  _isRearCameraSelected =
+                                      !_isRearCameraSelected;
+                                });
+                              },
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.circle,
+                                    color: Colors.black38,
+                                    size: 60,
+                                  ),
+                                  Icon(
+                                    _isRearCameraSelected
+                                        ? Icons.camera_front
+                                        : Icons.camera_rear,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ],
                     ),
                   ),

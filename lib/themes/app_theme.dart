@@ -91,7 +91,7 @@ class AppTheme {
     bannerTheme: MaterialBannerThemeData(backgroundColor: Colors.grey[800]),
     appBarTheme: AppBarTheme(
       elevation: 0,
-      color: Colors.white38,
+      color: Colors.black26,
     ),
     sliderTheme: SliderThemeData(
         activeTrackColor: Colors.deepPurple[300],

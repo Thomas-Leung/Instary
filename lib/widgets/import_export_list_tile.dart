@@ -66,73 +66,65 @@ class _ImportExportListTileState extends State<ImportExportListTile> {
             bool processResult = await widget.function();
             Scaffold.of(context).showBottomSheet<void>(
               (BuildContext context) {
-                return StatefulBuilder(
-                  builder:
-                      (BuildContext context, StateSetter setBottomSheetState) {
-                    return Container(
-                      margin: EdgeInsets.only(top: 5, left: 15, right: 15),
-                      height: 100,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          ValueListenableBuilder<bool>(
-                            valueListenable: _progressNotifier,
-                            builder: (context, value, child) => Container(
-                              height:
-                                  50, // column centers and the height makes it "float"
-                              decoration: BoxDecoration(
-                                color: bottomSheetColor,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15)),
-                              ),
-                              child: Center(
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 16.0),
-                                        child: Text(
-                                          status,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.only(right: 16.0),
-                                        child: !value
-                                            ? Container(
-                                                height: 20,
-                                                width: 20,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  strokeWidth: 2.5,
-                                                  color: Colors.white,
-                                                ),
-                                              )
-                                            : processResult
-                                                ? Icon(
-                                                    Icons.check_rounded,
-                                                    color: Colors.white,
-                                                  )
-                                                : Icon(
-                                                    Icons.error_outline,
-                                                    color: Colors.white,
-                                                  ),
-                                      ),
-                                    ]),
-                              ),
-                            ),
+                return Container(
+                  margin: EdgeInsets.only(top: 5, left: 15, right: 15),
+                  height: 100,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      ValueListenableBuilder<bool>(
+                        valueListenable: _progressNotifier,
+                        builder: (context, value, child) => Container(
+                          height:
+                              50, // column centers and the height makes it "float"
+                          decoration: BoxDecoration(
+                            color: bottomSheetColor,
+                            borderRadius: BorderRadius.all(Radius.circular(15)),
                           ),
-                        ],
+                          child: Center(
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 16.0),
+                                    child: Text(
+                                      status,
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(right: 16.0),
+                                    child: !value
+                                        ? Container(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2.5,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : processResult
+                                            ? Icon(
+                                                Icons.check_rounded,
+                                                color: Colors.white,
+                                              )
+                                            : Icon(
+                                                Icons.error_outline,
+                                                color: Colors.white,
+                                              ),
+                                  ),
+                                ]),
+                          ),
+                        ),
                       ),
-                    );
-                  },
+                    ],
+                  ),
                 );
               },
             );

@@ -547,7 +547,6 @@ class _CameraScreenState extends State<CameraScreen>
                                             ? () {
                                                 showGallery(
                                                   context: context,
-                                                  imageFile: _imageFile!,
                                                   fileList: allFileList,
                                                 );
                                               }

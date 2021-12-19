@@ -1,25 +1,21 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:instary/widgets/video_thumbnail.dart';
 
 Future<void> showGallery(
-    {required BuildContext context,
-    required File imageFile,
-    required List<File> fileList}) async {
+    {required BuildContext context, required List<File> fileList}) async {
   return showModalBottomSheet(
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       context: context,
-      builder: (BuildContext context) =>
-          GalleryPage(imageFile: imageFile, fileList: fileList));
+      builder: (BuildContext context) => GalleryPage(fileList: fileList));
 }
 
 class GalleryPage extends StatelessWidget {
-  final File imageFile;
   final List<File> fileList;
 
   const GalleryPage({
-    required this.imageFile,
     required this.fileList,
   });
 
@@ -36,33 +32,93 @@ class GalleryPage extends StatelessWidget {
                 topRight: Radius.circular(18.0),
                 topLeft: Radius.circular(18.0)),
             child: Container(
-              // color: Color(0xffeef2f6),
-              child: Scaffold(
-                backgroundColor: Colors.white,
-                body: SingleChildScrollView(
-                  controller: scrollController,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Icon(
-                            Icons.arrow_back,
-                            color: Colors.black54,
-                          ),
-                        ],
+              color: Theme.of(context).bannerTheme.backgroundColor,
+              child: SingleChildScrollView(
+                controller: scrollController,
+                physics: BouncingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHandle(context),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'Gallery',
+                        style: TextStyle(
+                          fontSize: 28.0,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      children: [
+                        for (File file in fileList)
+                          Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 2,
+                                ),
+                              ),
+                              child: file.path.contains('.jpg')
+                                  ? imageThumbnail(file)
+                                  : VideoThumbnail(videoFile: file)),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget imageThumbnail(File imageFile) {
+    return InkWell(
+      onTap: () {
+        // Navigator.of(context).pushReplacement(
+        //   MaterialPageRoute(
+        //     builder: (context) => PreviewScreen(
+        //       fileList: imageFileList,
+        //       imageFile: imageFile,
+        //     ),
+        //   ),
+        // );
+      },
+      child: Image.file(
+        imageFile,
+        fit: BoxFit.cover,
+      ),
+    );
+  }
+
+  Widget _buildHandle(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: FractionallySizedBox(
+            widthFactor: 0.25,
+            child: Container(
+              margin: const EdgeInsets.symmetric(
+                vertical: 12.0,
+              ),
+              child: Container(
+                height: 5.0,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).dividerColor,
+                  borderRadius: const BorderRadius.all(Radius.circular(2.5)),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

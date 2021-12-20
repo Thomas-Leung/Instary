@@ -89,6 +89,9 @@ class _HomePageState extends State<HomePage> {
             .then((Directory directory) {
           print(directory.path);
         });
+        new Directory(appDocDir.path +
+                GlobalConfiguration().getValue("androidVideoPath"))
+            .create(recursive: true);
       }
     });
     this._getInstary();

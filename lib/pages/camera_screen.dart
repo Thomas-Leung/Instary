@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:global_configuration/global_configuration.dart';
 import 'package:instary/main.dart';
 import 'package:instary/pages/gallery_page.dart';
 import 'package:path_provider/path_provider.dart';
@@ -42,6 +43,8 @@ class _CameraScreenState extends State<CameraScreen>
 
   FlashMode? _currentFlashMode;
 
+  late Directory directory;
+
   @override
   void initState() {
     // Hide the status bar
@@ -65,7 +68,12 @@ class _CameraScreenState extends State<CameraScreen>
 
   refreshAlreadyCapturedImages() async {
     // Get the directory
-    final directory = await getApplicationDocumentsDirectory();
+    final appDocDir = await getApplicationDocumentsDirectory();
+    directory = Directory(
+        appDocDir.path + GlobalConfiguration().getValue("androidGalleryPath"));
+    if (!await directory.exists()) {
+      await directory.create();
+    }
     List<FileSystemEntity> fileList = await directory.list().toList();
     allFileList.clear();
 
@@ -476,8 +484,6 @@ class _CameraScreenState extends State<CameraScreen>
                                               int currentUnix = DateTime.now()
                                                   .millisecondsSinceEpoch;
 
-                                              final directory =
-                                                  await getApplicationDocumentsDirectory();
                                               String fileFormat = videoFile.path
                                                   .split('.')
                                                   .last;
@@ -500,9 +506,6 @@ class _CameraScreenState extends State<CameraScreen>
 
                                             int currentUnix = DateTime.now()
                                                 .millisecondsSinceEpoch;
-
-                                            final directory =
-                                                await getApplicationDocumentsDirectory();
 
                                             String fileFormat =
                                                 imageFile.path.split('.').last;

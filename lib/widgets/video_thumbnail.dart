@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:instary/pages/video_player_screen.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoThumbnail extends StatefulWidget {
@@ -34,33 +35,36 @@ class _VideoThumbnailState extends State<VideoThumbnail> {
   Widget build(BuildContext context) {
     return InkWell(
       child: _controller.value.isInitialized
-          ? FittedBox(
-              fit: BoxFit.cover,
-              clipBehavior: Clip.hardEdge,
-              // SizedBox with width and height will remove exception for FittedBox
-              child: SizedBox(
-                width: _controller.value.size.width,
-                height: _controller.value.size.height,
-                child: Stack(children: [
-                  VideoPlayer(_controller),
-                  Center(
-                    child: Icon(
-                      Icons.play_circle_outline_rounded,
-                      size: 250,
-                    ),
-                  )
-                ]),
-              ),
+          ? Stack(
+              fit: StackFit.expand,
+              children: [
+                FittedBox(
+                  fit: BoxFit.cover,
+                  clipBehavior: Clip.hardEdge,
+                  // SizedBox with width and height will remove exception for FittedBox
+                  child: SizedBox(
+                    width: _controller.value.size.width,
+                    height: _controller.value.size.height,
+                    child: VideoPlayer(_controller),
+                  ),
+                ),
+                Center(
+                  child: Icon(
+                    Icons.play_circle_outline_rounded,
+                    size: 80,
+                  ),
+                )
+              ],
             )
-          : CircularProgressIndicator(),
+          : Center(child: CircularProgressIndicator()),
       onTap: () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) =>
-        //         VideoPlayerPage(videoUrl: widget.video.file.path),
-        //   ),
-        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                VideoPlayerScreen(videoFile: widget.videoFile),
+          ),
+        );
       },
     );
   }

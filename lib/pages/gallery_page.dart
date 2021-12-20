@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:instary/pages/view_photo_page.dart';
 import 'package:instary/widgets/video_thumbnail.dart';
 
 Future<void> showGallery(
@@ -64,7 +65,7 @@ class GalleryPage extends StatelessWidget {
                                 ),
                               ),
                               child: file.path.contains('.jpg')
-                                  ? imageThumbnail(file)
+                                  ? imageThumbnail(context, file)
                                   : VideoThumbnail(videoFile: file)),
                       ],
                     ),
@@ -78,17 +79,16 @@ class GalleryPage extends StatelessWidget {
     );
   }
 
-  Widget imageThumbnail(File imageFile) {
+  Widget imageThumbnail(BuildContext context, File imageFile) {
     return InkWell(
       onTap: () {
-        // Navigator.of(context).pushReplacement(
-        //   MaterialPageRoute(
-        //     builder: (context) => PreviewScreen(
-        //       fileList: imageFileList,
-        //       imageFile: imageFile,
-        //     ),
-        //   ),
-        // );
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ViewPhotoPage(
+              imagePath: imageFile,
+            ),
+          ),
+        );
       },
       child: Image.file(
         imageFile,

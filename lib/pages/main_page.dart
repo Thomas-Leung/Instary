@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:instary/pages/camera_screen.dart';
+// import 'package:instary/pages/camera_screen.dart';
 import 'package:instary/pages/home_page.dart';
 
 class MainPage extends StatefulWidget {
@@ -7,7 +7,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final PageController pageController = PageController(initialPage: 1);
+  final PageController pageController = PageController(initialPage: 0);
 
   @override
   void dispose() {
@@ -21,7 +21,7 @@ class _MainPageState extends State<MainPage> {
       body: PageView(
         controller: pageController,
         children: <Widget>[
-          CameraScreen(),
+          // CameraScreen(),
           HomePage(mainPageController: pageController)
         ],
       ),

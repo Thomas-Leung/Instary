@@ -350,7 +350,9 @@ class _CreatePageState extends State<CreatePage> {
   }
 
   void _pickImage() async {
-    final imageSource = await showDialog<ImageSource>(
+    final ImagePicker _imagePicker = ImagePicker();
+
+    final XFile? file = await showDialog<XFile>(
         context: context,
         builder: (context) => SimpleDialog(
               shape: RoundedRectangleBorder(
@@ -358,70 +360,91 @@ class _CreatePageState extends State<CreatePage> {
                   Radius.circular(10.0),
                 ),
               ),
-              title: Text("Select an image source"),
+              title: Text("Select a source"),
               children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context, ImageSource.camera),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 20.0, 30.0, 20.0),
-                        child: Column(
-                          children: <Widget>[
-                            Icon(
-                              Icons.camera_alt,
-                              color: Colors.grey,
-                            ),
-                            Text("Camera",
-                                style: TextStyle(color: Colors.grey)),
-                          ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () async => Navigator.pop(
+                            context,
+                            await _imagePicker.pickImage(
+                                source: ImageSource.camera)),
+                        child: ListTile(
+                          title: Text("Take a photo",
+                              style: TextStyle(color: Colors.grey)),
+                          leading: Icon(
+                            Icons.camera_alt,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
-                    ),
-                    Container(
-                      width: 1,
-                      height: 40.0,
-                      color: Colors.grey,
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context, ImageSource.gallery),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(30.0, 20.0, 0, 20.0),
-                        child: Column(
-                          children: <Widget>[
-                            Icon(
-                              Icons.photo,
-                              color: Colors.grey,
-                            ),
-                            Text("Gallery",
-                                style: TextStyle(color: Colors.grey)),
-                          ],
+                      Divider(),
+                      GestureDetector(
+                        onTap: () async => Navigator.pop(
+                            context,
+                            await _imagePicker.pickVideo(
+                                source: ImageSource.camera)),
+                        child: ListTile(
+                          title: Text("Record a video",
+                              style: TextStyle(color: Colors.grey)),
+                          leading: Icon(
+                            Icons.videocam_rounded,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      Divider(),
+                      GestureDetector(
+                        onTap: () async => Navigator.pop(
+                            context,
+                            await _imagePicker.pickImage(
+                                source: ImageSource.gallery)),
+                        child: ListTile(
+                          title: Text("Pick a image from gallery",
+                              style: TextStyle(color: Colors.grey)),
+                          leading: Icon(
+                            Icons.photo,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                      Divider(),
+                      GestureDetector(
+                        onTap: () async => Navigator.pop(
+                            context,
+                            await _imagePicker.pickVideo(
+                                source: ImageSource.gallery)),
+                        child: ListTile(
+                          title: Text("Pick a video from gallery",
+                              style: TextStyle(color: Colors.grey)),
+                          leading: Icon(
+                            Icons.video_library_rounded,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ));
 
-    if (imageSource != null) {
-      final ImagePicker _imagePicker = ImagePicker();
-      final XFile? file = await _imagePicker.pickImage(source: imageSource);
-      if (file != null) {
-        // check if file already exist in Instary folder, if so notify user to pick again
-        RegExp regex = new RegExp(r'([^\/]+$)');
-        String? fileName = regex.stringMatch(file.path);
-        String filePath = appDocumentDirPath +
-            GlobalConfiguration().getValue("androidImagePath") +
-            fileName!;
-        bool fileExist = await File(filePath).exists();
-        if (fileExist) {
-          var dialog = new DuplicateDialog();
-          dialog.showDuplicateFileDialog(context);
-        } else {
-          setState(() => _pickedImage = File(file.path));
-        }
+    if (file != null) {
+      // check if file already exist in Instary folder, if so notify user to pick again
+      RegExp regex = new RegExp(r'([^\/]+$)');
+      String? fileName = regex.stringMatch(file.path);
+      String filePath = appDocumentDirPath +
+          GlobalConfiguration().getValue("androidImagePath") +
+          fileName!;
+      bool fileExist = await File(filePath).exists();
+      if (fileExist) {
+        var dialog = new DuplicateDialog();
+        dialog.showDuplicateFileDialog(context);
+      } else {
+        setState(() => _pickedImage = File(file.path));
       }
     }
   }

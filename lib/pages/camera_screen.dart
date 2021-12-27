@@ -15,6 +15,7 @@ class CameraScreen extends StatefulWidget {
   _CameraScreenState createState() => _CameraScreenState();
 }
 
+// THIS CLASS IS CURRENTLY NOT USED
 // Reference: https://blog.logrocket.com/flutter-camera-plugin-deep-dive-with-examples/
 class _CameraScreenState extends State<CameraScreen>
     with WidgetsBindingObserver {

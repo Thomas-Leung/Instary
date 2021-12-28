@@ -177,7 +177,7 @@ class _CameraScreenState extends State<CameraScreen>
       ]);
 
       _currentFlashMode = controller!.value.flashMode;
-      // TODO: Implement tap to focus in the future
+      // Todo: Implement tap to focus in the future
       controller!.setFocusMode(FocusMode.auto);
     } on CameraException catch (e) {
       print('Error initializing camera: $e');

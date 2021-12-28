@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
+import 'package:instary/widgets/add_bottom_sheet.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -174,7 +175,7 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               IconButton(
-                  icon: Icon(Icons.photo_camera),
+                  icon: Icon(Icons.menu),
                   onPressed: () {
                     if (widget.mainPageController.hasClients) {
                       widget.mainPageController.animateToPage(
@@ -183,7 +184,19 @@ class _HomePageState extends State<HomePage> {
                         curve: Curves.easeInOut,
                       );
                     }
-                  })
+                  }),
+              IconButton(
+                icon: Icon(Icons.add_a_photo_rounded),
+                onPressed: () => {
+                  showModalBottomSheet<int>(
+                    backgroundColor: Colors.transparent,
+                    context: context,
+                    builder: (context) {
+                      return AddBottomSheet();
+                    },
+                  )
+                },
+              )
             ],
           ),
         ),

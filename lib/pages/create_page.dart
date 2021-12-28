@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:instary/pages/gallery_page.dart';
 import 'package:instary/widgets/duplicate_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
@@ -7,6 +8,7 @@ import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
@@ -35,6 +37,7 @@ class _CreatePageState extends State<CreatePage> {
   // ? means the value could be null
   File? _pickedImage;
   late final String appDocumentDirPath;
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   @override
   void initState() {
@@ -367,64 +370,78 @@ class _CreatePageState extends State<CreatePage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      GestureDetector(
-                        onTap: () async => Navigator.pop(
-                            context,
-                            await _imagePicker.pickImage(
-                                source: ImageSource.camera)),
-                        child: ListTile(
-                          title: Text("Take a photo",
-                              style: TextStyle(color: Colors.grey)),
-                          leading: Icon(
-                            Icons.camera_alt,
-                            color: Colors.grey,
-                          ),
+                      ListTile(
+                        title: Text("Select Media From App Gallary",
+                            style: TextStyle(color: Colors.grey)),
+                        leading: Icon(
+                          Icons.camera_alt,
+                          color: Colors.grey,
                         ),
+                        onTap: () async {
+                          SharedPreferences prefs = await _prefs;
+                          List<String>? unusedImages =
+                              prefs.getStringList("unusedImages");
+                          List<File> unusedImageFiles = [];
+                          unusedImages?.forEach(
+                              (path) => unusedImageFiles.add(File(path)));
+                          showGallery(
+                              context: context, fileList: unusedImageFiles);
+                        },
                       ),
                       Divider(),
-                      GestureDetector(
-                        onTap: () async => Navigator.pop(
-                            context,
-                            await _imagePicker.pickVideo(
-                                source: ImageSource.camera)),
-                        child: ListTile(
-                          title: Text("Record a video",
-                              style: TextStyle(color: Colors.grey)),
-                          leading: Icon(
-                            Icons.videocam_rounded,
-                            color: Colors.grey,
-                          ),
+                      ListTile(
+                        title: Text("Pick a image from gallery",
+                            style: TextStyle(color: Colors.grey)),
+                        leading: Icon(
+                          Icons.photo,
+                          color: Colors.grey,
                         ),
-                      ),
-                      Divider(),
-                      GestureDetector(
                         onTap: () async => Navigator.pop(
                             context,
                             await _imagePicker.pickImage(
                                 source: ImageSource.gallery)),
-                        child: ListTile(
-                          title: Text("Pick a image from gallery",
-                              style: TextStyle(color: Colors.grey)),
-                          leading: Icon(
-                            Icons.photo,
-                            color: Colors.grey,
-                          ),
-                        ),
                       ),
                       Divider(),
-                      GestureDetector(
+                      ListTile(
+                        title: Text("Pick a video from gallery",
+                            style: TextStyle(color: Colors.grey)),
+                        leading: Icon(
+                          Icons.video_library_rounded,
+                          color: Colors.grey,
+                        ),
                         onTap: () async => Navigator.pop(
                             context,
                             await _imagePicker.pickVideo(
                                 source: ImageSource.gallery)),
-                        child: ListTile(
-                          title: Text("Pick a video from gallery",
-                              style: TextStyle(color: Colors.grey)),
-                          leading: Icon(
-                            Icons.video_library_rounded,
-                            color: Colors.grey,
+                      ),
+                      ExpansionTile(
+                        title: Text('More'),
+                        children: <Widget>[
+                          ListTile(
+                            title: Text("Take a photo",
+                                style: TextStyle(color: Colors.grey)),
+                            leading: Icon(
+                              Icons.camera_alt,
+                              color: Colors.grey,
+                            ),
+                            onTap: () async => Navigator.pop(
+                                context,
+                                await _imagePicker.pickImage(
+                                    source: ImageSource.camera)),
                           ),
-                        ),
+                          Divider(),
+                          ListTile(
+                              title: Text("Record a video",
+                                  style: TextStyle(color: Colors.grey)),
+                              leading: Icon(
+                                Icons.videocam_rounded,
+                                color: Colors.grey,
+                              ),
+                              onTap: () async => Navigator.pop(
+                                  context,
+                                  await _imagePicker.pickVideo(
+                                      source: ImageSource.camera))),
+                        ],
                       ),
                     ],
                   ),

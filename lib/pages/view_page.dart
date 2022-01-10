@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:instary/themes/app_state_notifier.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'view_photo_page.dart';
 import 'edit_page.dart';
 
@@ -126,108 +128,111 @@ class ViewPage extends StatelessWidget {
             ),
             AspectRatio(
               aspectRatio: 1.35 / 1,
-              child: BarChart(
-                BarChartData(
-                  barTouchData: BarTouchData(
-                    touchTooltipData: BarTouchTooltipData(
-                      tooltipBgColor: Theme.of(context)
-                          .tooltipTheme
-                          .textStyle
-                          ?.backgroundColor,
+              child: Consumer<AppStateNotifier>(
+                  builder: (context, appState, child) {
+                return BarChart(
+                  BarChartData(
+                    barTouchData: BarTouchData(
+                      touchTooltipData: BarTouchTooltipData(
+                          tooltipBgColor: appState.isDarkModeOn
+                              ? Colors.white
+                              : Colors.grey[300]),
                     ),
-                  ),
-                  alignment: BarChartAlignment.spaceAround,
-                  maxY: 100,
-                  titlesData: FlTitlesData(
-                    show: true,
-                    bottomTitles: SideTitles(
-                      showTitles: true,
-                      getTextStyles: (BuildContext context, double value) {
-                        return TextStyle(
-                            color: Theme.of(context).textTheme.overline!.color,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14);
-                      },
-                      margin: 10,
-                      getTitles: (double value) {
-                        switch (value.toInt()) {
-                          case 0:
-                            return 'Happiness';
-                          case 1:
-                            return 'Tiredness';
-                          case 2:
-                            return 'Stressfulness';
-                          default:
+                    alignment: BarChartAlignment.spaceAround,
+                    maxY: 100,
+                    titlesData: FlTitlesData(
+                      show: true,
+                      bottomTitles: SideTitles(
+                        showTitles: true,
+                        getTextStyles: (BuildContext context, double value) {
+                          return TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.overline!.color,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14);
+                        },
+                        margin: 10,
+                        getTitles: (double value) {
+                          switch (value.toInt()) {
+                            case 0:
+                              return 'Happiness';
+                            case 1:
+                              return 'Tiredness';
+                            case 2:
+                              return 'Stressfulness';
+                            default:
+                              return '';
+                          }
+                        },
+                      ),
+                      leftTitles: SideTitles(
+                        showTitles: true,
+                        getTextStyles: (BuildContext context, double value) {
+                          return TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.overline!.color,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14);
+                        },
+                        margin: 15,
+                        reservedSize: 30,
+                        getTitles: (value) {
+                          if (value == 0) {
+                            return '0';
+                          } else if (value == 20) {
+                            return '20';
+                          } else if (value == 40) {
+                            return '40';
+                          } else if (value == 60) {
+                            return '60';
+                          } else if (value == 80) {
+                            return '80';
+                          } else if (value == 100) {
+                            return '100';
+                          } else {
                             return '';
-                        }
-                      },
+                          }
+                        },
+                      ),
                     ),
-                    leftTitles: SideTitles(
-                      showTitles: true,
-                      getTextStyles: (BuildContext context, double value) {
-                        return TextStyle(
-                            color: Theme.of(context).textTheme.overline!.color,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14);
-                      },
-                      margin: 15,
-                      reservedSize: 30,
-                      getTitles: (value) {
-                        if (value == 0) {
-                          return '0';
-                        } else if (value == 20) {
-                          return '20';
-                        } else if (value == 40) {
-                          return '40';
-                        } else if (value == 60) {
-                          return '60';
-                        } else if (value == 80) {
-                          return '80';
-                        } else if (value == 100) {
-                          return '100';
-                        } else {
-                          return '';
-                        }
-                      },
+                    borderData: FlBorderData(
+                      show: false,
                     ),
+                    barGroups: [
+                      BarChartGroupData(
+                        x: 0,
+                        barRods: [
+                          BarChartRodData(
+                            y: instary.happinessLv.roundToDouble(),
+                            colors: [Theme.of(context).indicatorColor],
+                          ),
+                        ],
+                        showingTooltipIndicators: [0],
+                      ),
+                      BarChartGroupData(
+                        x: 1,
+                        barRods: [
+                          BarChartRodData(
+                            y: instary.tirednessLv.roundToDouble(),
+                            colors: [Theme.of(context).indicatorColor],
+                          ),
+                        ],
+                        showingTooltipIndicators: [0],
+                      ),
+                      BarChartGroupData(
+                        x: 2,
+                        barRods: [
+                          BarChartRodData(
+                            y: instary.stressfulnessLv.roundToDouble(),
+                            colors: [Theme.of(context).indicatorColor],
+                          ),
+                        ],
+                        showingTooltipIndicators: [0],
+                      ),
+                    ],
                   ),
-                  borderData: FlBorderData(
-                    show: false,
-                  ),
-                  barGroups: [
-                    BarChartGroupData(
-                      x: 0,
-                      barRods: [
-                        BarChartRodData(
-                          y: instary.happinessLv.roundToDouble(),
-                          colors: [Theme.of(context).indicatorColor],
-                        ),
-                      ],
-                      showingTooltipIndicators: [0],
-                    ),
-                    BarChartGroupData(
-                      x: 1,
-                      barRods: [
-                        BarChartRodData(
-                          y: instary.tirednessLv.roundToDouble(),
-                          colors: [Theme.of(context).indicatorColor],
-                        ),
-                      ],
-                      showingTooltipIndicators: [0],
-                    ),
-                    BarChartGroupData(
-                      x: 2,
-                      barRods: [
-                        BarChartRodData(
-                          y: instary.stressfulnessLv.roundToDouble(),
-                          colors: [Theme.of(context).indicatorColor],
-                        ),
-                      ],
-                      showingTooltipIndicators: [0],
-                    ),
-                  ],
-                ),
-              ),
+                );
+              }),
             ),
           ],
         ),

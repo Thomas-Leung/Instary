@@ -1,14 +1,13 @@
 import 'dart:io';
 
-import 'package:instary/pages/gallery_page.dart';
 import 'package:instary/widgets/duplicate_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instary/widgets/gallary_grid.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
@@ -37,7 +36,6 @@ class _CreatePageState extends State<CreatePage> {
   // ? means the value could be null
   File? _pickedImage;
   late final String appDocumentDirPath;
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   @override
   void initState() {
@@ -297,157 +295,95 @@ class _CreatePageState extends State<CreatePage> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(bottom: 16.0),
-              child: Text('Your image of the day: ',
+              child: Text('Your captures of the day: ',
                   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20)),
             ),
-            GestureDetector(
-              child: Center(
-                child: _pickedImage == null
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment
-                            .center, // Center Row contents horizontally,
-                        crossAxisAlignment: CrossAxisAlignment
-                            .center, // Center Row contents vertically,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(right: 2.0),
-                            child: Icon(Icons.add_photo_alternate,
-                                color: Colors.grey),
+            Center(
+              child: _pickedImage == null
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .center, // Center Row contents horizontally,
+                      crossAxisAlignment: CrossAxisAlignment
+                          .center, // Center Row contents vertically,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(right: 2.0),
+                          child: Icon(Icons.image_not_supported,
+                              color: Colors.grey),
+                        ),
+                        Text("No Image/Video Selected",
+                            style: TextStyle(color: Colors.grey)),
+                      ],
+                    )
+                  : Column(
+                      children: <Widget>[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: Image(
+                            image: FileImage(_pickedImage!),
                           ),
-                          Text("Add Image",
-                              style: TextStyle(color: Colors.grey)),
-                        ],
-                      )
-                    : Column(
-                        children: <Widget>[
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10.0),
-                            child: Image(
-                              image: FileImage(_pickedImage!),
-                            ),
+                        ),
+                        TextButton.icon(
+                          icon: Icon(
+                            Icons.delete_outline,
+                            color: Colors.red[800],
                           ),
-                          TextButton.icon(
-                            icon: Icon(
-                              Icons.delete_outline,
-                              color: Colors.red[800],
-                            ),
-                            label: Text(
-                              "Remove Image",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.red[800]),
-                            ),
-                            onPressed: () {
-                              setState(() => _pickedImage = null);
-                            },
+                          label: Text(
+                            "Remove Image",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                color: Colors.red[800]),
                           ),
-                        ],
-                      ),
-              ),
-              onTap: () => _pickImage(),
+                          onPressed: () {
+                            setState(() => _pickedImage = null);
+                          },
+                        ),
+                      ],
+                    ),
             ),
+            Container(
+              height: 10,
+            ),
+            Divider(),
+            Text("Add media from other sources:"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  onPressed: () => _pickMedia(true, ImageSource.gallery),
+                  icon: Icon(Icons.photo),
+                  tooltip: "Pick an image from gallery",
+                ),
+                IconButton(
+                  onPressed: () => _pickMedia(false, ImageSource.gallery),
+                  icon: Icon(Icons.video_library_rounded),
+                  tooltip: "Pick a video from gallery",
+                ),
+                IconButton(
+                  onPressed: () => _pickMedia(true, ImageSource.camera),
+                  icon: Icon(Icons.camera_alt_rounded),
+                  tooltip: "Take a photo",
+                ),
+                IconButton(
+                  onPressed: () => _pickMedia(false, ImageSource.camera),
+                  icon: Icon(Icons.videocam_rounded),
+                  tooltip: "Pick a video from gallery",
+                ),
+              ],
+            ),
+            GallaryGrid()
           ],
         ),
       ),
     );
   }
 
-  void _pickImage() async {
+  void _pickMedia(bool isImage, ImageSource imageSource) async {
     final ImagePicker _imagePicker = ImagePicker();
 
-    final XFile? file = await showDialog<XFile>(
-        context: context,
-        builder: (context) => SimpleDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(10.0),
-                ),
-              ),
-              title: Text("Select a source"),
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      ListTile(
-                        title: Text("Select Media From App Gallary",
-                            style: TextStyle(color: Colors.grey)),
-                        leading: Icon(
-                          Icons.camera_alt,
-                          color: Colors.grey,
-                        ),
-                        onTap: () async {
-                          SharedPreferences prefs = await _prefs;
-                          List<String>? unusedImages =
-                              prefs.getStringList("unusedImages");
-                          List<File> unusedImageFiles = [];
-                          unusedImages?.forEach(
-                              (path) => unusedImageFiles.add(File(path)));
-                          showGallery(
-                              context: context, fileList: unusedImageFiles);
-                        },
-                      ),
-                      Divider(),
-                      ListTile(
-                        title: Text("Pick a image from gallery",
-                            style: TextStyle(color: Colors.grey)),
-                        leading: Icon(
-                          Icons.photo,
-                          color: Colors.grey,
-                        ),
-                        onTap: () async => Navigator.pop(
-                            context,
-                            await _imagePicker.pickImage(
-                                source: ImageSource.gallery)),
-                      ),
-                      Divider(),
-                      ListTile(
-                        title: Text("Pick a video from gallery",
-                            style: TextStyle(color: Colors.grey)),
-                        leading: Icon(
-                          Icons.video_library_rounded,
-                          color: Colors.grey,
-                        ),
-                        onTap: () async => Navigator.pop(
-                            context,
-                            await _imagePicker.pickVideo(
-                                source: ImageSource.gallery)),
-                      ),
-                      ExpansionTile(
-                        title: Text('More'),
-                        children: <Widget>[
-                          ListTile(
-                            title: Text("Take a photo",
-                                style: TextStyle(color: Colors.grey)),
-                            leading: Icon(
-                              Icons.camera_alt,
-                              color: Colors.grey,
-                            ),
-                            onTap: () async => Navigator.pop(
-                                context,
-                                await _imagePicker.pickImage(
-                                    source: ImageSource.camera)),
-                          ),
-                          Divider(),
-                          ListTile(
-                              title: Text("Record a video",
-                                  style: TextStyle(color: Colors.grey)),
-                              leading: Icon(
-                                Icons.videocam_rounded,
-                                color: Colors.grey,
-                              ),
-                              onTap: () async => Navigator.pop(
-                                  context,
-                                  await _imagePicker.pickVideo(
-                                      source: ImageSource.camera))),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ));
+    final XFile? file = isImage
+        ? await _imagePicker.pickImage(source: imageSource)
+        : await _imagePicker.pickVideo(source: imageSource);
 
     if (file != null) {
       // check if file already exist in Instary folder, if so notify user to pick again

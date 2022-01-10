@@ -32,9 +32,7 @@ class AppTheme {
 
     // BARCHART
     indicatorColor: Colors.indigo[400],
-    // BARCHART TOOLTIP
-    tooltipTheme: TooltipThemeData(
-        textStyle: TextStyle(backgroundColor: Colors.grey[300])),
+    // BARCHART TOOLTIP color is inside the barchart code
     // cardTheme: CardTheme(color: Color.fromRGBO(241, 241, 241, 1)),
 
     // FEELINGS ICONS
@@ -97,8 +95,6 @@ class AppTheme {
         activeTrackColor: Colors.deepPurple[300],
         thumbColor: Colors.deepPurple[200]),
     indicatorColor: Colors.deepPurple[300],
-    tooltipTheme:
-        TooltipThemeData(textStyle: TextStyle(backgroundColor: Colors.white)),
     iconTheme: IconThemeData(color: Colors.white),
     inputDecorationTheme: new InputDecorationTheme(
       labelStyle: new TextStyle(color: Colors.white),

@@ -42,19 +42,12 @@ class AddBottomSheet extends StatelessWidget {
                 Directory appDocumentDir =
                     await path_provider.getApplicationDocumentsDirectory();
                 String filePath = appDocumentDir.path +
-                    GlobalConfiguration().getValue("androidImagePath") +
+                    GlobalConfiguration().getValue("androidGalleryPath") +
                     filename;
                 image.saveTo(filePath);
                 // Delete the cache image
                 File cacheImage = File(image.path);
                 cacheImage.delete();
-                // Add to unusedImage list, so that user can pick the image later
-                final SharedPreferences prefs = await _prefs;
-                List<String>? unusedImages =
-                    prefs.getStringList("unusedImages");
-                unusedImages?.add(filePath);
-                prefs.setStringList("unusedImages",
-                    unusedImages != null ? unusedImages : [filePath]);
               } else {
                 print("NO IMAGE");
               }

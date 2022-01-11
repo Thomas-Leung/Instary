@@ -6,12 +6,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path_lib;
 import 'package:path_provider/path_provider.dart' as path_provider;
-import 'package:shared_preferences/shared_preferences.dart';
 
 // Ref: https://medium.com/litslink/flutter-custom-bottom-sheet-modal-f23df7d21fd2
 class AddBottomSheet extends StatelessWidget {
   final ImagePicker _imagePicker = ImagePicker();
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   @override
   Widget build(BuildContext context) {

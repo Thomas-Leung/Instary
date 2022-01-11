@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:instary/widgets/gallary_grid.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:mime/mime.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
@@ -34,7 +34,7 @@ class _CreatePageState extends State<CreatePage> {
   double tirednessLv = 50.0;
   double stressfulnessLv = 50.0;
   // ? means the value could be null
-  File? _pickedImage;
+  List<File> _pickedMedia = [];
   late final String appDocumentDirPath;
 
   @override
@@ -202,7 +202,7 @@ class _CreatePageState extends State<CreatePage> {
               Container(
                 height: 20.0,
               ),
-              _imageCard(),
+              _mediaCard(),
               Container(
                 height: 20.0,
               ),
@@ -223,6 +223,7 @@ class _CreatePageState extends State<CreatePage> {
                       var uuid = Uuid();
                       String id = uuid.v1();
                       List<String> imagePaths = _createImagePaths();
+                      List<String> videoPaths = _createVideoPaths();
                       final newInstary = Instary(
                           id,
                           dateTime,
@@ -232,7 +233,7 @@ class _CreatePageState extends State<CreatePage> {
                           tirednessLv,
                           stressfulnessLv,
                           imagePaths,
-                          List.empty());
+                          videoPaths);
                       addInstary(newInstary);
                     }
                   },
@@ -258,31 +259,63 @@ class _CreatePageState extends State<CreatePage> {
 
   List<String> _createImagePaths() {
     List<String> imagePaths = [];
-    if (_pickedImage == null) {
-      // create 1 item in list for empty image
-      // imagePaths.add(null);
+    String saveLocation =
+        appDocumentDirPath + GlobalConfiguration().getValue("androidImagePath");
+    if (_pickedMedia.isEmpty) {
       return imagePaths;
     } else {
+      // ([^\/]+)$ gets the file name with extension, e.g. path/filename.jpg -> filename.jpg
       RegExp regex = new RegExp(r'([^\/]+$)');
-      String? fileName = regex.stringMatch(_pickedImage!.path);
-      imagePaths.add(appDocumentDirPath +
-          GlobalConfiguration().getValue("androidImagePath") +
-          fileName!);
-      _saveImage(fileName);
+      _pickedMedia.forEach((file) {
+        String? fileName = regex.stringMatch(file.path);
+        if (lookupMimeType(file.path)!.contains("image")) {
+          imagePaths.add(saveLocation + fileName!);
+          _saveImage(file, fileName);
+        }
+      });
       return imagePaths;
     }
   }
 
-  Future<void> _saveImage(String? fileName) async {
+  Future<void> _saveImage(File file, String? fileName) async {
     if (fileName == null) {
       return;
     }
-    await _pickedImage!.copy(appDocumentDirPath +
+    await file.copy(appDocumentDirPath +
         GlobalConfiguration().getValue("androidImagePath") +
         fileName);
   }
 
-  Widget _imageCard() {
+  List<String> _createVideoPaths() {
+    List<String> videoPaths = [];
+    String saveLocation =
+        appDocumentDirPath + GlobalConfiguration().getValue("androidVideoPath");
+    if (_pickedMedia.isEmpty) {
+      return videoPaths;
+    } else {
+      // ([^\/]+)$ gets the file name with extension, e.g. path/filename.jpg -> filename.jpg
+      RegExp regex = new RegExp(r'([^\/]+$)');
+      _pickedMedia.forEach((file) {
+        String? fileName = regex.stringMatch(file.path);
+        if (lookupMimeType(file.path)!.contains("video")) {
+          videoPaths.add(saveLocation + fileName!);
+          _saveVideo(file, fileName);
+        }
+      });
+      return videoPaths;
+    }
+  }
+
+  Future<void> _saveVideo(File file, String? fileName) async {
+    if (fileName == null) {
+      return;
+    }
+    await file.copy(appDocumentDirPath +
+        GlobalConfiguration().getValue("androidVideoPath") +
+        fileName);
+  }
+
+  Widget _mediaCard() {
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(
@@ -293,59 +326,8 @@ class _CreatePageState extends State<CreatePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Text('Your captures of the day: ',
-                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20)),
-            ),
-            Center(
-              child: _pickedImage == null
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment
-                          .center, // Center Row contents horizontally,
-                      crossAxisAlignment: CrossAxisAlignment
-                          .center, // Center Row contents vertically,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(right: 2.0),
-                          child: Icon(Icons.image_not_supported,
-                              color: Colors.grey),
-                        ),
-                        Text("No Image/Video Selected",
-                            style: TextStyle(color: Colors.grey)),
-                      ],
-                    )
-                  : Column(
-                      children: <Widget>[
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: Image(
-                            image: FileImage(_pickedImage!),
-                          ),
-                        ),
-                        TextButton.icon(
-                          icon: Icon(
-                            Icons.delete_outline,
-                            color: Colors.red[800],
-                          ),
-                          label: Text(
-                            "Remove Image",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                color: Colors.red[800]),
-                          ),
-                          onPressed: () {
-                            setState(() => _pickedImage = null);
-                          },
-                        ),
-                      ],
-                    ),
-            ),
-            Container(
-              height: 10,
-            ),
-            Divider(),
-            Text("Add media from other sources:"),
+            Text('Your captures of the day: ',
+                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -371,7 +353,79 @@ class _CreatePageState extends State<CreatePage> {
                 ),
               ],
             ),
-            GallaryGrid()
+            Divider(),
+            _pickedMedia.isEmpty
+                ? Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .center, // Center Row contents horizontally,
+                      crossAxisAlignment: CrossAxisAlignment
+                          .center, // Center Row contents vertically,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(right: 2.0),
+                          child: Icon(Icons.image_not_supported,
+                              color: Colors.grey),
+                        ),
+                        Text("No Image/Video Selected",
+                            style: TextStyle(color: Colors.grey)),
+                      ],
+                    ),
+                  )
+                : Container(
+                    height: 450,
+                    child: Center(
+                      child: ReorderableListView.builder(
+                        shrinkWrap: true,
+                        physics: BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _pickedMedia.length,
+                        itemBuilder: (context, index) {
+                          return Column(
+                            key: Key('$index'),
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  child: Image(
+                                    width: 280,
+                                    fit: BoxFit.fill,
+                                    image: FileImage(_pickedMedia[index]),
+                                  ),
+                                ),
+                              ),
+                              TextButton.icon(
+                                icon: Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.red[800],
+                                ),
+                                label: Text(
+                                  "Remove Image",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.red[800]),
+                                ),
+                                onPressed: () {
+                                  setState(() => _pickedMedia.removeAt(index));
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                        onReorder: (int oldIndex, int newIndex) {
+                          setState(() {
+                            if (oldIndex < newIndex) {
+                              newIndex -= 1;
+                            }
+                            final File item = _pickedMedia.removeAt(oldIndex);
+                            _pickedMedia.insert(newIndex, item);
+                          });
+                        },
+                      ),
+                    ),
+                  )
           ],
         ),
       ),
@@ -397,7 +451,7 @@ class _CreatePageState extends State<CreatePage> {
         var dialog = new DuplicateDialog();
         dialog.showDuplicateFileDialog(context);
       } else {
-        setState(() => _pickedImage = File(file.path));
+        setState(() => _pickedMedia.add(File(file.path)));
       }
     }
   }

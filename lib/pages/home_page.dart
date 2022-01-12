@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:mime/mime.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -288,10 +289,16 @@ class _HomePageState extends State<HomePage> {
         controller: PageController(viewportFraction: 0.85),
         itemCount: instaries.isEmpty ? 0 : filteredInstaries.length,
         itemBuilder: (BuildContext context, int index) {
-          // get imagePath
-          File? imagePath;
-          if ((filteredInstaries[index].imagePaths as List).isNotEmpty) {
-            imagePath = new File(filteredInstaries[index].imagePaths[0]);
+          // get mediaFile
+          File? imageFile;
+          if ((filteredInstaries[index].mediaPaths as List).isNotEmpty) {
+            // only assign if it is an image
+            for (final filePath in filteredInstaries[index].mediaPaths) {
+              if (lookupMimeType(filePath)!.contains("image")) {
+                imageFile = new File(filteredInstaries[index].mediaPaths[0]);
+                break;
+              }
+            }
           }
           return Padding(
             padding: EdgeInsets.all(16.0),
@@ -312,8 +319,8 @@ class _HomePageState extends State<HomePage> {
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
                       image: DecorationImage(
-                        image: imagePath != null
-                            ? FileImage(imagePath)
+                        image: imageFile != null
+                            ? FileImage(imageFile)
                             : AssetImage('assets/images/img_not_found.png')
                                 as ImageProvider,
                         fit: BoxFit.cover,

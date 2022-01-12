@@ -22,12 +22,10 @@ class Instary {
   @HiveField(6)
   double stressfulnessLv;
   @HiveField(7)
-  List<String> imagePaths;
-  @HiveField(8)
-  List<String> videoPaths;
+  List<String> mediaPaths;
 
   Instary(this.id, this.dateTime, this.title, this.content, this.happinessLv,
-      this.tirednessLv, this.stressfulnessLv, this.imagePaths, this.videoPaths);
+      this.tirednessLv, this.stressfulnessLv, this.mediaPaths);
 
   Instary.fromJson(Map<String, dynamic> json)
       : id = json["id"],
@@ -37,9 +35,8 @@ class Instary {
         happinessLv = json["happinessLv"],
         tirednessLv = json["tirednessLv"],
         stressfulnessLv = json["stressfulnessLv"],
-        imagePaths = json["imagePaths"]
-            .cast<String>(), // cast from List<dynamic> to List<String>
-        videoPaths = json["videoPaths"].cast<String>();
+        mediaPaths = json["mediaPaths"]
+            .cast<String>(); // cast from List<dynamic> to List<String>
 
   Map<String, dynamic> toJson() {
     return {
@@ -50,8 +47,7 @@ class Instary {
       "happinessLv": this.happinessLv,
       "tirednessLv": this.tirednessLv,
       "stressfulnessLv": this.stressfulnessLv,
-      "imagePaths": this.imagePaths,
-      "videoPaths": this.videoPaths
+      "mediaPaths": this.mediaPaths
     };
   }
 }

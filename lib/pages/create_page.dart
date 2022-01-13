@@ -269,11 +269,12 @@ class _CreatePageState extends State<CreatePage> {
       RegExp regex = new RegExp(r'([^\/]+$)');
       _selectedMedia.forEach((file) {
         String? fileName = regex.stringMatch(file.path);
-        if (fileName != null) {
+        String? mimeType = lookupMimeType(file.path);
+        if (fileName != null && mimeType != null) {
           late String savePath;
-          if (lookupMimeType(file.path)!.contains("image")) {
+          if (mimeType.contains("image")) {
             savePath = imageSaveLocation + fileName;
-          } else if (lookupMimeType(file.path)!.contains("video")) {
+          } else if (mimeType.contains("video")) {
             savePath = videoSaveLocation + fileName;
           } else {
             throw UnsupportedError("File Type is not supported");

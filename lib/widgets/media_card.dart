@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:global_configuration/global_configuration.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:instary/widgets/duplicate_dialog.dart';
-import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:intl/intl.dart';
+import 'package:mime/mime.dart';
+import 'package:path/path.dart' as p;
 
 class MediaCard extends StatefulWidget {
   final Function(List<File>) onSelectedMediaChanged;
@@ -17,19 +17,11 @@ class MediaCard extends StatefulWidget {
 }
 
 class _MediaCardState extends State<MediaCard> {
-  late final String appDocumentDirPath;
   List<File> selectedMedia = [];
 
   @override
   void initState() {
     super.initState();
-    setAppDocumentDirPath();
-  }
-
-  Future<void> setAppDocumentDirPath() async {
-    await path_provider
-        .getApplicationDocumentsDirectory()
-        .then((value) => appDocumentDirPath = value.path);
   }
 
   @override
@@ -152,28 +144,31 @@ class _MediaCardState extends State<MediaCard> {
     );
   }
 
-  void _pickMedia(bool isImage, ImageSource imageSource) async {
+  void _pickMedia(bool isImage, ImageSource source) async {
     final ImagePicker _imagePicker = ImagePicker();
 
-    final XFile? file = isImage
-        ? await _imagePicker.pickImage(source: imageSource)
-        : await _imagePicker.pickVideo(source: imageSource);
+    final XFile? xFile = isImage
+        ? await _imagePicker.pickImage(source: source)
+        : await _imagePicker.pickVideo(source: source);
 
-    if (file != null) {
-      // check if file already exist in Instary folder, if so notify user to pick again
-      RegExp regex = new RegExp(r'([^\/]+$)');
-      String? fileName = regex.stringMatch(file.path);
-      String filePath = appDocumentDirPath +
-          GlobalConfiguration().getValue("androidImagePath") +
-          fileName!;
-      bool fileExist = await File(filePath).exists();
-      if (fileExist) {
-        var dialog = new DuplicateDialog();
-        dialog.showDuplicateFileDialog(context);
-      } else {
-        setState(() => selectedMedia.add(File(file.path)));
-        widget.onSelectedMediaChanged(selectedMedia);
-      }
+    if (xFile != null) {
+      File file = File(xFile.path);
+      String prefix =
+          lookupMimeType(file.path)!.contains("image") ? "IMG" : "VID";
+      File renamedFile = await changeFileName(file,
+          '${prefix}_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}');
+      setState(() => selectedMedia.add(renamedFile));
+      widget.onSelectedMediaChanged(selectedMedia);
     }
+  }
+
+  // file: the file that needs to change name, newFileName: a new name without extension
+  Future<File> changeFileName(File file, String newFileName) {
+    var path = file.path;
+    var lastSeparator = path.lastIndexOf(Platform.pathSeparator);
+    var extenstion = p.extension(path);
+    var newPath =
+        path.substring(0, lastSeparator + 1) + newFileName + extenstion;
+    return file.rename(newPath);
   }
 }

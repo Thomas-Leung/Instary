@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:instary/widgets/duplicate_dialog.dart';
+import 'package:instary/unused/duplicate_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';

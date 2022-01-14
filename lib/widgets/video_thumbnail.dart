@@ -36,7 +36,8 @@ class _VideoThumbnailState extends State<VideoThumbnail> {
     return InkWell(
       child: _controller.value.isInitialized
           ? Stack(
-              fit: StackFit.expand,
+              alignment: Alignment(0, 0), // center
+              fit: StackFit.loose,
               children: [
                 FittedBox(
                   fit: BoxFit.cover,
@@ -48,15 +49,29 @@ class _VideoThumbnailState extends State<VideoThumbnail> {
                     child: VideoPlayer(_controller),
                   ),
                 ),
-                Center(
-                  child: Icon(
-                    Icons.play_circle_outline_rounded,
-                    size: 80,
-                  ),
-                )
+                new LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    if (constraints.maxWidth > 300.0) {
+                      return Icon(
+                        Icons.play_circle_outline_rounded,
+                        size: 180,
+                        color: Colors.white54,
+                      );
+                    } else {
+                      return Icon(
+                        Icons.play_circle_outline_rounded,
+                        size: 80,
+                        color: Colors.white54,
+                      );
+                    }
+                  },
+                ),
               ],
             )
-          : Center(child: CircularProgressIndicator()),
+          : Container(
+              margin: EdgeInsets.all(50),
+              child: CircularProgressIndicator(),
+            ),
       onTap: () {
         Navigator.push(
           context,

@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instary/widgets/image_thumbnail.dart';
+import 'package:instary/widgets/video_thumbnail.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
@@ -85,57 +87,60 @@ class _MediaCardState extends State<MediaCard> {
                   )
                 : Container(
                     height: 450,
-                    child: Center(
-                      child: ReorderableListView.builder(
-                        shrinkWrap: true,
-                        physics: BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: selectedMedia.length,
-                        itemBuilder: (context, index) {
-                          return Column(
-                            key: Key('$index'),
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  child: Image(
-                                    width: 280,
-                                    fit: BoxFit.fill,
-                                    image: FileImage(selectedMedia[index]),
+                    child: ReorderableListView.builder(
+                      shrinkWrap: true,
+                      physics: BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: selectedMedia.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          key: Key('$index'),
+                          children: <Widget>[
+                            Flexible(
+                              flex: 1,
+                              child: Container(
+                                width: 280,
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      child: displayMedia(
+                                          context, selectedMedia[index]),
+                                    ),
                                   ),
                                 ),
                               ),
-                              TextButton.icon(
-                                icon: Icon(
-                                  Icons.delete_outline,
-                                  color: Colors.red[800],
-                                ),
-                                label: Text(
-                                  "Remove Image",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.red[800]),
-                                ),
-                                onPressed: () {
-                                  setState(() => selectedMedia.removeAt(index));
-                                  widget.onSelectedMediaChanged(selectedMedia);
-                                },
+                            ),
+                            TextButton.icon(
+                              icon: Icon(
+                                Icons.delete_outline,
+                                color: Colors.red[800],
                               ),
-                            ],
-                          );
-                        },
-                        onReorder: (int oldIndex, int newIndex) {
-                          setState(() {
-                            if (oldIndex < newIndex) {
-                              newIndex -= 1;
-                            }
-                            final File item = selectedMedia.removeAt(oldIndex);
-                            selectedMedia.insert(newIndex, item);
-                            widget.onSelectedMediaChanged(selectedMedia);
-                          });
-                        },
-                      ),
+                              label: Text(
+                                "Remove Image",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.red[800]),
+                              ),
+                              onPressed: () {
+                                setState(() => selectedMedia.removeAt(index));
+                                widget.onSelectedMediaChanged(selectedMedia);
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                      onReorder: (int oldIndex, int newIndex) {
+                        setState(() {
+                          if (oldIndex < newIndex) {
+                            newIndex -= 1;
+                          }
+                          final File item = selectedMedia.removeAt(oldIndex);
+                          selectedMedia.insert(newIndex, item);
+                          widget.onSelectedMediaChanged(selectedMedia);
+                        });
+                      },
                     ),
                   )
           ],
@@ -170,5 +175,14 @@ class _MediaCardState extends State<MediaCard> {
     var newPath =
         path.substring(0, lastSeparator + 1) + newFileName + extenstion;
     return file.rename(newPath);
+  }
+
+  Widget displayMedia(BuildContext context, File file) {
+    if (lookupMimeType(file.path)!.contains("image")) {
+      return ImageThumbnail(imageFile: file);
+    } else if (lookupMimeType(file.path)!.contains("video")) {
+      return VideoThumbnail(videoFile: file);
+    }
+    return Image.asset('assets/images/img_not_found.png', fit: BoxFit.cover);
   }
 }

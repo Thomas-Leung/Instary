@@ -295,7 +295,7 @@ class _HomePageState extends State<HomePage> {
             // only assign if it is an image
             for (final filePath in filteredInstaries[index].mediaPaths) {
               if (lookupMimeType(filePath)!.contains("image")) {
-                imageFile = new File(filteredInstaries[index].mediaPaths[0]);
+                imageFile = new File(filePath);
                 break;
               }
             }

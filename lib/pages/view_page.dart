@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:instary/themes/app_state_notifier.dart';
+import 'package:instary/widgets/image_thumbnail.dart';
+import 'package:instary/widgets/video_thumbnail.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:provider/provider.dart';
-import 'view_photo_page.dart';
 import 'edit_page.dart';
 
 class ViewPage extends StatelessWidget {
@@ -46,7 +47,11 @@ class ViewPage extends StatelessWidget {
                         controller: PageController(),
                         itemCount: instary.mediaPaths.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return displayMedia(context, mediaPathList[index]);
+                          return FittedBox(
+                            fit: BoxFit.cover,
+                            child: displayMedia(
+                                context, File(mediaPathList[index])),
+                          );
                         }),
               ),
             ),
@@ -249,19 +254,11 @@ class ViewPage extends StatelessWidget {
     );
   }
 
-  Widget displayMedia(BuildContext context, String filePath) {
-    if (lookupMimeType(filePath)!.contains("image")) {
-      return GestureDetector(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => ViewPhotoPage(imageFile: File(filePath)),
-              ),
-            );
-          },
-          child: Image.file(File(filePath), fit: BoxFit.cover));
-    } else if (lookupMimeType(filePath)!.contains("video")) {
-      return Container(child: Text("This is a video"));
+  Widget displayMedia(BuildContext context, File file) {
+    if (lookupMimeType(file.path)!.contains("image")) {
+      return ImageThumbnail(imageFile: file);
+    } else if (lookupMimeType(file.path)!.contains("video")) {
+      return VideoThumbnail(videoFile: file);
     }
     return Image.asset('assets/images/img_not_found.png', fit: BoxFit.cover);
   }

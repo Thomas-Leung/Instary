@@ -200,9 +200,11 @@ class _CreatePageState extends State<CreatePage> {
               Container(
                 height: 20.0,
               ),
-              MediaCard(onSelectedMediaChanged: (List<File> selectedMedia) {
-                _selectedMedia = selectedMedia;
-              }),
+              MediaCard(
+                  existingMediaPaths: _selectedMedia,
+                  onSelectedMediaChanged: (List<File> selectedMedia) {
+                    _selectedMedia = selectedMedia;
+                  }),
               Container(
                 height: 20.0,
               ),
@@ -256,6 +258,8 @@ class _CreatePageState extends State<CreatePage> {
   }
 
   List<String> _createMediaPaths() {
+    // _selectedMedia contains media file from cache
+    // mediaPaths will contain paths of saved location
     List<String> mediaPaths = [];
     String imageSaveLocation =
         appDocumentDirPath + GlobalConfiguration().getValue("androidImagePath");

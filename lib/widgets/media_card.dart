@@ -9,9 +9,14 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 
 class MediaCard extends StatefulWidget {
+  // paths that are currently exist, mainly for EditPage
+  final List<File> existingMediaPaths;
   final Function(List<File>) onSelectedMediaChanged;
 
-  const MediaCard({Key? key, required this.onSelectedMediaChanged})
+  const MediaCard(
+      {Key? key,
+      required this.existingMediaPaths,
+      required this.onSelectedMediaChanged})
       : super(key: key);
 
   @override
@@ -24,6 +29,7 @@ class _MediaCardState extends State<MediaCard> {
   @override
   void initState() {
     super.initState();
+    selectedMedia = widget.existingMediaPaths;
   }
 
   @override
@@ -40,6 +46,9 @@ class _MediaCardState extends State<MediaCard> {
           children: <Widget>[
             Text('Your captures of the day: ',
                 style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20)),
+            Container(
+              height: 8,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -87,62 +96,65 @@ class _MediaCardState extends State<MediaCard> {
                   )
                 : Container(
                     height: 450,
-                    child: ReorderableListView.builder(
-                      shrinkWrap: true,
-                      physics: BouncingScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: selectedMedia.length,
-                      itemBuilder: (context, index) {
-                        return Column(
-                          key: Key('$index'),
-                          children: <Widget>[
-                            Flexible(
-                              flex: 1,
-                              child: Container(
-                                width: 280,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      child: displayMedia(
-                                          context, selectedMedia[index]),
+                    child: Center(
+                      child: ReorderableListView.builder(
+                        shrinkWrap: true,
+                        physics: BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: selectedMedia.length,
+                        itemBuilder: (context, index) {
+                          return Column(
+                            key: Key('$index'),
+                            children: <Widget>[
+                              Flexible(
+                                flex: 1,
+                                child: Container(
+                                  width: 280,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        child: displayMedia(
+                                            context, selectedMedia[index]),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            TextButton.icon(
-                              icon: Icon(
-                                Icons.delete_outline,
-                                color: Colors.red[800],
+                              TextButton.icon(
+                                icon: Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.red[800],
+                                ),
+                                label: Text(
+                                  "Remove Image",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.red[800]),
+                                ),
+                                onPressed: () {
+                                  setState(() => selectedMedia.removeAt(index));
+                                  widget.onSelectedMediaChanged(selectedMedia);
+                                },
                               ),
-                              label: Text(
-                                "Remove Image",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.red[800]),
-                              ),
-                              onPressed: () {
-                                setState(() => selectedMedia.removeAt(index));
-                                widget.onSelectedMediaChanged(selectedMedia);
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                      onReorder: (int oldIndex, int newIndex) {
-                        setState(() {
-                          if (oldIndex < newIndex) {
-                            newIndex -= 1;
-                          }
-                          final File item = selectedMedia.removeAt(oldIndex);
-                          selectedMedia.insert(newIndex, item);
-                          widget.onSelectedMediaChanged(selectedMedia);
-                        });
-                      },
+                            ],
+                          );
+                        },
+                        onReorder: (int oldIndex, int newIndex) {
+                          setState(() {
+                            if (oldIndex < newIndex) {
+                              newIndex -= 1;
+                            }
+                            final File item = selectedMedia.removeAt(oldIndex);
+                            selectedMedia.insert(newIndex, item);
+                            widget.onSelectedMediaChanged(selectedMedia);
+                          });
+                        },
+                      ),
                     ),
-                  )
+                  ),
           ],
         ),
       ),

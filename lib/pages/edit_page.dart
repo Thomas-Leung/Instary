@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:instary/unused/duplicate_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:instary/widgets/media_card.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:mime/mime.dart';
 import 'view_page.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
@@ -36,8 +36,8 @@ class _EditPageState extends State<EditPage> {
   late double happinessLv;
   late double tirednessLv;
   late double stressfulnessLv;
-  File? _pickedImage;
   late final String appDocumentDirPath;
+  List<File> _selectedMedia = [];
 
   @override
   void initState() {
@@ -48,9 +48,8 @@ class _EditPageState extends State<EditPage> {
     happinessLv = widget.instary.happinessLv;
     tirednessLv = widget.instary.tirednessLv;
     stressfulnessLv = widget.instary.stressfulnessLv;
-    // check if image exist
-    if ((widget.instary.imagePaths as List).isNotEmpty) {
-      _pickedImage = new File(widget.instary.imagePaths[0]);
+    for (String filePath in widget.instary.mediaPaths) {
+      _selectedMedia.add(File(filePath));
     }
     setAppDocumentDirPath();
     super.initState();
@@ -151,8 +150,12 @@ class _EditPageState extends State<EditPage> {
               child: Text("Delete", style: TextStyle(color: Colors.red[800])),
               onPressed: () {
                 final instaryBox = Hive.box('instary');
-                if (widget.instary.imagePaths[0] != null) {
-                  _deleteImage(widget.instary.imagePaths[0]);
+                // use deletePaths instead of _selectedPaths since user can modify
+                // _selectedPaths before deleting the project
+                List<String> deletePaths =
+                    widget.instary.mediaPaths as List<String>;
+                if (deletePaths.isNotEmpty) {
+                  deletePaths.forEach((path) => _deleteMedia(path));
                 }
                 instaryBox.delete(this.widget.instary.id);
                 Navigator.of(context).popUntil((route) => route.isFirst);
@@ -257,7 +260,11 @@ class _EditPageState extends State<EditPage> {
               Container(
                 height: 20.0,
               ),
-              _imageCard(),
+              MediaCard(
+                  existingMediaPaths: _selectedMedia,
+                  onSelectedMediaChanged: (List<File> selectedMedia) {
+                    _selectedMedia = selectedMedia;
+                  }),
               Container(
                 height: 20.0,
               ),
@@ -275,7 +282,7 @@ class _EditPageState extends State<EditPage> {
                     FocusScope.of(context).requestFocus(new FocusNode());
                     // Validate returns true if the form is valid, or false
                     // otherwise.
-                    List<String> imagePaths = _updateImagePaths();
+                    List<String> mediaPaths = _updateMediaPaths();
                     if (_formKey.currentState!.validate()) {
                       final newInstary = Instary(
                           this.widget.instary.id,
@@ -285,7 +292,7 @@ class _EditPageState extends State<EditPage> {
                           happinessLv,
                           tirednessLv,
                           stressfulnessLv,
-                          imagePaths);
+                          mediaPaths);
                       updateInstary(newInstary);
                     }
                   },
@@ -313,201 +320,53 @@ class _EditPageState extends State<EditPage> {
     );
   }
 
-  List<String> _updateImagePaths() {
-    List<String> imagePaths = [];
-    if (_pickedImage == null) {
-      // create 1 item in list for empty image
-      // imagePaths.add(null);
-      if ((widget.instary.imagePaths as List).isNotEmpty) {
-        _deleteImage(widget.instary.imagePaths[0]);
+  List<String> _updateMediaPaths() {
+    List<String> newMediaPaths = [];
+    String imageSaveLocation =
+        appDocumentDirPath + GlobalConfiguration().getValue("androidImagePath");
+    String videoSaveLocation =
+        appDocumentDirPath + GlobalConfiguration().getValue("androidVideoPath");
+
+    // Remove saved media that are removed by the user in existing media paths
+    for (String savedPath in widget.instary.mediaPaths) {
+      if (!_selectedMedia.contains(savedPath)) {
+        _deleteMedia(savedPath);
       }
-      return imagePaths;
-    } else {
-      // TODO: This code assumes one picture only, need to change in the future.
-      if ((widget.instary.imagePaths as List).isEmpty ||
-          widget.instary.imagePaths[0] != _pickedImage!.path) {
-        RegExp regex = new RegExp(r'([^\/]+$)');
-        String? fileName = regex.stringMatch(_pickedImage!.path);
-        imagePaths.add(appDocumentDirPath +
-            GlobalConfiguration().getValue("androidImagePath") +
-            fileName!);
-        _updateImage(
-            (widget.instary.imagePaths as List).isEmpty
-                ? ""
-                : widget.instary.imagePaths[0],
-            fileName);
-      } else {
-        imagePaths.add(widget.instary.imagePaths[0]);
-      }
-      return imagePaths;
     }
-  }
 
-  Future<void> _saveImage(String? fileName) async {
-    if (fileName == null) {
-      return;
-    }
-    await _pickedImage!.copy(appDocumentDirPath +
-        GlobalConfiguration().getValue("androidImagePath") +
-        fileName);
-  }
+    // ([^\/]+)$ gets the file name with extension, e.g. path/filename.jpg -> filename.jpg
+    RegExp regex = new RegExp(r'([^\/]+$)');
 
-  void _deleteImage(String imagePath) {
-    final imagefile = File(imagePath);
-    imagefile.delete();
-  }
-
-  void _updateImage(String oldImagePath, String newImageFile) {
-    // delete image if oldImage exist
-    if (oldImagePath != "") {
-      _deleteImage(oldImagePath);
-    }
-    _saveImage(newImageFile);
-  }
-
-  Widget _imageCard() {
-    return Card(
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Text('You image of the day: ',
-                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20)),
-            ),
-            GestureDetector(
-              child: Center(
-                child: _pickedImage == null
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment
-                            .center, // Center Row contents horizontally,
-                        crossAxisAlignment: CrossAxisAlignment
-                            .center, // Center Row contents vertically,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(right: 2.0),
-                            child: Icon(Icons.add_photo_alternate,
-                                color: Colors.grey),
-                          ),
-                          Text("Add Image",
-                              style: TextStyle(color: Colors.grey)),
-                        ],
-                      )
-                    : Column(
-                        children: <Widget>[
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10.0),
-                            child: Image(
-                              image: FileImage(_pickedImage!),
-                            ),
-                          ),
-                          TextButton.icon(
-                            icon: Icon(
-                              Icons.delete_outline,
-                              color: Colors.red[800],
-                            ),
-                            label: Text(
-                              "Remove Image",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.red[800]),
-                            ),
-                            onPressed: () {
-                              setState(() => _pickedImage = null);
-                            },
-                          ),
-                        ],
-                      ),
-              ),
-              onTap: () => _pickImage(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _pickImage() async {
-    final imageSource = await showDialog<ImageSource>(
-        context: context,
-        builder: (context) => SimpleDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(10.0),
-                ),
-              ),
-              title: Text("Select an image source"),
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context, ImageSource.camera),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 20.0, 30.0, 20.0),
-                        child: Column(
-                          children: <Widget>[
-                            Icon(
-                              Icons.camera_alt,
-                              color: Colors.grey,
-                            ),
-                            Text("Camera",
-                                style: TextStyle(color: Colors.grey)),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 1,
-                      height: 40.0,
-                      color: Colors.grey,
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context, ImageSource.gallery),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(30.0, 20.0, 0, 20.0),
-                        child: Column(
-                          children: <Widget>[
-                            Icon(
-                              Icons.photo,
-                              color: Colors.grey,
-                            ),
-                            Text("Gallery",
-                                style: TextStyle(color: Colors.grey)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ));
-
-    if (imageSource != null) {
-      final ImagePicker _imagePicker = ImagePicker();
-      final XFile? file = await _imagePicker.pickImage(source: imageSource);
-      if (file != null) {
-        // check if file already exist in Instary folder, if so notify user to pick again
-        RegExp regex = new RegExp(r'([^\/]+$)');
-        String? fileName = regex.stringMatch(file.path);
-        String filePath = appDocumentDirPath +
-            GlobalConfiguration().getValue("androidImagePath") +
-            fileName!;
-        bool fileExist = await File(filePath).exists();
-        if (fileExist) {
-          var dialog = new DuplicateDialog();
-          dialog.showDuplicateFileDialog(context);
+    // loop _selectedMedia, if file in _selectedMedia is:
+    // 1. In Image or Video folder then no need to delete image,
+    //    just add to newMediaPaths directly
+    // 2. If not, then save them to the correct location and add to newMediaPaths
+    _selectedMedia.forEach((file) {
+      String? fileName = regex.stringMatch(file.path);
+      String? mimeType = lookupMimeType(file.path);
+      if (fileName != null && mimeType != null) {
+        late String savePath;
+        if (mimeType.contains("image")) {
+          savePath = imageSaveLocation + fileName;
+        } else if (mimeType.contains("video")) {
+          savePath = videoSaveLocation + fileName;
         } else {
-          setState(() => _pickedImage = File(file.path));
+          throw UnsupportedError("File Type is not supported");
         }
+        newMediaPaths.add(savePath);
+        _saveMedia(file, savePath);
       }
-    }
+    });
+    return newMediaPaths;
+  }
+
+  Future<void> _saveMedia(File file, String savePath) async {
+    await file.copy(savePath);
+  }
+
+  void _deleteMedia(String deletePath) {
+    final deleteFile = File(deletePath);
+    deleteFile.delete();
   }
 
   Widget _feelingCard() {

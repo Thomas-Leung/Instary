@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
+import 'package:instary/models/feelings_level.dart';
+import 'package:instary/widgets/feelings_card.dart';
 import 'package:instary/widgets/media_card.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -29,9 +31,7 @@ class _CreatePageState extends State<CreatePage> {
   final contentController = TextEditingController();
   DateTime dateTime = DateTime.now();
   String date = DateFormat.yMMMd().format(DateTime.now());
-  double happinessLv = 50.0;
-  double tirednessLv = 50.0;
-  double stressfulnessLv = 50.0;
+  FeelingsLevel _level = FeelingsLevel.init();
   late final String appDocumentDirPath;
   List<File> _selectedMedia = [];
 
@@ -208,7 +208,12 @@ class _CreatePageState extends State<CreatePage> {
               Container(
                 height: 20.0,
               ),
-              _feelingCard(),
+              FeelingsCard(
+                existingLevel: _level,
+                onLevelChanged: (FeelingsLevel newLevel) {
+                  _level = newLevel;
+                },
+              ),
               Container(
                 height: 20.0,
               ),
@@ -230,9 +235,9 @@ class _CreatePageState extends State<CreatePage> {
                           dateTime,
                           titleController.text,
                           contentController.text,
-                          happinessLv,
-                          tirednessLv,
-                          stressfulnessLv,
+                          _level.happinessLv,
+                          _level.tirednessLv,
+                          _level.stressfulnessLv,
                           mediaPaths);
                       addInstary(newInstary);
                     }
@@ -293,147 +298,5 @@ class _CreatePageState extends State<CreatePage> {
 
   Future<void> _saveMedia(File file, String savePath) async {
     await file.copy(savePath);
-  }
-
-  Widget _feelingCard() {
-    return Card(
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text('Rate your feelings',
-                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20)),
-            ),
-            Container(
-              child: Text("Happiness"),
-              padding: EdgeInsets.only(top: 16.0),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: <Widget>[
-                  Icon(Icons.sentiment_dissatisfied),
-                  Expanded(
-                    child: SliderTheme(
-                      data: SliderTheme.of(context).copyWith(
-                        activeTrackColor:
-                            Theme.of(context).sliderTheme.activeTrackColor,
-                        inactiveTrackColor: Colors.grey,
-                        trackHeight: 4.0,
-                        thumbColor: Theme.of(context).sliderTheme.thumbColor,
-                        thumbShape:
-                            RoundSliderThumbShape(enabledThumbRadius: 8.0),
-                        overlayColor: Colors.purple.withAlpha(60),
-                        overlayShape:
-                            RoundSliderOverlayShape(overlayRadius: 16.0),
-                      ),
-                      child: Slider(
-                        value: happinessLv,
-                        min: 0,
-                        max: 100,
-                        divisions: 100,
-                        onChanged: (value) {
-                          setState(() {
-                            happinessLv = value.roundToDouble();
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  Icon(Icons.sentiment_satisfied)
-                ],
-              ),
-            ),
-            Container(
-              child: Text("Tiredness"),
-              padding: EdgeInsets.only(top: 16.0),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: <Widget>[
-                  Icon(Icons.battery_charging_full),
-                  Expanded(
-                    child: SliderTheme(
-                      data: SliderTheme.of(context).copyWith(
-                        activeTrackColor:
-                            Theme.of(context).sliderTheme.activeTrackColor,
-                        inactiveTrackColor: Colors.grey,
-                        trackHeight: 4.0,
-                        thumbColor: Theme.of(context).sliderTheme.thumbColor,
-                        thumbShape:
-                            RoundSliderThumbShape(enabledThumbRadius: 8.0),
-                        overlayColor: Colors.purple.withAlpha(60),
-                        overlayShape:
-                            RoundSliderOverlayShape(overlayRadius: 16.0),
-                      ),
-                      child: Slider(
-                        value: tirednessLv,
-                        min: 0,
-                        max: 100,
-                        divisions: 100,
-                        onChanged: (value) {
-                          setState(() {
-                            tirednessLv = value.roundToDouble();
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  Icon(Icons.airline_seat_flat)
-                ],
-              ),
-            ),
-            Container(
-              child: Text("Stressfulness"),
-              padding: EdgeInsets.only(top: 16.0),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: <Widget>[
-                  Icon(Icons.sentiment_very_satisfied),
-                  Expanded(
-                    child: SliderTheme(
-                      data: SliderTheme.of(context).copyWith(
-                        activeTrackColor:
-                            Theme.of(context).sliderTheme.activeTrackColor,
-                        inactiveTrackColor: Colors.grey,
-                        trackHeight: 4.0,
-                        thumbColor: Theme.of(context).sliderTheme.thumbColor,
-                        thumbShape:
-                            RoundSliderThumbShape(enabledThumbRadius: 8.0),
-                        overlayColor: Colors.purple.withAlpha(60),
-                        overlayShape:
-                            RoundSliderOverlayShape(overlayRadius: 16.0),
-                      ),
-                      child: Slider(
-                        value: stressfulnessLv,
-                        min: 0,
-                        max: 100,
-                        divisions: 100,
-                        onChanged: (value) {
-                          setState(() {
-                            stressfulnessLv = value.roundToDouble();
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  Icon(Icons.sentiment_very_dissatisfied)
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
-    );
   }
 }

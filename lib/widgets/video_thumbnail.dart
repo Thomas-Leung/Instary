@@ -49,7 +49,7 @@ class _VideoThumbnailState extends State<VideoThumbnail> {
                     child: VideoPlayer(_controller),
                   ),
                 ),
-                new LayoutBuilder(
+                LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
                     if (constraints.maxWidth > 300.0) {
                       return Icon(
@@ -68,9 +68,22 @@ class _VideoThumbnailState extends State<VideoThumbnail> {
                 ),
               ],
             )
-          : Container(
-              margin: EdgeInsets.all(50),
-              child: CircularProgressIndicator(),
+          : LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                if (constraints.maxWidth > 300.0) {
+                  // in ViewPage
+                  return Container(
+                    margin: EdgeInsets.all(150),
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  // in Create/EditPage
+                  return Container(
+                    margin: EdgeInsets.all(50),
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              },
             ),
       onTap: () {
         Navigator.push(

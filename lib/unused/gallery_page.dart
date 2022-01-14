@@ -85,7 +85,7 @@ class GalleryPage extends StatelessWidget {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => ViewPhotoPage(
-              imagePath: imageFile,
+              imageFile: imageFile,
             ),
           ),
         );

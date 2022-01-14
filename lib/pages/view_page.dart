@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:instary/themes/app_state_notifier.dart';
 import 'package:intl/intl.dart';
+import 'package:mime/mime.dart';
 import 'package:provider/provider.dart';
 import 'view_photo_page.dart';
 import 'edit_page.dart';
@@ -15,11 +16,8 @@ class ViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // get imagePath
-    File? imagePath;
-    if ((instary.imagePaths as List).isNotEmpty) {
-      imagePath = new File(instary.imagePaths[0]);
-    }
+    List<String> mediaPathList = instary.mediaPaths as List<String>;
+
     return Scaffold(
       body: CustomScrollView(
         physics: BouncingScrollPhysics(),
@@ -36,23 +34,20 @@ class ViewPage extends StatelessWidget {
             expandedHeight: MediaQuery.of(context).size.height / 2.5,
             floating: false,
             pinned: false,
-            flexibleSpace: GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ViewPhotoPage(imagePath: imagePath),
-                  ),
-                );
-              },
-              child: FlexibleSpaceBar(
-                background: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.elliptical(60.0, 60.0)),
-                  child: imagePath != null
-                      ? Image.file(imagePath, fit: BoxFit.cover)
-                      : Image.asset('assets/images/img_not_found.png',
-                          fit: BoxFit.cover),
-                ),
+            flexibleSpace: FlexibleSpaceBar(
+              background: ClipRRect(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.elliptical(60.0, 60.0)),
+                child: mediaPathList.isEmpty
+                    ? Image.asset('assets/images/img_not_found.png',
+                        fit: BoxFit.cover)
+                    : PageView.builder(
+                        physics: BouncingScrollPhysics(),
+                        controller: PageController(),
+                        itemCount: instary.mediaPaths.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return displayMedia(context, mediaPathList[index]);
+                        }),
               ),
             ),
           ),
@@ -252,5 +247,22 @@ class ViewPage extends StatelessWidget {
       },
       color: Colors.grey[500],
     );
+  }
+
+  Widget displayMedia(BuildContext context, String filePath) {
+    if (lookupMimeType(filePath)!.contains("image")) {
+      return GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ViewPhotoPage(imageFile: File(filePath)),
+              ),
+            );
+          },
+          child: Image.file(File(filePath), fit: BoxFit.cover));
+    } else if (lookupMimeType(filePath)!.contains("video")) {
+      return Container(child: Text("This is a video"));
+    }
+    return Image.asset('assets/images/img_not_found.png', fit: BoxFit.cover);
   }
 }

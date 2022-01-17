@@ -32,10 +32,11 @@ class FileImportExport {
             await path_provider.getApplicationDocumentsDirectory();
         Directory tempDir = await path_provider.getTemporaryDirectory();
         // Read the Zip file from disk.
-        final bytes = FileEncryption.decryptAES(file.readAsBytesSync());
+        // TODO: Implement decryption
+        // final bytes = FileEncryption.decryptAES(file.readAsBytesSync());
 
         // Decode the Zip file
-        final archive = ZipDecoder().decodeBytes(bytes);
+        final archive = ZipDecoder().decodeBytes(file.readAsBytesSync());
 
         // Extract the contents of the Zip archive to disk
         for (final file in archive) {
@@ -48,15 +49,16 @@ class FileImportExport {
                 ..createSync(recursive: true)
                 ..writeAsBytesSync(data);
               print("Add to temp folder");
-            } else if (filename.toLowerCase().contains("images")) {
+            } else if (filename.toLowerCase().contains("images") ||
+                filename.toLowerCase().contains("videos")) {
               // Images inside the Images folder somehow are also treated as file
               final data = file.content as List<int>;
               File(appDir.path +
                   Platform.pathSeparator +
-                  filename) // filename already contains "Image/"
+                  filename) // filename already contains "Image/" or "Videos/"
                 ..createSync(recursive: true)
                 ..writeAsBytesSync(data);
-              print("Add to Image folder");
+              print("Add to Image or Video folder");
             }
           } else {
             // Not sure when it will be treated as Directory, so far everything are files
@@ -124,30 +126,42 @@ class FileImportExport {
         encoder.addDirectory(imageDir);
       }
     });
+
+    // Add Videos Directory to Zip
+    Directory videoDir = Directory(
+        appDir.path + GlobalConfiguration().getValue("androidVideoPath"));
+    await videoDir.exists().then((isDir) {
+      if (isDir) {
+        encoder.addDirectory(videoDir);
+      }
+    });
+
     encoder.close();
 
     // Encrypt the Zip file and sent to download folder in Android
     // Get Zip File -> Convert zip to byte -> Encrypt the byte -> Create file name and file path
     // -> Write the encrypted data -> Send to Android using Method Channel
-    File zipFile = File(zipTempFilePath);
-    Uint8List zipInByte = await zipFile.readAsBytes();
-    Uint8List encryptedByte = FileEncryption.encryptAES(zipInByte);
-    String encryptedFileName =
-        "${DateFormat('yyyy-MM-dd_HH-MM').format(DateTime.now())}.$instaryExtension";
-    File encryptedFile =
-        File(tempDir.path + Platform.pathSeparator + encryptedFileName);
-    await encryptedFile.writeAsBytes(encryptedByte);
-    MediaStore().downloadBackup(file: encryptedFile, name: encryptedFileName);
+    // TODO: implement encryption
+    // File zipFile = File(zipTempFilePath);
+    // // Uint8List zipInByte = await zipFile.readAsBytes();
+    // // Uint8List encryptedByte = await FileEncryption().encryptAES(zipInByte);
+    // String encryptedFileName =
+    //     "${DateFormat('yyyy-MM-dd_HH-MM').format(DateTime.now())}.$instaryExtension";
+    // File encryptedFile =
+    //     File(tempDir.path + Platform.pathSeparator + encryptedFileName);
+    // await FileEncryption().encryptAESWrapper(zipFile, encryptedFile);
+    // // await encryptedFile.writeAsBytes(encryptedByte);
+    // // MediaStore().downloadBackup(file: encryptedFile, name: encryptedFileName);
 
     // Save the Zip file from temp folder to download folder in Android
     // Uncomment below for export without encryption
-    // File zipFile = File(zipTempFilePath);
-    // String zipFileName =
-    //     "${DateFormat('yyyy-MM-dd_HH-MM').format(DateTime.now())}.zip";
-    // MediaStore().downloadBackup(file: zipFile, name: zipFileName);
+    File zipFile = File(zipTempFilePath);
+    String zipFileName =
+        "${DateFormat('yyyy-MM-dd_HH-MM').format(DateTime.now())}.zip";
+    MediaStore().downloadBackup(file: zipFile, name: zipFileName);
 
     tempFile.delete(); // delete Instary json file
-    zipFile.delete();
+    // zipFile.delete();
     tempMetadata.delete();
 
     return true;
@@ -168,7 +182,7 @@ class FileImportExport {
     }
     List jsonList = [];
     tempList.map((item) => jsonList.add(item.toJson())).toList();
-    print(jsonEncode(jsonList));
+    print('Encoded to JSON: ${jsonEncode(jsonList)}');
     return jsonEncode(jsonList); // jsonEncode gives "" to json objects
   }
 
@@ -196,7 +210,7 @@ class MediaStore {
   static const _channel = MethodChannel('flutter_media_store');
   Future<void> downloadBackup(
       {required File file, required String name}) async {
-    print("File from ${file.path} is sending to Android.");
+    print("File $name from ${file.path} is sending to Android.");
     await _channel
         .invokeMethod('downloadBackup', {'path': file.path, 'name': name});
     await file.delete(); // delete temp zip file

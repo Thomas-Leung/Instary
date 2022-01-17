@@ -255,10 +255,12 @@ class ViewPage extends StatelessWidget {
   }
 
   Widget displayMedia(BuildContext context, File file) {
-    if (lookupMimeType(file.path)!.contains("image")) {
-      return ImageThumbnail(imageFile: file);
-    } else if (lookupMimeType(file.path)!.contains("video")) {
-      return VideoThumbnail(videoFile: file);
+    if (file.existsSync()) {
+      if (lookupMimeType(file.path)!.contains("image")) {
+        return ImageThumbnail(imageFile: file);
+      } else if (lookupMimeType(file.path)!.contains("video")) {
+        return VideoThumbnail(videoFile: file);
+      }
     }
     return Image.asset('assets/images/img_not_found.png', fit: BoxFit.cover);
   }

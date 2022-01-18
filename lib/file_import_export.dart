@@ -25,7 +25,7 @@ class FileImportExport {
         await FilePicker.platform.pickFiles(type: FileType.any);
 
     if (result != null) {
-      if (result.files.first.extension == instaryExtension) {
+      if (result.files.first.extension == "zip") {
         File file = File(result.files.single.path!);
         print("Import file location" + file.path);
         Directory appDir =

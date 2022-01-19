@@ -333,7 +333,8 @@ class _EditPageState extends State<EditPage> {
 
     // Remove saved media that are removed by the user in existing media paths
     for (String savedPath in widget.instary.mediaPaths) {
-      if (!_selectedMedia.contains(savedPath)) {
+      // get all paths from _sekectedMedia and check if they contains savedPath
+      if (!_selectedMedia.map((file) => file.path).contains(savedPath)) {
         _deleteMedia(savedPath);
       }
     }

@@ -297,6 +297,8 @@ class _CreatePageState extends State<CreatePage> {
   }
 
   Future<void> _saveMedia(File file, String savePath) async {
-    await file.copy(savePath);
+    if (!File(savePath).existsSync()) {
+      await file.copy(savePath);
+    }
   }
 }

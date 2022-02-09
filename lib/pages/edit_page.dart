@@ -324,6 +324,10 @@ class _EditPageState extends State<EditPage> {
     );
   }
 
+  // loop _selectedMedia, if file in _selectedMedia is:
+  // 1. In Image or Video folder then no need to delete image,
+  //    just add to newMediaPaths directly
+  // 2. If not, then save them to the correct location and add to newMediaPaths
   List<String> _updateMediaPaths() {
     List<String> newMediaPaths = [];
     String imageSaveLocation =
@@ -342,10 +346,6 @@ class _EditPageState extends State<EditPage> {
     // ([^\/]+)$ gets the file name with extension, e.g. path/filename.jpg -> filename.jpg
     RegExp regex = new RegExp(r'([^\/]+$)');
 
-    // loop _selectedMedia, if file in _selectedMedia is:
-    // 1. In Image or Video folder then no need to delete image,
-    //    just add to newMediaPaths directly
-    // 2. If not, then save them to the correct location and add to newMediaPaths
     _selectedMedia.forEach((file) {
       String? fileName = regex.stringMatch(file.path);
       String? mimeType = lookupMimeType(file.path);
@@ -366,7 +366,10 @@ class _EditPageState extends State<EditPage> {
   }
 
   Future<void> _saveMedia(File file, String savePath) async {
-    await file.copy(savePath);
+    // copying the same file will create a 0kb file
+    if (!File(savePath).existsSync()) {
+      await file.copy(savePath);
+    }
   }
 
   void _deleteMedia(String deletePath) {

@@ -132,6 +132,7 @@ class ViewPage extends StatelessWidget {
                   builder: (context, appState, child) {
                 return BarChart(
                   BarChartData(
+                    gridData: FlGridData(show: true),
                     barTouchData: BarTouchData(
                       touchTooltipData: BarTouchTooltipData(
                           tooltipBgColor: appState.isDarkModeOn
@@ -141,7 +142,8 @@ class ViewPage extends StatelessWidget {
                     alignment: BarChartAlignment.spaceAround,
                     maxY: 100,
                     titlesData: FlTitlesData(
-                      show: true,
+                      topTitles: SideTitles(showTitles: false),
+                      rightTitles: SideTitles(showTitles: false),
                       bottomTitles: SideTitles(
                         showTitles: true,
                         getTextStyles: (BuildContext context, double value) {

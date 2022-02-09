@@ -12,7 +12,7 @@
      Android 10 or higher. -->
     <application
         android:requestLegacyExternalStorage="true"
-        android:name="io.flutter.app.FlutterApplication"
+        android:name="${applicationName}"
         android:label="instary"
         android:icon="@mipmap/ic_launcher">
         <activity

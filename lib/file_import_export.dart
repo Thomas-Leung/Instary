@@ -1,14 +1,13 @@
 import 'dart:io';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
 import 'package:device_info/device_info.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
-import 'package:instary/file_encryption.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as path_provider;
@@ -101,6 +100,10 @@ class FileImportExport {
     final fileName = "instary.json";
     final tempDir = await path_provider.getTemporaryDirectory();
     final appDir = await path_provider.getApplicationDocumentsDirectory();
+    final imageDir = Directory(
+        appDir.path + GlobalConfiguration().getValue("androidImagePath"));
+    final videoDir = Directory(
+        appDir.path + GlobalConfiguration().getValue("androidVideoPath"));
     final filePath = path.join(tempDir.path, fileName);
     File tempFile = await File(filePath).writeAsString(jsonContent);
 
@@ -111,32 +114,14 @@ class FileImportExport {
     File tempMetadata =
         await File(metadataPath).writeAsString(metedataJsonContent);
 
-    // Add json File to Zip
-    var encoder = ZipFileEncoder();
     String zipTempFilePath = path.join(tempDir.path, "temp.zip");
-    encoder.create(zipTempFilePath);
-    encoder.addFile(tempFile);
-    encoder.addFile(tempMetadata);
-
-    // Add Images Directory to Zip
-    Directory imageDir = Directory(
-        appDir.path + GlobalConfiguration().getValue("androidImagePath"));
-    await imageDir.exists().then((isDir) {
-      if (isDir) {
-        encoder.addDirectory(imageDir);
-      }
-    });
-
-    // Add Videos Directory to Zip
-    Directory videoDir = Directory(
-        appDir.path + GlobalConfiguration().getValue("androidVideoPath"));
-    await videoDir.exists().then((isDir) {
-      if (isDir) {
-        encoder.addDirectory(videoDir);
-      }
-    });
-
-    encoder.close();
+    Map<String, dynamic> itemsToZip = Map();
+    itemsToZip['imageDir'] = imageDir;
+    itemsToZip['videoDir'] = videoDir;
+    itemsToZip['zipTempFilePath'] = zipTempFilePath;
+    itemsToZip['tempFile'] = tempFile;
+    itemsToZip['tempMetadataFile'] = tempMetadata;
+    await compute(addFilesToZip, itemsToZip);
 
     // Encrypt the Zip file and sent to download folder in Android
     // Get Zip File -> Convert zip to byte -> Encrypt the byte -> Create file name and file path
@@ -169,6 +154,35 @@ class FileImportExport {
     // Directory dir = await path_provider.getTemporaryDirectory();
     // dir.deleteSync(recursive: true);
     // dir.create(); // This will create the temporary directory again. So temporary files will only be deleted
+  }
+
+  // Since this method is compute intensive, we use isolate (run in another thread) by using compute().
+  // As it is running in a different thread, we have to obtain all the document path and GlobalConfiguration before hand.
+  // We use a map as we can only pass one argument in compute.
+  Future<void> addFilesToZip(Map<String, dynamic> items) async {
+    // Create Zip folder and add json File to Zip
+    var encoder = ZipFileEncoder();
+    encoder.create(items['zipTempFilePath']);
+    encoder.addFile(items['tempFile']);
+    encoder.addFile(items['tempMetadataFile']);
+
+    // Add Images Directory to Zip
+    Directory imageDir = items['imageDir'];
+    await imageDir.exists().then((isDir) {
+      if (isDir) {
+        encoder.addDirectory(imageDir);
+      }
+    });
+
+    // Add Videos Directory to Zip
+    Directory videoDir = items['videoDir'];
+    await videoDir.exists().then((isDir) {
+      if (isDir) {
+        encoder.addDirectory(videoDir);
+      }
+    });
+
+    encoder.close();
   }
 
   /// Take all instary and convert to a JSON string

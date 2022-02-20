@@ -21,38 +21,8 @@ class ImportExportListTile extends StatefulWidget {
   _ImportExportListTileState createState() => _ImportExportListTileState();
 }
 
-// Reference: https://medium.com/swlh/use-valuenotifier-like-pro-6441d9ddad05
-class ProgressNotifier extends ValueNotifier<bool> {
-  ProgressNotifier({required bool value}) : super(value);
-
-  void processComplete() {
-    value = true;
-  }
-}
-
 class _ImportExportListTileState extends State<ImportExportListTile> {
-  late ProgressNotifier _progressNotifier;
-  late Color bottomSheetColor;
-  late String status;
-  bool processing = false;
-
-  @override
-  void initState() {
-    super.initState();
-    status = widget.processStatus;
-    // set false as we haven't complete import/export
-    _progressNotifier = ProgressNotifier(value: false);
-    // use future because we need to get the context
-    Future.delayed(Duration.zero, () {
-      bottomSheetColor = Theme.of(context).sliderTheme.thumbColor!;
-    });
-  }
-
-  @override
-  void dispose() {
-    _progressNotifier.dispose();
-    super.dispose();
-  }
+  bool _enableListTile = true;
 
   @override
   Widget build(BuildContext context) {
@@ -60,22 +30,51 @@ class _ImportExportListTileState extends State<ImportExportListTile> {
       child: ListTile(
         title: Text(widget.displayName),
         leading: widget.icon,
+        enabled: _enableListTile,
         onTap: () async {
-          if (!processing) {
-            processing = true;
-            bool processResult = await widget.function();
-            Scaffold.of(context).showBottomSheet<void>(
-              (BuildContext context) {
-                return Container(
-                  margin: EdgeInsets.only(top: 5, left: 15, right: 15),
-                  height: 100,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      ValueListenableBuilder<bool>(
-                        valueListenable: _progressNotifier,
-                        builder: (context, value, child) => Container(
+          setState(() => _enableListTile = false);
+          Scaffold.of(context).showBottomSheet<void>(
+            (BuildContext context) {
+              return Container(
+                margin: EdgeInsets.only(top: 5, left: 15, right: 15),
+                height: 100,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    FutureBuilder(
+                      future: widget.function(),
+                      builder: (context, snapshot) {
+                        String status = widget.processStatus;
+                        Widget icon = CircularProgressIndicator(
+                            strokeWidth: 2.5, color: Colors.white);
+                        Color bottomSheetColor =
+                            Theme.of(context).sliderTheme.thumbColor!;
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                        } else {
+                          if (snapshot.hasError || snapshot.data != true) {
+                            status = widget.errorStatus;
+                            icon = Icon(
+                              Icons.error_outline,
+                              color: Colors.white,
+                            );
+                            bottomSheetColor = Colors.red[800]!;
+                          } else {
+                            status = widget.completeStatus;
+                            icon = Icon(
+                              Icons.check_rounded,
+                              color: Colors.white,
+                            );
+                            bottomSheetColor = Colors.green;
+                          }
+                          Future.delayed(const Duration(seconds: 2), () {
+                            // Close bottom sheet and re-enable listTile
+                            setState(() => _enableListTile = true);
+                            Navigator.pop(context);
+                          });
+                        }
+                        return Container(
                           height:
                               50, // column centers and the height makes it "float"
                           decoration: BoxDecoration(
@@ -100,51 +99,22 @@ class _ImportExportListTileState extends State<ImportExportListTile> {
                                   ),
                                   Padding(
                                     padding: EdgeInsets.only(right: 16.0),
-                                    child: !value
-                                        ? Container(
-                                            height: 20,
-                                            width: 20,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2.5,
-                                              color: Colors.white,
-                                            ),
-                                          )
-                                        : processResult
-                                            ? Icon(
-                                                Icons.check_rounded,
-                                                color: Colors.white,
-                                              )
-                                            : Icon(
-                                                Icons.error_outline,
-                                                color: Colors.white,
-                                              ),
+                                    child: Container(
+                                      height: 20,
+                                      width: 20,
+                                      child: icon,
+                                    ),
                                   ),
                                 ]),
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
-            await Future.delayed(Duration(seconds: 2));
-            if (processResult) {
-              status = widget.completeStatus;
-              bottomSheetColor = Colors.green;
-            } else {
-              status = widget.errorStatus;
-              bottomSheetColor = Colors.red[800]!;
-            }
-            _progressNotifier.processComplete();
-            await Future.delayed(Duration(seconds: 2));
-            Navigator.pop(context);
-            // Reset values
-            status = widget.processStatus;
-            _progressNotifier = ProgressNotifier(value: false);
-            bottomSheetColor = Theme.of(context).sliderTheme.thumbColor!;
-            processing = false;
-          }
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
         },
       ),
     );

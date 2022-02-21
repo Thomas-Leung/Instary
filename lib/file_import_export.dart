@@ -33,38 +33,11 @@ class FileImportExport {
         // Read the Zip file from disk.
         // TODO: Implement decryption
         // final bytes = FileEncryption.decryptAES(file.readAsBytesSync());
-
-        // Decode the Zip file
-        final archive = ZipDecoder().decodeBytes(file.readAsBytesSync());
-
-        // Extract the contents of the Zip archive to disk
-        for (final file in archive) {
-          final filename = file.name;
-          print(file.name);
-          if (file.isFile) {
-            if (filename == "instary.json") {
-              final data = file.content as List<int>;
-              File('${tempDir.path}/' + filename)
-                ..createSync(recursive: true)
-                ..writeAsBytesSync(data);
-              print("Add to temp folder");
-            } else if (filename.toLowerCase().contains("images") ||
-                filename.toLowerCase().contains("videos")) {
-              // Images inside the Images folder somehow are also treated as file
-              final data = file.content as List<int>;
-              File(appDir.path +
-                  Platform.pathSeparator +
-                  filename) // filename already contains "Image/" or "Videos/"
-                ..createSync(recursive: true)
-                ..writeAsBytesSync(data);
-              print("Add to Image or Video folder");
-            }
-          } else {
-            // Not sure when it will be treated as Directory, so far everything are files
-            Directory('${tempDir.path}/' + filename).create(recursive: true);
-          }
-        }
-
+        Map<String, dynamic> items = Map();
+        items['file'] = file;
+        items['appDir'] = appDir;
+        items['tempDir'] = tempDir;
+        await compute(getFileFromZip, items);
         createInstaryFromJson('${tempDir.path}/instary.json');
         return true;
       } else {
@@ -74,6 +47,40 @@ class FileImportExport {
       // User canceled the picker
     }
     return false;
+  }
+
+  void getFileFromZip(Map<String, dynamic> items) {
+// Decode the Zip file
+    final archive = ZipDecoder().decodeBytes(items['file'].readAsBytesSync());
+
+    // Extract the contents of the Zip archive to disk
+    for (final file in archive) {
+      final filename = file.name;
+      print(file.name);
+      if (file.isFile) {
+        if (filename == "instary.json") {
+          final data = file.content as List<int>;
+          File('${items['tempDir'].path}/' + filename)
+            ..createSync(recursive: true)
+            ..writeAsBytesSync(data);
+          print("Add to temp folder");
+        } else if (filename.toLowerCase().contains("images") ||
+            filename.toLowerCase().contains("videos")) {
+          // Images inside the Images folder somehow are also treated as file
+          final data = file.content as List<int>;
+          File(items['appDir'].path +
+              Platform.pathSeparator +
+              filename) // filename already contains "Image/" or "Videos/"
+            ..createSync(recursive: true)
+            ..writeAsBytesSync(data);
+          print("Add to Image or Video folder");
+        }
+      } else {
+        // Not sure when it will be treated as Directory, so far everything are files
+        Directory('${items['tempDir'].path}/' + filename)
+            .create(recursive: true);
+      }
+    }
   }
 
   /// This method read instary.json, decode to List<Instary> and add them to Hive

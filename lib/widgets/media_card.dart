@@ -165,8 +165,10 @@ class _MediaCardState extends State<MediaCard> {
     final ImagePicker _imagePicker = ImagePicker();
 
     final XFile? xFile = isImage
-        ? await _imagePicker.pickImage(source: source)
-        : await _imagePicker.pickVideo(source: source);
+        ? await _imagePicker.pickImage(source: source, imageQuality: 30)
+        : await _imagePicker.pickVideo(
+            source: source,
+          );
 
     if (xFile != null) {
       File file = File(xFile.path);

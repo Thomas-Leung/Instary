@@ -76,8 +76,13 @@ class AppTheme {
             (states) => TextStyle(color: Colors.white)),
       ),
     ),
+
+    // CIRCULAR PROGRESS INDICATOR
+    progressIndicatorTheme:
+        ProgressIndicatorThemeData(color: Colors.indigo[300]),
   );
 
+  /// DARK THEME
   static final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
 
@@ -125,5 +130,7 @@ class AppTheme {
             (states) => TextStyle(color: Colors.white)),
       ),
     ),
+    progressIndicatorTheme:
+        ProgressIndicatorThemeData(color: Colors.deepPurple[300]),
   );
 }

@@ -113,7 +113,7 @@ class _MediaCardState extends State<MediaCard> {
           deleteOrigin: true,
           includeAudio: true,
         );
-        isCompressing = false;
+        setState(() => isCompressing = false);
         file = info!.file!; // replace existing file with compressed video file
       }
       File renamedFile = await changeFileName(file,

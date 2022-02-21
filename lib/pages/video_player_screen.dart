@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -14,20 +15,22 @@ class VideoPlayerScreen extends StatefulWidget {
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  late VideoPlayerController _controller;
+  late VideoPlayerController _videoPlayercontroller;
+  late ChewieController _chewieController;
   late Future<void> _initializeVideoPlayerFuture;
 
   @override
   void initState() {
-    _controller = VideoPlayerController.file(widget.videoFile);
-    _initializeVideoPlayerFuture = _controller.initialize();
+    _videoPlayercontroller = VideoPlayerController.file(widget.videoFile);
+    _initializeVideoPlayerFuture = _videoPlayercontroller.initialize();
     super.initState();
   }
 
   @override
   void dispose() {
     // Ensure disposing of the VideoPlayerController to free up resources.
-    _controller.dispose();
+    _videoPlayercontroller.dispose();
+    _chewieController.dispose();
     super.dispose();
   }
 
@@ -43,12 +46,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             future: _initializeVideoPlayerFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
+                _chewieController = ChewieController(
+                    videoPlayerController: _videoPlayercontroller,
+                    autoPlay: true,
+                    looping: false);
                 // If the VideoPlayerController has finished initialization, use
                 // the data it provides to limit the aspect ratio of the video.
                 return AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
-                  // Use the VideoPlayer widget to display the video.
-                  child: VideoPlayer(_controller),
+                  aspectRatio: _videoPlayercontroller.value.aspectRatio,
+                  // Use the Chewie VideoPlayer widget to display the video.
+                  child: Chewie(
+                    controller: _chewieController,
+                  ),
                 );
               } else {
                 // If the VideoPlayerController is still initializing, show a
@@ -59,25 +68,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               }
             },
           ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Wrap the play or pause in a call to `setState`. This ensures the
-          // correct icon is shown.
-          setState(() {
-            // If the video is playing, pause it.
-            if (_controller.value.isPlaying) {
-              _controller.pause();
-            } else {
-              // If the video is paused, play it.
-              _controller.play();
-            }
-          });
-        },
-        // Display the correct icon depending on the state of the player.
-        child: Icon(
-          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
         ),
       ),
     );

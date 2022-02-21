@@ -42,6 +42,10 @@ dependencies:
   video_player: ^2.2.8
   mime: ^1.0.1
   cryptography: ^2.0.5
+  video_compress: # version 3.1.0 has issue, need to use master for now
+    git:
+      url: https://github.com/jonataslaw/VideoCompress.git
+      ref: master
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

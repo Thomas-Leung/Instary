@@ -366,7 +366,7 @@ class _EditPageState extends State<EditPage> {
   }
 
   Future<void> _saveMedia(File file, String savePath) async {
-    // copying the same file will create a 0kb file
+    // copying the same file will create a 0kb file, so need to check if file already exists
     if (!File(savePath).existsSync()) {
       await file.copy(savePath);
     }

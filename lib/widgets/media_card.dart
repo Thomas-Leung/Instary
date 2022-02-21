@@ -7,6 +7,7 @@ import 'package:instary/widgets/video_thumbnail.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
+import 'package:video_compress/video_compress.dart';
 
 class MediaCard extends StatefulWidget {
   // paths that are currently exist, mainly for EditPage
@@ -25,6 +26,7 @@ class MediaCard extends StatefulWidget {
 
 class _MediaCardState extends State<MediaCard> {
   List<File> selectedMedia = [];
+  bool isCompressing = false;
 
   @override
   void initState() {
@@ -59,7 +61,7 @@ class _MediaCardState extends State<MediaCard> {
                 ),
                 IconButton(
                   onPressed: () => _pickMedia(false, ImageSource.gallery),
-                  icon: Icon(Icons.video_library_rounded),
+                  icon: Icon(Icons.smart_display_rounded),
                   tooltip: "Pick a video from gallery",
                 ),
                 IconButton(
@@ -75,86 +77,11 @@ class _MediaCardState extends State<MediaCard> {
               ],
             ),
             Divider(),
-            selectedMedia.isEmpty
-                ? Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment
-                          .center, // Center Row contents horizontally,
-                      crossAxisAlignment: CrossAxisAlignment
-                          .center, // Center Row contents vertically,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(right: 2.0),
-                          child: Icon(Icons.image_not_supported,
-                              color: Colors.grey),
-                        ),
-                        Text("No Image/Video Selected",
-                            style: TextStyle(color: Colors.grey)),
-                      ],
-                    ),
-                  )
-                : Container(
-                    height: 450,
-                    child: Center(
-                      child: ReorderableListView.builder(
-                        shrinkWrap: true,
-                        physics: BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: selectedMedia.length,
-                        itemBuilder: (context, index) {
-                          return Column(
-                            key: Key('$index'),
-                            children: <Widget>[
-                              Flexible(
-                                flex: 1,
-                                child: Container(
-                                  width: 280,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        child: displayMedia(
-                                            context, selectedMedia[index]),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              TextButton.icon(
-                                icon: Icon(
-                                  Icons.delete_outline,
-                                  color: Colors.red[800],
-                                ),
-                                label: Text(
-                                  "Remove Image",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.red[800]),
-                                ),
-                                onPressed: () {
-                                  setState(() => selectedMedia.removeAt(index));
-                                  widget.onSelectedMediaChanged(selectedMedia);
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                        onReorder: (int oldIndex, int newIndex) {
-                          setState(() {
-                            if (oldIndex < newIndex) {
-                              newIndex -= 1;
-                            }
-                            final File item = selectedMedia.removeAt(oldIndex);
-                            selectedMedia.insert(newIndex, item);
-                            widget.onSelectedMediaChanged(selectedMedia);
-                          });
-                        },
-                      ),
-                    ),
-                  ),
+            isCompressing
+                ? videoCompressingWidget()
+                : selectedMedia.isEmpty
+                    ? noMediaSelectedWidget()
+                    : mediaSelectedView()
           ],
         ),
       ),
@@ -171,9 +98,24 @@ class _MediaCardState extends State<MediaCard> {
           );
 
     if (xFile != null) {
+      // xFile.path example: "/data/user/0/com.example.instary/cache/image_picker548700238243715557.mp4"
       File file = File(xFile.path);
-      String prefix =
-          lookupMimeType(file.path)!.contains("image") ? "IMG" : "VID";
+      String prefix;
+      if (lookupMimeType(file.path)!.contains("image")) {
+        prefix = "IMG";
+      } else {
+        prefix = "VID";
+        // Compress video file
+        setState(() => isCompressing = true);
+        final MediaInfo? info = await VideoCompress.compressVideo(
+          file.path,
+          quality: VideoQuality.MediumQuality,
+          deleteOrigin: true,
+          includeAudio: true,
+        );
+        isCompressing = false;
+        file = info!.file!; // replace existing file with compressed video file
+      }
       File renamedFile = await changeFileName(file,
           '${prefix}_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}');
       setState(() => selectedMedia.add(renamedFile));
@@ -189,6 +131,122 @@ class _MediaCardState extends State<MediaCard> {
     var newPath =
         path.substring(0, lastSeparator + 1) + newFileName + extenstion;
     return file.rename(newPath);
+  }
+
+  Widget videoCompressingWidget() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(right: 2.0),
+                child: Icon(Icons.compress_rounded, color: Colors.grey),
+              ),
+              Text(
+                "Video compressing...",
+                style: TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+          Text(
+            "Might take a while, please wait.",
+            style: TextStyle(color: Colors.grey, fontSize: 10),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(80.0, 8.0, 80.0, 0),
+            child: LinearProgressIndicator(
+              backgroundColor: Colors.transparent,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget noMediaSelectedWidget() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment:
+            MainAxisAlignment.center, // Center Row contents horizontally,
+        crossAxisAlignment:
+            CrossAxisAlignment.center, // Center Row contents vertically,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 2.0),
+            child: Icon(Icons.image_not_supported, color: Colors.grey),
+          ),
+          Text("No Image/Video Selected", style: TextStyle(color: Colors.grey)),
+        ],
+      ),
+    );
+  }
+
+  Widget mediaSelectedView() {
+    return Container(
+      height: 450,
+      child: Center(
+        child: ReorderableListView.builder(
+          shrinkWrap: true,
+          physics: BouncingScrollPhysics(),
+          scrollDirection: Axis.horizontal,
+          itemCount: selectedMedia.length,
+          itemBuilder: (context, index) {
+            return Column(
+              key: Key('$index'),
+              children: <Widget>[
+                Flexible(
+                  flex: 1,
+                  child: Container(
+                    width: 280,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: displayMedia(context, selectedMedia[index]),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                TextButton.icon(
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: Colors.red[800],
+                  ),
+                  label: Text(
+                    "Remove",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w400, color: Colors.red[800]),
+                  ),
+                  onPressed: () {
+                    setState(() => selectedMedia.removeAt(index));
+                    widget.onSelectedMediaChanged(selectedMedia);
+                  },
+                ),
+              ],
+            );
+          },
+          onReorder: (int oldIndex, int newIndex) {
+            setState(() {
+              if (oldIndex < newIndex) {
+                newIndex -= 1;
+              }
+              final File item = selectedMedia.removeAt(oldIndex);
+              selectedMedia.insert(newIndex, item);
+              widget.onSelectedMediaChanged(selectedMedia);
+            });
+          },
+        ),
+      ),
+    );
   }
 
   Widget displayMedia(BuildContext context, File file) {

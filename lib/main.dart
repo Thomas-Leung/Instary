@@ -8,22 +8,11 @@ import 'package:path_provider/path_provider.dart' as path_provider;
 import 'pages/create_page.dart';
 import 'pages/settings_page.dart';
 import 'package:provider/provider.dart';
-import 'package:camera/camera.dart';
 
 import 'models/instary.dart';
 
-List<CameraDescription> cameras = [];
-
 void main() async {
-  // Ensure that plugin services are initialized so that `availableCameras()`
-  // can be called before `runApp()`
   WidgetsFlutterBinding.ensureInitialized(); // fixes iOS flutter error
-  try {
-    WidgetsFlutterBinding.ensureInitialized();
-    cameras = await availableCameras();
-  } on CameraException catch (e) {
-    print('Error in fetching the cameras: $e');
-  }
   await GlobalConfiguration().loadFromAsset("app_settings");
   final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
   Hive.init(appDocumentDir.path);

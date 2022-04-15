@@ -132,7 +132,7 @@ class ViewPage extends StatelessWidget {
                   builder: (context, appState, child) {
                 return BarChart(
                   BarChartData(
-                    gridData: FlGridData(show: true),
+                    gridData: FlGridData(show: false), // don't show grid
                     barTouchData: BarTouchData(
                       touchTooltipData: BarTouchTooltipData(
                           tooltipBgColor: appState.isDarkModeOn
@@ -142,71 +142,89 @@ class ViewPage extends StatelessWidget {
                     alignment: BarChartAlignment.spaceAround,
                     maxY: 100,
                     titlesData: FlTitlesData(
-                      topTitles: SideTitles(showTitles: false),
-                      rightTitles: SideTitles(showTitles: false),
-                      bottomTitles: SideTitles(
-                        showTitles: true,
-                        getTextStyles: (BuildContext context, double value) {
-                          return TextStyle(
-                              color:
-                                  Theme.of(context).textTheme.overline!.color,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14);
-                        },
-                        margin: 10,
-                        getTitles: (double value) {
-                          switch (value.toInt()) {
-                            case 0:
-                              return 'Happiness';
-                            case 1:
-                              return 'Tiredness';
-                            case 2:
-                              return 'Stressfulness';
-                            default:
-                              return '';
-                          }
-                        },
+                      show: true,
+                      // only show text on bottom and left side
+                      rightTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
                       ),
-                      leftTitles: SideTitles(
-                        showTitles: true,
-                        getTextStyles: (BuildContext context, double value) {
-                          return TextStyle(
-                              color:
-                                  Theme.of(context).textTheme.overline!.color,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14);
-                        },
-                        margin: 15,
-                        reservedSize: 30,
-                        getTitles: (value) {
-                          if (value == 0) {
-                            return '0';
-                          } else if (value == 20) {
-                            return '20';
-                          } else if (value == 40) {
-                            return '40';
-                          } else if (value == 60) {
-                            return '60';
-                          } else if (value == 80) {
-                            return '80';
-                          } else if (value == 100) {
-                            return '100';
-                          } else {
-                            return '';
-                          }
-                        },
+                      topTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          getTitlesWidget: (value, meta) {
+                            var textStyle = TextStyle(
+                                color:
+                                    Theme.of(context).textTheme.overline!.color,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14);
+                            Widget textWidget;
+                            switch (value.toInt()) {
+                              case 0:
+                                textWidget =
+                                    Text('Happiness', style: textStyle);
+                                break;
+                              case 1:
+                                textWidget =
+                                    Text('Tiredness', style: textStyle);
+                                break;
+                              case 2:
+                                textWidget =
+                                    Text('Stressfulness', style: textStyle);
+                                break;
+                              default:
+                                textWidget = Text('', style: textStyle);
+                                break;
+                            }
+                            return Padding(
+                                padding: const EdgeInsets.only(top: 6),
+                                child: textWidget);
+                          },
+                        ),
+                      ),
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 30,
+                          getTitlesWidget: (double value, TitleMeta meta) {
+                            var textStyle = TextStyle(
+                                color:
+                                    Theme.of(context).textTheme.overline!.color,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14);
+                            String text;
+                            if (value == 0) {
+                              text = '0';
+                            } else if (value == 20) {
+                              text = '20';
+                            } else if (value == 40) {
+                              text = '40';
+                            } else if (value == 60) {
+                              text = '60';
+                            } else if (value == 80) {
+                              text = '80';
+                            } else if (value == 100) {
+                              text = '100';
+                            } else {
+                              return Container();
+                            }
+                            return Text(text, style: textStyle);
+                          },
+                        ),
                       ),
                     ),
                     borderData: FlBorderData(
                       show: false,
                     ),
+                    // here is where it pass the text to bottomTitle
                     barGroups: [
                       BarChartGroupData(
                         x: 0,
                         barRods: [
                           BarChartRodData(
-                            y: instary.happinessLv.roundToDouble(),
-                            colors: [Theme.of(context).indicatorColor],
+                            toY: instary.happinessLv.roundToDouble(),
+                            color: Theme.of(context).indicatorColor,
                           ),
                         ],
                         showingTooltipIndicators: [0],
@@ -215,8 +233,8 @@ class ViewPage extends StatelessWidget {
                         x: 1,
                         barRods: [
                           BarChartRodData(
-                            y: instary.tirednessLv.roundToDouble(),
-                            colors: [Theme.of(context).indicatorColor],
+                            toY: instary.tirednessLv.roundToDouble(),
+                            color: Theme.of(context).indicatorColor,
                           ),
                         ],
                         showingTooltipIndicators: [0],
@@ -225,8 +243,8 @@ class ViewPage extends StatelessWidget {
                         x: 2,
                         barRods: [
                           BarChartRodData(
-                            y: instary.stressfulnessLv.roundToDouble(),
-                            colors: [Theme.of(context).indicatorColor],
+                            toY: instary.stressfulnessLv.roundToDouble(),
+                            color: Theme.of(context).indicatorColor,
                           ),
                         ],
                         showingTooltipIndicators: [0],

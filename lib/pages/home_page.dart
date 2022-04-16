@@ -175,7 +175,7 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               IconButton(
-                  icon: Icon(Icons.menu),
+                  icon: Icon(Icons.show_chart_rounded),
                   onPressed: () {
                     if (widget.mainPageController.hasClients) {
                       widget.mainPageController.animateToPage(

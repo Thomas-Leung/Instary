@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:instary/models/instary.dart';
 import 'package:instary/widgets/line_chart.dart';
 
 class StatsPage extends StatefulWidget {
@@ -13,6 +15,43 @@ class StatsPage extends StatefulWidget {
 
 class _StatsPageState extends State<StatsPage> {
   final PageController controller = PageController();
+
+  @override
+  void initState() {
+    super.initState();
+    _getInstary();
+  }
+
+  @override
+  void dispose() {
+    Hive.close(); // close all boxes when leave page
+    super.dispose();
+  }
+
+  Future<void> _getInstary() async {
+    List<Instary> instaries = [];
+    if (!Hive.isBoxOpen('instary')) {
+      await Hive.openBox('instary');
+    }
+    final instaryBox = Hive.box('instary');
+    // to initialize instaries when start
+    for (int i = 0; i < instaryBox.length; i++) {
+      final instary = instaryBox.getAt(i);
+      instaries.add(instary);
+    }
+    setState(() {
+      instaries.sort((a, b) {
+        var adate = a.dateTime;
+        var bdate = b.dateTime;
+        return adate.compareTo(bdate);
+      }); // sort by date
+    });
+
+    for (var instary in instaries) {
+      print(instary.dateTime);
+      print(instary.happinessLv);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

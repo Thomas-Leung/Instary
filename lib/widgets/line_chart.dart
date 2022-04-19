@@ -2,9 +2,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class _LineChart extends StatelessWidget {
-  const _LineChart({required this.isShowingMainData});
+  const _LineChart({required this.isShowingMainData, required this.dataPoints});
 
   final bool isShowingMainData;
+  final List<FlSpot> dataPoints;
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +20,12 @@ class _LineChart extends StatelessWidget {
         gridData: gridData,
         titlesData: titlesData1,
         borderData: borderData,
-        lineBarsData: lineBarsData1,
+        lineBarsData: [
+          lineChartBarData1_1(dataPoints),
+        ],
         minX: 0,
-        maxX: 14,
-        maxY: 4,
+        maxX: 31,
+        maxY: 100, // maximum Y axis value
         minY: 0,
       );
 
@@ -34,7 +37,7 @@ class _LineChart extends StatelessWidget {
         lineBarsData: lineBarsData2,
         minX: 0,
         maxX: 14,
-        maxY: 6,
+        maxY: 100,
         minY: 0,
       );
 
@@ -47,6 +50,8 @@ class _LineChart extends StatelessWidget {
 
   FlTitlesData get titlesData1 => FlTitlesData(
         bottomTitles: AxisTitles(
+          axisNameWidget:
+              Text("April", style: TextStyle(fontWeight: FontWeight.bold)),
           sideTitles: bottomTitles,
         ),
         rightTitles: AxisTitles(
@@ -59,10 +64,6 @@ class _LineChart extends StatelessWidget {
           sideTitles: leftTitles(),
         ),
       );
-
-  List<LineChartBarData> get lineBarsData1 => [
-        lineChartBarData1_1,
-      ];
 
   LineTouchData get lineTouchData2 => LineTouchData(
         enabled: false,
@@ -95,20 +96,23 @@ class _LineChart extends StatelessWidget {
     );
     String text;
     switch (value.toInt()) {
-      case 1:
-        text = '1m';
+      case 0:
+        text = '0';
         break;
-      case 2:
-        text = '2m';
+      case 20:
+        text = '20';
         break;
-      case 3:
-        text = '3m';
+      case 40:
+        text = '40';
         break;
-      case 4:
-        text = '5m';
+      case 60:
+        text = '60';
         break;
-      case 5:
-        text = '6m';
+      case 80:
+        text = '80';
+        break;
+      case 100:
+        text = '100';
         break;
       default:
         return Container();
@@ -132,14 +136,26 @@ class _LineChart extends StatelessWidget {
     );
     Widget text;
     switch (value.toInt()) {
-      case 2:
-        text = const Text('SEPT', style: style);
+      case 1:
+        text = const Text('1', style: style);
         break;
-      case 7:
-        text = const Text('OCT', style: style);
+      case 5:
+        text = const Text('5', style: style);
         break;
-      case 12:
-        text = const Text('DEC', style: style);
+      case 10:
+        text = const Text('10', style: style);
+        break;
+      case 15:
+        text = const Text('15', style: style);
+        break;
+      case 20:
+        text = const Text('20', style: style);
+        break;
+      case 25:
+        text = const Text('25', style: style);
+        break;
+      case 30:
+        text = const Text('30', style: style);
         break;
       default:
         text = const Text('');
@@ -165,40 +181,34 @@ class _LineChart extends StatelessWidget {
         ),
       );
 
-  LineChartBarData get lineChartBarData1_1 => LineChartBarData(
-        isCurved: true,
-        color: Colors.white,
-        barWidth: 8,
-        isStrokeCapRound: true,
-        dotData: FlDotData(show: false),
-        belowBarData: BarAreaData(show: false),
-        spots: const [
-          FlSpot(1, 1),
-          FlSpot(3, 1.5),
-          FlSpot(5, 1.4),
-          FlSpot(7, 3.4),
-          FlSpot(10, 2),
-          FlSpot(12, 2.2),
-          FlSpot(13, 1.8),
-        ],
-      );
+  LineChartBarData lineChartBarData1_1(List<FlSpot> points) {
+    return LineChartBarData(
+      isCurved: true,
+      color: Colors.white,
+      barWidth: 8,
+      isStrokeCapRound: true,
+      dotData: FlDotData(show: false),
+      belowBarData: BarAreaData(show: false),
+      spots: points,
+    );
+  }
 
   LineChartBarData get lineChartBarData2_1 => LineChartBarData(
         isCurved: true,
         curveSmoothness: 0,
-        color: const Color(0x444af699),
+        color: Color.fromARGB(255, 255, 255, 255),
         barWidth: 4,
         isStrokeCapRound: true,
-        dotData: FlDotData(show: false),
+        dotData: FlDotData(show: true),
         belowBarData: BarAreaData(show: false),
         spots: const [
-          FlSpot(1, 1),
-          FlSpot(3, 4),
-          FlSpot(5, 1.8),
-          FlSpot(7, 5),
-          FlSpot(10, 2),
-          FlSpot(12, 2.2),
-          FlSpot(13, 1.8),
+          FlSpot(1, 10),
+          FlSpot(3, 40),
+          FlSpot(5, 18),
+          FlSpot(7, 50),
+          FlSpot(10, 20),
+          FlSpot(12, 22),
+          FlSpot(13, 18),
         ],
       );
 }
@@ -213,6 +223,15 @@ class CustomLineChart extends StatefulWidget {
 
 class CustomLineChartState extends State<CustomLineChart> {
   late bool isShowingMainData;
+  final dataPoints = <FlSpot>[
+    FlSpot(1, 20),
+    FlSpot(2, 15),
+    FlSpot(5, 14),
+    FlSpot(7, 34),
+    FlSpot(14, 20),
+    FlSpot(16, 22),
+    FlSpot(26, 100),
+  ];
 
   @override
   void initState() {
@@ -253,7 +272,9 @@ class CustomLineChartState extends State<CustomLineChart> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(right: 16.0, left: 6.0),
-                    child: _LineChart(isShowingMainData: isShowingMainData),
+                    child: _LineChart(
+                        isShowingMainData: isShowingMainData,
+                        dataPoints: dataPoints),
                   ),
                 ),
                 const SizedBox(

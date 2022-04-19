@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:instary/models/instary.dart';
 import 'package:instary/widgets/line_chart.dart';
+import 'package:intl/intl.dart' as intl;
 
 class StatsPage extends StatefulWidget {
   final PageController mainPageController;
@@ -24,7 +25,10 @@ class _StatsPageState extends State<StatsPage> {
 
   @override
   void dispose() {
-    Hive.close(); // close all boxes when leave page
+    // don't close if we are going to homePage
+    if (widget.mainPageController.page != 1) {
+      Hive.close(); // close all boxes when leave page
+    }
     super.dispose();
   }
 
@@ -47,9 +51,14 @@ class _StatsPageState extends State<StatsPage> {
       }); // sort by date
     });
 
+    // get today's month and only show this month's data (for now)
+    var now = new DateTime.now();
     for (var instary in instaries) {
-      print(instary.dateTime);
-      print(instary.happinessLv);
+      if (instary.dateTime.year == now.year &&
+          instary.dateTime.month == now.month) {
+        print(instary.dateTime);
+        print(instary.happinessLv);
+      }
     }
   }
 

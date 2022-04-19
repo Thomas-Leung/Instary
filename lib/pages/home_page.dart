@@ -99,9 +99,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  void dispose() {
-    Hive.close(); // close all boxes when leave page
+  void dispose() async {
     super.dispose();
+    // need to await to make sure search listener is disposed as well
+    // if not we might get memory leak
+    await Hive.close(); // close all boxes when leave page
   }
 
   Future<void> _getInstary() async {

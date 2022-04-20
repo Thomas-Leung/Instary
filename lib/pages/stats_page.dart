@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:instary/models/instary.dart';
 import 'package:instary/widgets/line_chart.dart';
+import 'package:collection/collection.dart';
 import 'package:intl/intl.dart' as intl;
 
 class StatsPage extends StatefulWidget {
@@ -16,6 +19,8 @@ class StatsPage extends StatefulWidget {
 
 class _StatsPageState extends State<StatsPage> {
   final PageController controller = PageController();
+  List<int> days = [];
+  List<double> happiness = [];
 
   @override
   void initState() {
@@ -56,8 +61,8 @@ class _StatsPageState extends State<StatsPage> {
     for (var instary in instaries) {
       if (instary.dateTime.year == now.year &&
           instary.dateTime.month == now.month) {
-        print(instary.dateTime);
-        print(instary.happinessLv);
+        days.add(instary.dateTime.day);
+        happiness.add(instary.happinessLv);
       }
     }
   }
@@ -83,7 +88,8 @@ class _StatsPageState extends State<StatsPage> {
                         child: Center(
                           child: Padding(
                             padding: const EdgeInsets.all(28.0),
-                            child: CustomLineChart(),
+                            child: CustomLineChart(
+                                dates: days, dataPoints: happiness),
                           ),
                         ),
                       ),
@@ -115,7 +121,9 @@ class _StatsPageState extends State<StatsPage> {
                                     ),
                                   ),
                                   Text(
-                                    "75 points",
+                                    happiness.isEmpty
+                                        ? "No data"
+                                        : "${happiness.average.toStringAsFixed(1)} points",
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -136,7 +144,9 @@ class _StatsPageState extends State<StatsPage> {
                                     ),
                                   ),
                                   Text(
-                                    "50 points",
+                                    happiness.isEmpty
+                                        ? "No data"
+                                        : "${happiness.reduce(max)} points",
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -157,7 +167,9 @@ class _StatsPageState extends State<StatsPage> {
                                     ),
                                   ),
                                   Text(
-                                    "90 points",
+                                    happiness.isEmpty
+                                        ? "No data"
+                                        : "${happiness.reduce(min)} points",
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,

@@ -2,10 +2,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class _LineChart extends StatelessWidget {
-  const _LineChart({required this.isShowingMainData, required this.dataPoints});
+  const _LineChart({required this.isShowingMainData, required this.flSpots});
 
   final bool isShowingMainData;
-  final List<FlSpot> dataPoints;
+  final List<FlSpot> flSpots;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class _LineChart extends StatelessWidget {
         titlesData: titlesData1,
         borderData: borderData,
         lineBarsData: [
-          lineChartBarData1_1(dataPoints),
+          lineChartBarData1_1(flSpots),
         ],
         minX: 0,
         maxX: 31,
@@ -181,15 +181,15 @@ class _LineChart extends StatelessWidget {
         ),
       );
 
-  LineChartBarData lineChartBarData1_1(List<FlSpot> points) {
+  LineChartBarData lineChartBarData1_1(List<FlSpot> spots) {
     return LineChartBarData(
       isCurved: true,
       color: Colors.white,
-      barWidth: 8,
+      barWidth: 6,
       isStrokeCapRound: true,
       dotData: FlDotData(show: false),
       belowBarData: BarAreaData(show: false),
-      spots: points,
+      spots: spots,
     );
   }
 
@@ -215,7 +215,12 @@ class _LineChart extends StatelessWidget {
 
 // START FROM HERE
 class CustomLineChart extends StatefulWidget {
-  const CustomLineChart({Key? key}) : super(key: key);
+  final List<int> dates;
+  final List<double> dataPoints;
+
+  const CustomLineChart(
+      {Key? key, required this.dates, required this.dataPoints})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => CustomLineChartState();
@@ -223,20 +228,27 @@ class CustomLineChart extends StatefulWidget {
 
 class CustomLineChartState extends State<CustomLineChart> {
   late bool isShowingMainData;
-  final dataPoints = <FlSpot>[
-    FlSpot(1, 20),
-    FlSpot(2, 15),
-    FlSpot(5, 14),
-    FlSpot(7, 34),
-    FlSpot(14, 20),
-    FlSpot(16, 22),
-    FlSpot(26, 100),
+  final flSpots = <FlSpot>[
+    // FlSpot(1, 20),
+    // FlSpot(2, 15),
+    // FlSpot(5, 14),
+    // FlSpot(7, 34),
+    // FlSpot(14, 20),
+    // FlSpot(16, 22),
+    // FlSpot(26, 100),
   ];
 
   @override
   void initState() {
     super.initState();
     isShowingMainData = true;
+    _generateFlSpots(widget.dates, widget.dataPoints);
+  }
+
+  _generateFlSpots(List<int> dates, List<double> dataPoints) {
+    for (int i = 0; i < dates.length; i++) {
+      flSpots.add(FlSpot(dates[i].toDouble(), dataPoints[i]));
+    }
   }
 
   @override
@@ -273,8 +285,7 @@ class CustomLineChartState extends State<CustomLineChart> {
                   child: Padding(
                     padding: const EdgeInsets.only(right: 16.0, left: 6.0),
                     child: _LineChart(
-                        isShowingMainData: isShowingMainData,
-                        dataPoints: dataPoints),
+                        isShowingMainData: isShowingMainData, flSpots: flSpots),
                   ),
                 ),
                 const SizedBox(

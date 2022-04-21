@@ -6,6 +6,7 @@ import 'package:instary/models/instary.dart';
 import 'package:instary/widgets/line_chart.dart';
 import 'package:collection/collection.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:intl/date_symbol_data_local.dart';
 
 class StatsPage extends StatefulWidget {
   final PageController mainPageController;
@@ -21,10 +22,13 @@ class _StatsPageState extends State<StatsPage> {
   final PageController controller = PageController();
   List<int> days = [];
   List<double> happiness = [];
+  List<double> tiredness = [];
+  List<double> stressfulness = [];
 
   @override
   void initState() {
     super.initState();
+    initializeDateFormatting(); // for showing month string in LineChart
     _getInstary();
   }
 
@@ -63,6 +67,8 @@ class _StatsPageState extends State<StatsPage> {
           instary.dateTime.month == now.month) {
         days.add(instary.dateTime.day);
         happiness.add(instary.happinessLv);
+        tiredness.add(instary.tirednessLv);
+        stressfulness.add(instary.stressfulnessLv);
       }
     }
   }
@@ -79,116 +85,12 @@ class _StatsPageState extends State<StatsPage> {
                 physics: BouncingScrollPhysics(),
                 controller: controller,
                 children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Flexible(
-                        flex: 6,
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(28.0),
-                            child: CustomLineChart(
-                                dates: days, dataPoints: happiness),
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        flex: 2,
-                        fit: FlexFit.loose,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Happiness",
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Divider(),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Average",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    happiness.isEmpty
-                                        ? "No data"
-                                        : "${happiness.average.toStringAsFixed(1)} points",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 4),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Low",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    happiness.isEmpty
-                                        ? "No data"
-                                        : "${happiness.reduce(max)} points",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 4),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "High",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    happiness.isEmpty
-                                        ? "No data"
-                                        : "${happiness.reduce(min)} points",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Center(
-                    child: Text('Second Page'),
-                  ),
-                  Center(
-                    child: Text('Third Page'),
-                  )
+                  feelingDetailWidget(
+                      'Happiness', days, happiness, Color(0xffedad5e)),
+                  feelingDetailWidget(
+                      "Tiredness", days, tiredness, Color(0xffa89df8)),
+                  feelingDetailWidget(
+                      "Stressfulness", days, stressfulness, Color(0xffee7d69))
                 ],
               ),
             ),
@@ -228,6 +130,119 @@ class _StatsPageState extends State<StatsPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget feelingDetailWidget(
+      String title, List<int> dates, List<double> dataPoints, Color bgColor) {
+    String locale = Localizations.localeOf(context).languageCode;
+    DateTime now = new DateTime.now();
+    String month = intl.DateFormat.MMMM(locale).format(now);
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Flexible(
+          flex: 6,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(28.0),
+              child: CustomLineChart(
+                dates: dates,
+                dataPoints: dataPoints,
+                bgColor: bgColor,
+                xAxisTitle: month,
+              ),
+            ),
+          ),
+        ),
+        Flexible(
+          flex: 2,
+          fit: FlexFit.loose,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 28.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Average",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      dataPoints.isEmpty
+                          ? "No data"
+                          : "${dataPoints.average.toStringAsFixed(1)} points",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Low",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      dataPoints.isEmpty
+                          ? "No data"
+                          : "${dataPoints.reduce(min)} points",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "High",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      dataPoints.isEmpty
+                          ? "No data"
+                          : "${dataPoints.reduce(max)} points",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

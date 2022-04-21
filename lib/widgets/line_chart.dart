@@ -2,10 +2,14 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class _LineChart extends StatelessWidget {
-  const _LineChart({required this.isShowingMainData, required this.flSpots});
-
   final bool isShowingMainData;
   final List<FlSpot> flSpots;
+  final String xAxisTitle;
+
+  const _LineChart(
+      {required this.isShowingMainData,
+      required this.flSpots,
+      required this.xAxisTitle});
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +27,9 @@ class _LineChart extends StatelessWidget {
         lineBarsData: [
           lineChartBarData1_1(flSpots),
         ],
-        minX: 0,
-        maxX: 31,
+        // if flSpots array is empty then use first and last day of a month
+        minX: flSpots.isEmpty ? 1 : flSpots.first.x, // minimum X axis value
+        maxX: flSpots.isEmpty ? 31 : flSpots.last.x,
         maxY: 100, // maximum Y axis value
         minY: 0,
       );
@@ -50,8 +55,10 @@ class _LineChart extends StatelessWidget {
 
   FlTitlesData get titlesData1 => FlTitlesData(
         bottomTitles: AxisTitles(
-          axisNameWidget:
-              Text("April", style: TextStyle(fontWeight: FontWeight.bold)),
+          axisNameWidget: Text(
+            xAxisTitle,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
           sideTitles: bottomTitles,
         ),
         rightTitles: AxisTitles(
@@ -217,9 +224,15 @@ class _LineChart extends StatelessWidget {
 class CustomLineChart extends StatefulWidget {
   final List<int> dates;
   final List<double> dataPoints;
+  final String xAxisTitle;
+  final Color bgColor;
 
   const CustomLineChart(
-      {Key? key, required this.dates, required this.dataPoints})
+      {Key? key,
+      required this.dates,
+      required this.dataPoints,
+      this.xAxisTitle: "",
+      this.bgColor: const Color(0xffa2c887)})
       : super(key: key);
 
   @override
@@ -256,9 +269,9 @@ class CustomLineChartState extends State<CustomLineChart> {
     return AspectRatio(
       aspectRatio: 0.72,
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(18)),
-          color: Color(0xffa2c887),
+          color: widget.bgColor,
         ),
         child: Stack(
           children: <Widget>[
@@ -285,7 +298,10 @@ class CustomLineChartState extends State<CustomLineChart> {
                   child: Padding(
                     padding: const EdgeInsets.only(right: 16.0, left: 6.0),
                     child: _LineChart(
-                        isShowingMainData: isShowingMainData, flSpots: flSpots),
+                      isShowingMainData: isShowingMainData,
+                      flSpots: flSpots,
+                      xAxisTitle: widget.xAxisTitle,
+                    ),
                   ),
                 ),
                 const SizedBox(

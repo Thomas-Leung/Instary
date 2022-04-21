@@ -7,7 +7,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final PageController pageController = PageController(initialPage: 0);
+  final PageController pageController = PageController(initialPage: 1);
 
   @override
   void dispose() {

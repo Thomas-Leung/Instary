@@ -138,7 +138,7 @@ class FileImportExport {
     // // Uint8List zipInByte = await zipFile.readAsBytes();
     // // Uint8List encryptedByte = await FileEncryption().encryptAES(zipInByte);
     // String encryptedFileName =
-    //     "${DateFormat('yyyy-MM-dd_HH-MM').format(DateTime.now())}.$instaryExtension";
+    //     "${DateFormat('yyyy-MM-dd_HH-mm').format(DateTime.now())}.$instaryExtension";
     // File encryptedFile =
     //     File(tempDir.path + Platform.pathSeparator + encryptedFileName);
     // await FileEncryption().encryptAESWrapper(zipFile, encryptedFile);
@@ -149,7 +149,7 @@ class FileImportExport {
     // Uncomment below for export without encryption
     File zipFile = File(zipTempFilePath);
     String zipFileName =
-        "${DateFormat('yyyy-MM-dd_HH-MM').format(DateTime.now())}.zip";
+        "${DateFormat('yyyy-MM-dd_HH-mm').format(DateTime.now())}.zip";
     MediaStore().downloadBackup(file: zipFile, name: zipFileName);
 
     tempFile.delete(); // delete Instary json file

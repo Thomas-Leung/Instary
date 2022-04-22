@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
 import 'package:instary/models/feelings_level.dart';
+import 'package:instary/widgets/date_picker_widget.dart';
 import 'package:instary/widgets/feelings_card.dart';
 import 'package:instary/widgets/media_card.dart';
+import 'package:instary/widgets/time_picker_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:mime/mime.dart';
@@ -34,6 +36,7 @@ class _CreatePageState extends State<CreatePage> {
   FeelingsLevel _level = FeelingsLevel.init();
   late final String appDocumentDirPath;
   List<File> _selectedMedia = [];
+  TimeOfDay _timeOfDay = TimeOfDay(hour: 0, minute: 0);
 
   @override
   void initState() {
@@ -216,6 +219,30 @@ class _CreatePageState extends State<CreatePage> {
               ),
               Container(
                 height: 20.0,
+              ),
+              Column(
+                children: [
+                  Text(_timeOfDay.format(context)),
+                  ElevatedButton(
+                    onPressed: () {
+                      showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                      ).then((value) {
+                        setState(() {
+                          _timeOfDay = value!;
+                        });
+                      });
+                    },
+                    child: Text('Pick Time'),
+                  ),
+                ],
+              ),
+              Container(
+                child: DatePickerWidget(),
+              ),
+              Container(
+                child: TimePickerWidget(),
               ),
               SizedBox(
                 width: double.infinity,

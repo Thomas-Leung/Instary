@@ -164,7 +164,7 @@ class _HomePageState extends State<HomePage> {
         floatingActionButton: FloatingActionButton(
           child: Icon(
             Icons.add,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: Colors.white,
           ),
           elevation: 4.0,
           onPressed: () => Navigator.pushNamed(context, '/createPage'),

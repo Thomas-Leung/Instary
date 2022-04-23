@@ -10,7 +10,9 @@ class AppTheme {
 
     // +(ADD) BUTTONS
     colorScheme: ColorScheme.light(
-        secondary: Color(0xff425296), onSurface: Colors.white),
+      secondary: Color(0xff425296),
+      // onSurface: DatePicker Text color
+    ),
 
     // SEARCH BAR
     bannerTheme: MaterialBannerThemeData(backgroundColor: Colors.blueGrey[50]),
@@ -88,9 +90,9 @@ class AppTheme {
 
     // +(ADD and SUBMIT) BUTTON
     colorScheme: ColorScheme.dark(
-        secondary: Colors.deepPurple[300]!,
-        onPrimary: Colors.white,
-        onSurface: Colors.white),
+      secondary: Colors.deepPurple[300]!,
+      onPrimary: Colors.white,
+    ),
     bannerTheme: MaterialBannerThemeData(backgroundColor: Colors.grey[800]),
     appBarTheme: AppBarTheme(
       elevation: 0,

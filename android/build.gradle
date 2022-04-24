@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.4' // If this updated remember to update android > gradle > wrapper > gradle-wrapper.properties as well
+        classpath 'com.android.tools.build:gradle:7.1.1' // If this updated remember to update android > gradle > wrapper > gradle-wrapper.properties as well
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }

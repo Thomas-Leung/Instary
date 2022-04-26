@@ -95,7 +95,11 @@ class ViewPage extends StatelessWidget {
                   Container(
                     height: 20.0,
                   ),
-                  feelingsWidget(context)
+                  feelingsWidget(context),
+                  Container(
+                    height: 20.0,
+                  ),
+                  _sleepWidget(context),
                 ],
               ),
             ),
@@ -283,5 +287,195 @@ class ViewPage extends StatelessWidget {
       }
     }
     return Image.asset('assets/images/img_not_found.png', fit: BoxFit.cover);
+  }
+
+  Widget _sleepWidget(BuildContext context) {
+    return Card(
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Sleep Tracker',
+                    style: TextStyle(
+                        color: Theme.of(context).textTheme.subtitle1!.color,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  flex: 1,
+                  fit: FlexFit.tight,
+                  child: Container(
+                    width: 100,
+                    height: 100, //0xffea9c90
+                    decoration: BoxDecoration(
+                      color: Color(0xff4b3062),
+                      borderRadius: BorderRadius.only(
+                          topLeft: const Radius.circular(10.0),
+                          bottomLeft: const Radius.circular(10.0)),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Stack(
+                        alignment: Alignment.topCenter,
+                        clipBehavior: Clip.none,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Sleep",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      instary.bedTime == null
+                                          ? "No data"
+                                          : DateFormat('HH:mm')
+                                              .format(instary.bedTime),
+                                      style: TextStyle(
+                                          fontSize:
+                                              instary.bedTime == null ? 14 : 28,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      instary.bedTime == null
+                                          ? ""
+                                          : DateFormat('yyyy/MM/dd')
+                                              .format(instary.bedTime),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          Positioned(
+                            top: -22,
+                            left: 2,
+                            child: Container(
+                                decoration: BoxDecoration(
+                                  color: Color(0xff4b3062),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: Icon(Icons.nightlight,
+                                      color: Colors.amber[200], size: 20),
+                                )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Flexible(
+                  flex: 1,
+                  fit: FlexFit.tight,
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Color(0xffea9c90),
+                      borderRadius: BorderRadius.only(
+                          topRight: const Radius.circular(10.0),
+                          bottomRight: const Radius.circular(10.0)),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Stack(
+                        alignment: Alignment.topCenter,
+                        clipBehavior: Clip.none,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Wake up",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      instary.wakeUpTime == null
+                                          ? "No Data"
+                                          : DateFormat('HH:mm')
+                                              .format(instary.wakeUpTime!),
+                                      style: TextStyle(
+                                          fontSize: instary.wakeUpTime == null
+                                              ? 14
+                                              : 28,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      instary.wakeUpTime == null
+                                          ? ""
+                                          : DateFormat('yyyy/MM/dd')
+                                              .format(instary.wakeUpTime!),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          Positioned(
+                            top: -22,
+                            left: 2,
+                            child: Container(
+                                decoration: BoxDecoration(
+                                  color: Color(0xffea9c90),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: Icon(Icons.light_mode,
+                                      color: Colors.amber[100], size: 20),
+                                )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

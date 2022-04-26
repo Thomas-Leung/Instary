@@ -35,6 +35,9 @@ class _CreatePageState extends State<CreatePage> {
   FeelingsLevel _level = FeelingsLevel.init();
   late final String appDocumentDirPath;
   List<File> _selectedMedia = [];
+  DateTime? _bedTime;
+  DateTime? _wakeUpTime;
+  Object redrawSleepCard = Object();
 
   @override
   void initState() {
@@ -132,6 +135,10 @@ class _CreatePageState extends State<CreatePage> {
                       setState(() {
                         this.date = DateFormat.yMMMd().format(date);
                         dateTime = date;
+                        // new date so reset bedTime and wakeUpTime
+                        _bedTime = null;
+                        _wakeUpTime = null;
+                        redrawSleepCard = Object();
                       });
                     }, currentTime: dateTime);
                   },
@@ -218,7 +225,16 @@ class _CreatePageState extends State<CreatePage> {
               Container(
                 height: 20.0,
               ),
-              SleepCard(),
+              SleepCard(
+                key: ValueKey<Object>(redrawSleepCard),
+                existingDateTime: dateTime,
+                existingBedTime: _bedTime,
+                existingWakeUpTime: _wakeUpTime,
+                onSleepTimeChanged: (DateTime? bedTime, DateTime? wakeUpTime) {
+                  _bedTime = bedTime;
+                  _wakeUpTime = wakeUpTime;
+                },
+              ),
               Container(
                 height: 20.0,
               ),
@@ -236,14 +252,17 @@ class _CreatePageState extends State<CreatePage> {
                       String id = uuid.v1();
                       List<String> mediaPaths = _createMediaPaths();
                       final newInstary = Instary(
-                          id,
-                          dateTime,
-                          titleController.text,
-                          contentController.text,
-                          _level.happinessLv,
-                          _level.tirednessLv,
-                          _level.stressfulnessLv,
-                          mediaPaths);
+                        id,
+                        dateTime,
+                        titleController.text,
+                        contentController.text,
+                        _level.happinessLv,
+                        _level.tirednessLv,
+                        _level.stressfulnessLv,
+                        mediaPaths,
+                        _bedTime,
+                        _wakeUpTime,
+                      );
                       addInstary(newInstary);
                     }
                   },

@@ -5,6 +5,7 @@ part 'instary.g.dart';
 // create hive adapter
 // flutter packages pub run build_runner build
 // typeId is used to identify the class (so you can change class name)
+// no need to change typeId when update schema
 @HiveType(typeId: 1)
 class Instary {
   @HiveField(0)
@@ -23,9 +24,22 @@ class Instary {
   double stressfulnessLv;
   @HiveField(7)
   List<String> mediaPaths;
+  @HiveField(8)
+  DateTime? bedTime;
+  @HiveField(9)
+  DateTime? wakeUpTime;
 
-  Instary(this.id, this.dateTime, this.title, this.content, this.happinessLv,
-      this.tirednessLv, this.stressfulnessLv, this.mediaPaths);
+  Instary(
+      this.id,
+      this.dateTime,
+      this.title,
+      this.content,
+      this.happinessLv,
+      this.tirednessLv,
+      this.stressfulnessLv,
+      this.mediaPaths,
+      this.bedTime,
+      this.wakeUpTime);
 
   Instary.fromJson(Map<String, dynamic> json)
       : id = json["id"],
@@ -36,7 +50,13 @@ class Instary {
         tirednessLv = json["tirednessLv"],
         stressfulnessLv = json["stressfulnessLv"],
         mediaPaths = json["mediaPaths"]
-            .cast<String>(); // cast from List<dynamic> to List<String>
+            .cast<String>(), // cast from List<dynamic> to List<String>
+        bedTime = json["bedTime"] != null
+            ? new DateTime.fromMillisecondsSinceEpoch(json["bedTime"])
+            : null,
+        wakeUpTime = json["wakeUpTime"] != null
+            ? new DateTime.fromMillisecondsSinceEpoch(json["wakeUpTime"])
+            : null;
 
   Map<String, dynamic> toJson() {
     return {
@@ -47,7 +67,9 @@ class Instary {
       "happinessLv": this.happinessLv,
       "tirednessLv": this.tirednessLv,
       "stressfulnessLv": this.stressfulnessLv,
-      "mediaPaths": this.mediaPaths
+      "mediaPaths": this.mediaPaths,
+      "bedTime": this.bedTime?.millisecondsSinceEpoch,
+      "wakeUpTime": this.wakeUpTime?.millisecondsSinceEpoch
     };
   }
 }

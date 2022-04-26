@@ -6,6 +6,7 @@ import 'package:hive/hive.dart';
 import 'package:instary/models/feelings_level.dart';
 import 'package:instary/widgets/feelings_card.dart';
 import 'package:instary/widgets/media_card.dart';
+import 'package:instary/widgets/sleep_card.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:mime/mime.dart';
@@ -38,6 +39,9 @@ class _EditPageState extends State<EditPage> {
   late FeelingsLevel _level;
   late final String appDocumentDirPath;
   List<File> _selectedMedia = [];
+  DateTime? _bedTime;
+  DateTime? _wakeUpTime;
+  Object redrawSleepCard = Object();
 
   @override
   void initState() {
@@ -50,6 +54,8 @@ class _EditPageState extends State<EditPage> {
     for (String filePath in widget.instary.mediaPaths) {
       _selectedMedia.add(File(filePath));
     }
+    _bedTime = widget.instary.bedTime;
+    _wakeUpTime = widget.instary.wakeUpTime;
     setAppDocumentDirPath();
     super.initState();
   }
@@ -191,6 +197,10 @@ class _EditPageState extends State<EditPage> {
                       setState(() {
                         this.date = DateFormat.yMMMd().format(date);
                         dateTime = date;
+                        // new date so reset bedTime and wakeUpTime
+                        _bedTime = null;
+                        _wakeUpTime = null;
+                        redrawSleepCard = Object();
                       });
                     }, currentTime: dateTime);
                   },
@@ -276,6 +286,19 @@ class _EditPageState extends State<EditPage> {
               Container(
                 height: 20.0,
               ),
+              SleepCard(
+                key: ValueKey<Object>(redrawSleepCard),
+                existingDateTime: dateTime,
+                existingBedTime: _bedTime,
+                existingWakeUpTime: _wakeUpTime,
+                onSleepTimeChanged: (DateTime? bedTime, DateTime? wakeUpTime) {
+                  _bedTime = bedTime;
+                  _wakeUpTime = wakeUpTime;
+                },
+              ),
+              Container(
+                height: 20.0,
+              ),
               SizedBox(
                 width: double.infinity,
                 height: 42,
@@ -289,14 +312,17 @@ class _EditPageState extends State<EditPage> {
                     List<String> mediaPaths = _updateMediaPaths();
                     if (_formKey.currentState!.validate()) {
                       final newInstary = Instary(
-                          this.widget.instary.id,
-                          dateTime,
-                          titleController.text,
-                          contentController.text,
-                          _level.happinessLv,
-                          _level.tirednessLv,
-                          _level.stressfulnessLv,
-                          mediaPaths);
+                        this.widget.instary.id,
+                        dateTime,
+                        titleController.text,
+                        contentController.text,
+                        _level.happinessLv,
+                        _level.tirednessLv,
+                        _level.stressfulnessLv,
+                        mediaPaths,
+                        _bedTime,
+                        _wakeUpTime,
+                      );
                       updateInstary(newInstary);
                     }
                   },

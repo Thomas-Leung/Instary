@@ -2,15 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class SleepCard extends StatefulWidget {
-  const SleepCard({Key? key}) : super(key: key);
+  final DateTime existingDateTime;
+  final DateTime? existingBedTime;
+  final DateTime? existingWakeUpTime;
+  final Function(DateTime?, DateTime?) onSleepTimeChanged;
+
+  const SleepCard(
+      {Key? key,
+      required this.existingDateTime,
+      this.existingBedTime,
+      this.existingWakeUpTime,
+      required this.onSleepTimeChanged})
+      : super(key: key);
 
   @override
   State<SleepCard> createState() => _SleepCardState();
 }
 
 class _SleepCardState extends State<SleepCard> {
-  DateTime? sleepDateTime;
-  DateTime? wakeUpDateTime;
+  late DateTime dateTime;
+  DateTime? bedTime;
+  DateTime? wakeUpTime;
+
+  @override
+  void initState() {
+    super.initState();
+    dateTime = widget.existingDateTime;
+    bedTime = widget.existingBedTime;
+    wakeUpTime = widget.existingWakeUpTime;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +56,10 @@ class _SleepCardState extends State<SleepCard> {
                 TextButton(
                   onPressed: () {
                     setState(() {
-                      sleepDateTime = null;
-                      wakeUpDateTime = null;
+                      bedTime = null;
+                      wakeUpTime = null;
                     });
+                    widget.onSleepTimeChanged(bedTime, wakeUpTime);
                   },
                   child: const Text('reset'),
                   style: TextButton.styleFrom(
@@ -58,13 +79,13 @@ class _SleepCardState extends State<SleepCard> {
                   fit: FlexFit.tight,
                   child: GestureDetector(
                     onTap: () async {
-                      DateTime? tempTime =
-                          await pickDateTime(context, sleepDateTime);
+                      DateTime? tempTime = await pickDateTime(context, bedTime);
                       if (tempTime == null) return;
-                      if (wakeUpDateTime == null ||
-                          tempTime.isBefore(wakeUpDateTime!) ||
-                          tempTime == sleepDateTime) {
-                        setState(() => sleepDateTime = tempTime);
+                      if (wakeUpTime == null ||
+                          tempTime.isBefore(wakeUpTime!) ||
+                          tempTime == bedTime) {
+                        setState(() => bedTime = tempTime);
+                        widget.onSleepTimeChanged(bedTime, wakeUpTime);
                       } else {
                         showDialog(
                           context: context,
@@ -117,21 +138,20 @@ class _SleepCardState extends State<SleepCard> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        sleepDateTime == null
+                                        bedTime == null
                                             ? "Tap to Pick Date"
                                             : DateFormat('HH:mm')
-                                                .format(sleepDateTime!),
+                                                .format(bedTime!),
                                         style: TextStyle(
-                                            fontSize:
-                                                sleepDateTime == null ? 14 : 28,
+                                            fontSize: bedTime == null ? 14 : 28,
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold),
                                       ),
                                       Text(
-                                        sleepDateTime == null
+                                        bedTime == null
                                             ? ""
                                             : DateFormat('yyyy/MM/dd')
-                                                .format(sleepDateTime!),
+                                                .format(bedTime!),
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.white70,
@@ -168,12 +188,13 @@ class _SleepCardState extends State<SleepCard> {
                   child: GestureDetector(
                     onTap: () async {
                       DateTime? tempTime =
-                          await pickDateTime(context, wakeUpDateTime);
+                          await pickDateTime(context, wakeUpTime);
                       if (tempTime == null) return;
-                      if (sleepDateTime == null ||
-                          tempTime.isAfter(sleepDateTime!) ||
-                          tempTime == sleepDateTime) {
-                        setState(() => wakeUpDateTime = tempTime);
+                      if (bedTime == null ||
+                          tempTime.isAfter(bedTime!) ||
+                          tempTime == bedTime) {
+                        setState(() => wakeUpTime = tempTime);
+                        widget.onSleepTimeChanged(bedTime, wakeUpTime);
                       } else {
                         showDialog(
                           context: context,
@@ -226,22 +247,21 @@ class _SleepCardState extends State<SleepCard> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        wakeUpDateTime == null
+                                        wakeUpTime == null
                                             ? "Tap to Pick Date"
                                             : DateFormat('HH:mm')
-                                                .format(wakeUpDateTime!),
+                                                .format(wakeUpTime!),
                                         style: TextStyle(
-                                            fontSize: wakeUpDateTime == null
-                                                ? 14
-                                                : 28,
+                                            fontSize:
+                                                wakeUpTime == null ? 14 : 28,
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold),
                                       ),
                                       Text(
-                                        wakeUpDateTime == null
+                                        wakeUpTime == null
                                             ? ""
                                             : DateFormat('yyyy/MM/dd')
-                                                .format(wakeUpDateTime!),
+                                                .format(wakeUpTime!),
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.white70,
@@ -293,13 +313,14 @@ class _SleepCardState extends State<SleepCard> {
 
   Future<DateTime?> pickDate(
       BuildContext context, DateTime? existingDate) async {
-    final initialDate = DateTime.now();
+    final initialDate = dateTime;
+
     final newDate = await showDatePicker(
       context: context,
       initialDate: existingDate ??
           initialDate, // if existingDate is null, use initialDate else use date
-      firstDate: DateTime.now().subtract(Duration(days: 1)),
-      lastDate: DateTime.now(),
+      firstDate: initialDate.subtract(Duration(days: 1)),
+      lastDate: initialDate,
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -318,8 +339,9 @@ class _SleepCardState extends State<SleepCard> {
 
   Future<TimeOfDay?> pickTime(
       BuildContext context, DateTime? existingDate) async {
-    final initialTime = TimeOfDay(hour: 9, minute: 0);
+    final TimeOfDay initialTime = TimeOfDay.fromDateTime(DateTime.now());
     TimeOfDay? existingTime;
+
     if (existingDate != null) {
       existingTime = TimeOfDay.fromDateTime(existingDate);
     }

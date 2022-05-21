@@ -21,7 +21,7 @@ dependencies:
   flutter:
     sdk: flutter
   intl: ^0.17.0
-  fl_chart: ^0.50.1
+  fl_chart: ^0.50.6
   flutter_datetime_picker: ^1.5.1  # update this package to remove warning when debug in the future
   hive: ^2.0.4
   hive_flutter: ^1.1.0

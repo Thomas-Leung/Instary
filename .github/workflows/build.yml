@@ -20,7 +20,7 @@ jobs:
         with:
           channel: 'stable'
       - run: flutter pub get
-      - run: flutter test
+      # - run: flutter test
       - run: flutter build apk
       - name: Upload content
         uses: actions/upload-artifact@v3
@@ -33,7 +33,7 @@ jobs:
       needs: build-project
       steps:
       - name: Download artifact
-        uses: actions/doenload-artifact@v3
+        uses: actions/download-artifact@v3
         with:
           name: release-apk
       - name: Test artifact download

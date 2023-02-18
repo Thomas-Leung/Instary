@@ -27,9 +27,11 @@ jobs:
         with:
           name: release-apk
           path: build/app/outputs/apk/release/app-release.apk
-  tag-project:
-      name: Tag Project
+  release-project:
+      name: Release Project
       runs-on: ubuntu-latest
+      permissions:
+        contents: write
       needs: build-project
       steps:
       - name: Download artifact
@@ -38,17 +40,7 @@ jobs:
           name: release-apk
       - name: Test artifact download
         run: ls -R
-      - name: Push tag
-        id: create-new-tag
-        uses: mathieudutour/github-tag-action@v6.1
+      - name: Create Github release
+        uses: ncipollo/release-action@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create-new-tag.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: .app-release.apk
-          asset_name: Instary.apk
-          asset_content_type: application/zip
+          artifacts: "app-release.apk"

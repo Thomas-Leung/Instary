@@ -68,7 +68,7 @@ class _ImportExportListTileState extends State<ImportExportListTile> {
                             );
                             bottomSheetColor = Colors.green;
                           }
-                          Future.delayed(const Duration(seconds: 2), () {
+                          Future.delayed(const Duration(seconds: 4), () {
                             // Close bottom sheet and re-enable listTile
                             setState(() => _enableListTile = true);
                             Navigator.pop(context);
@@ -89,12 +89,16 @@ class _ImportExportListTileState extends State<ImportExportListTile> {
                                 children: [
                                   Padding(
                                     padding: EdgeInsets.only(left: 16.0),
-                                    child: Text(
-                                      status,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
+                                    child: SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.6,
+                                      child: Text(
+                                        status,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            // fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                     ),
                                   ),
                                   Padding(

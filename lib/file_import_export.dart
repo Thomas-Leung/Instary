@@ -150,7 +150,12 @@ class FileImportExport {
     File zipFile = File(zipTempFilePath);
     String zipFileName =
         "${DateFormat('yyyy-MM-dd_HH-mm').format(DateTime.now())}.zip";
-    MediaStore().downloadBackup(file: zipFile, name: zipFileName);
+
+    // Move zip file to internal app storage first because we are running a background task
+    // When user opens the app again then we will move the file out of the app
+    Directory moveToDownloadsDir = await new Directory('${appDir.path}/moveToDownloads').create();
+    await zipFile.rename("${moveToDownloadsDir.path}/$zipFileName");
+
 
     tempFile.delete(); // delete Instary json file
     // zipFile.delete();

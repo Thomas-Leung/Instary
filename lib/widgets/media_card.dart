@@ -127,9 +127,9 @@ class _MediaCardState extends State<MediaCard> {
   Future<File> changeFileName(File file, String newFileName) {
     var path = file.path;
     var lastSeparator = path.lastIndexOf(Platform.pathSeparator);
-    var extenstion = p.extension(path);
+    var extension = p.extension(path);
     var newPath =
-        path.substring(0, lastSeparator + 1) + newFileName + extenstion;
+        path.substring(0, lastSeparator + 1) + newFileName + extension;
     return file.rename(newPath);
   }
 

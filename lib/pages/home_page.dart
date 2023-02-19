@@ -1,12 +1,15 @@
 import 'dart:io';
 
+import 'package:instary/file_import_export.dart';
 import 'package:instary/pages/view_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:hive/hive.dart';
+import 'package:instary/widgets/custom_snackbar.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -25,6 +28,7 @@ class _HomePageState extends State<HomePage> {
   List filteredInstaries = []; // Instaries filtered by search text
   Icon _searchIcon = Icon(Icons.search);
   Icon _settingsIcon = Icon(Icons.settings);
+  bool showBackupSnackbar = false;
 
   // evaluates whether there is text currently in our search bar, and if so,
   // appropriately sets our _searchText to whatever that input is so we can filter our list accordingly
@@ -48,6 +52,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     setup();
+    moveToDownloads();
   }
 
   Future<void> setup() async {
@@ -96,6 +101,27 @@ class _HomePageState extends State<HomePage> {
       }
     });
     this._getInstary();
+  }
+
+  /// Move files to device Downloads folder when internal folder (moveToDownloads) is not empty.
+  /// This method exist because workmanager will export Instary even user quit the app, however,
+  /// we face challenge when sending the file to the device when running task in background.
+  /// Therefore, we move the file when user is in the app again.
+  Future<void> moveToDownloads() async {
+    final appDir = await getApplicationDocumentsDirectory();
+    Directory moveToDownloadsDir =
+        new Directory('${appDir.path}/moveToDownloads');
+    if (await moveToDownloadsDir.exists() &&
+        moveToDownloadsDir.listSync().isNotEmpty) {
+      final List<FileSystemEntity> entities = moveToDownloadsDir.listSync();
+      entities.forEach(print);
+      final Iterable<File> files = entities.whereType<File>();
+      files.forEach((file) {
+        MediaStore().downloadBackup(file: file, name: p.basename(file.path));
+      });
+      showCustomSnackbar(
+          context, 'Export Instary to Downloads folder complete.');
+    }
   }
 
   @override

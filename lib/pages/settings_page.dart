@@ -1,5 +1,6 @@
 import 'package:instary/file_import_export.dart';
 import 'package:instary/themes/app_state_notifier.dart';
+import 'package:instary/widgets/custom_snackbar.dart';
 import 'package:instary/widgets/import_export_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -45,24 +46,20 @@ class _SettingsPageState extends State<SettingsPage> {
                 errorStatus: "Cancelled or wrong file type.",
               ),
               // We are now using workManager for backup, process/errorStatus are basically useless.
-              ImportExportListTile(
-                function: workManagerBackup,
-                icon: Icon(Icons.drive_folder_upload_outlined),
-                displayName: "Export Instary",
-                processStatus: "Exporting...",
-                completeStatus:
-                    "Export is running in the background. You can keep using or close the app.",
-                errorStatus: "Oops, something went wrong.",
-              ),
+              // Tell user to not close the app, otherwise task will take too long to run in Android.
+              ListTile(
+                leading: Icon(Icons.drive_folder_upload_outlined),
+                title: Text("Export Instary"),
+                onTap: () {
+                  Workmanager().registerOneOffTask("ExportTask", "export");
+                  showCustomSnackbar(context,
+                      "Don't close the app. Export is running, you can keep using the app.");
+                },
+              )
             ],
           ),
         ),
       ),
     );
-  }
-
-  Future<bool> workManagerBackup() {
-    Workmanager().registerOneOffTask("ExportTask", "export");
-    return Future.value(true);
   }
 }

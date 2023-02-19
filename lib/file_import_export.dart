@@ -31,7 +31,7 @@ class FileImportExport {
             await path_provider.getApplicationDocumentsDirectory();
         Directory tempDir = await path_provider.getTemporaryDirectory();
         // Read the Zip file from disk.
-        // TODO: Implement decryption
+        // Todo: Implement decryption
         // final bytes = FileEncryption.decryptAES(file.readAsBytesSync());
         Map<String, dynamic> items = Map();
         items['file'] = file;
@@ -133,7 +133,7 @@ class FileImportExport {
     // Encrypt the Zip file and sent to download folder in Android
     // Get Zip File -> Convert zip to byte -> Encrypt the byte -> Create file name and file path
     // -> Write the encrypted data -> Send to Android using Method Channel
-    // TODO: implement encryption
+    // Todo: implement encryption
     // File zipFile = File(zipTempFilePath);
     // // Uint8List zipInByte = await zipFile.readAsBytes();
     // // Uint8List encryptedByte = await FileEncryption().encryptAES(zipInByte);
@@ -153,9 +153,9 @@ class FileImportExport {
 
     // Move zip file to internal app storage first because we are running a background task
     // When user opens the app again then we will move the file out of the app
-    Directory moveToDownloadsDir = await new Directory('${appDir.path}/moveToDownloads').create();
+    Directory moveToDownloadsDir =
+        await new Directory('${appDir.path}/moveToDownloads').create();
     await zipFile.rename("${moveToDownloadsDir.path}/$zipFileName");
-
 
     tempFile.delete(); // delete Instary json file
     // zipFile.delete();

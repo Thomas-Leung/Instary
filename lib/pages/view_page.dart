@@ -71,8 +71,10 @@ class ViewPage extends StatelessWidget {
                           style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 30.0,
-                              color:
-                                  Theme.of(context).textTheme.bodyText2!.color),
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .color),
                         ),
                       ),
                       editWidget(context)
@@ -123,7 +125,7 @@ class ViewPage extends StatelessWidget {
             Text(
               'Your Feelings',
               style: TextStyle(
-                  color: Theme.of(context).textTheme.subtitle1!.color,
+                  color: Theme.of(context).textTheme.titleMedium!.color,
                   fontSize: 20,
                   fontWeight: FontWeight.bold),
             ),
@@ -159,8 +161,10 @@ class ViewPage extends StatelessWidget {
                           showTitles: true,
                           getTitlesWidget: (value, meta) {
                             var textStyle = TextStyle(
-                                color:
-                                    Theme.of(context).textTheme.overline!.color,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .labelSmall!
+                                    .color,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14);
                             Widget textWidget;
@@ -193,8 +197,10 @@ class ViewPage extends StatelessWidget {
                           reservedSize: 30,
                           getTitlesWidget: (double value, TitleMeta meta) {
                             var textStyle = TextStyle(
-                                color:
-                                    Theme.of(context).textTheme.overline!.color,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .labelSmall!
+                                    .color,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14);
                             String text;
@@ -307,7 +313,7 @@ class ViewPage extends StatelessWidget {
                   child: Text(
                     'Sleep Tracker',
                     style: TextStyle(
-                        color: Theme.of(context).textTheme.subtitle1!.color,
+                        color: Theme.of(context).textTheme.titleMedium!.color,
                         fontSize: 20,
                         fontWeight: FontWeight.bold),
                   ),

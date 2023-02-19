@@ -33,7 +33,7 @@ class ButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-          minimumSize: Size.fromHeight(40), primary: Colors.white),
+          minimumSize: Size.fromHeight(40), backgroundColor: Colors.white),
       child: FittedBox(
         child: Text(text, style: TextStyle(fontSize: 20, color: Colors.black)),
       ),

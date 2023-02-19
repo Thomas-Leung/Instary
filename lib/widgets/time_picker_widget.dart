@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:instary/widgets/button_widget.dart';
-import 'package:intl/intl.dart';
 
 class TimePickerWidget extends StatefulWidget {
   const TimePickerWidget({Key? key}) : super(key: key);

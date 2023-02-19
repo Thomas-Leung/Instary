@@ -47,16 +47,16 @@ class AppTheme {
 
     textTheme: TextTheme(
       // VIEWPAGE TITLE
-      bodyText2: TextStyle(color: Colors.black),
+      bodyMedium: TextStyle(color: Colors.black),
       // VIEWPAGE CARD TITLE
-      subtitle1: TextStyle(color: Colors.blueGrey[700]),
+      titleMedium: TextStyle(color: Colors.blueGrey[700]),
       // BARCHART LABEL
-      overline: TextStyle(color: Color(0xff7589a2)),
+      labelSmall: TextStyle(color: Color(0xff7589a2)),
     ),
 
     // BACK or CANCEL BUTTON
     textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(primary: Colors.black87),
+      style: TextButton.styleFrom(foregroundColor: Colors.black87),
     ),
 
     // SAVE BUTTON
@@ -107,12 +107,12 @@ class AppTheme {
       labelStyle: new TextStyle(color: Colors.white),
     ),
     textTheme: TextTheme(
-      bodyText2: TextStyle(color: Colors.white),
-      subtitle1: TextStyle(color: Colors.blueGrey[50]),
-      overline: TextStyle(color: Colors.blueGrey[50]),
+      bodyMedium: TextStyle(color: Colors.white),
+      titleMedium: TextStyle(color: Colors.blueGrey[50]),
+      labelSmall: TextStyle(color: Colors.blueGrey[50]),
     ),
     textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(primary: Colors.white),
+      style: TextButton.styleFrom(foregroundColor: Colors.white),
     ),
     // ButtonStyle > elevatedButtonTheme > ButtonTheme
     elevatedButtonTheme: ElevatedButtonThemeData(

@@ -231,8 +231,8 @@ class CustomLineChart extends StatefulWidget {
       {Key? key,
       required this.dates,
       required this.dataPoints,
-      this.xAxisTitle: "",
-      this.bgColor: const Color(0xffa2c887)})
+      this.xAxisTitle = "",
+      this.bgColor = const Color(0xffa2c887)})
       : super(key: key);
 
   @override

@@ -6,7 +6,11 @@ class AppTheme {
 
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
-    // primaryColor: Colors.grey[900],
+
+    // BACKGROUND COLOR
+    scaffoldBackgroundColor: Color.fromRGBO(245, 245, 247, 1),
+    bottomAppBarTheme:
+        BottomAppBarTheme(color: Color.fromRGBO(245, 245, 247, 1)),
 
     // +(ADD) BUTTONS
     colorScheme: ColorScheme.light(
@@ -15,7 +19,7 @@ class AppTheme {
     ),
 
     // SEARCH BAR
-    bannerTheme: MaterialBannerThemeData(backgroundColor: Colors.blueGrey[50]),
+    bannerTheme: MaterialBannerThemeData(backgroundColor: Colors.grey[300]),
 
     appBarTheme: AppBarTheme(
       elevation: 0,
@@ -53,6 +57,8 @@ class AppTheme {
       // BARCHART LABEL
       labelSmall: TextStyle(color: Color(0xff7589a2)),
     ),
+    // TEXTFIELD CURSOR
+    textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.grey),
 
     // BACK or CANCEL BUTTON
     textButtonTheme: TextButtonThemeData(
@@ -62,6 +68,7 @@ class AppTheme {
     // SAVE BUTTON
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
+        elevation: MaterialStateProperty.all(0),
         minimumSize: MaterialStateProperty.resolveWith<Size>(
             (states) => Size(250.0, 42)),
         side: MaterialStateProperty.resolveWith<BorderSide>(
@@ -117,6 +124,7 @@ class AppTheme {
     // ButtonStyle > elevatedButtonTheme > ButtonTheme
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
+        elevation: MaterialStateProperty.all(0),
         minimumSize: MaterialStateProperty.resolveWith<Size>(
             (states) => Size(250.0, 42)),
         side: MaterialStateProperty.resolveWith<BorderSide>(

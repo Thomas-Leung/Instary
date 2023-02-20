@@ -113,7 +113,7 @@ class ViewPage extends StatelessWidget {
 
   Widget feelingsWidget(BuildContext context) {
     return Card(
-      elevation: 4.0,
+      elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -297,7 +297,7 @@ class ViewPage extends StatelessWidget {
 
   Widget _sleepWidget(BuildContext context) {
     return Card(
-      elevation: 4.0,
+      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),

@@ -36,7 +36,16 @@ class _TagsCardState extends State<TagsCard> {
                 tags.length,
                 (int index) {
                   return InputChip(
-                    backgroundColor: Colors.grey,
+                    backgroundColor:
+                        MediaQuery.of(context).platformBrightness ==
+                                Brightness.light
+                            ? Colors.blueGrey[50]
+                            : Colors.grey[850],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8),
+                      ),
+                    ),
                     label: Text('${tags.elementAt(index)}'),
                     onDeleted: () {
                       setState(() {

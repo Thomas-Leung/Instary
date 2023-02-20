@@ -12,6 +12,7 @@ import 'edit_page.dart';
 
 class ViewPage extends StatelessWidget {
   final instary;
+  final List<String> temptags = ["apple", "orange", "asdf"];
 
   ViewPage({this.instary});
 
@@ -86,6 +87,23 @@ class ViewPage extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         fontSize: 18.0,
                         color: Colors.grey[500]),
+                  ),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 5.0,
+                    children: List<Widget>.generate(
+                      temptags.length,
+                      (int index) {
+                        return Chip(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(8),
+                            ),
+                          ),
+                          label: Text('${temptags.elementAt(index)}'),
+                        );
+                      },
+                    ).toList(),
                   ),
                   Container(
                     height: 20.0,

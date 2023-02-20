@@ -7,6 +7,7 @@ import 'package:instary/models/feelings_level.dart';
 import 'package:instary/widgets/feelings_card.dart';
 import 'package:instary/widgets/media_card.dart';
 import 'package:instary/widgets/sleep_card.dart';
+import 'package:instary/widgets/tags_card.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:mime/mime.dart';
@@ -205,6 +206,10 @@ class _CreatePageState extends State<CreatePage> {
                   ),
                 ),
               ),
+              Container(
+                height: 20.0,
+              ),
+              TagsCard(),
               Container(
                 height: 20.0,
               ),

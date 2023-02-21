@@ -90,10 +90,20 @@ class FileImportExport {
       List<dynamic> content = jsonDecode(jsonString) as List<dynamic>;
       List<Instary> instaries = decodeToInstary(content);
       final instaryBox = Hive.box('instary');
+      final tagBox = Hive.box('tag');
+      Set<String> tagsToTagDb = {};
       var existingKeys = instaryBox.keys;
+      // add instary to database and collect all tags
       for (final instary in instaries) {
         if (!existingKeys.contains(instary.id)) {
           instaryBox.put(instary.id, instary);
+          tagsToTagDb.addAll(instary.tags ?? []); // if null the add empty list
+        }
+      }
+      // add tags to database
+      for (String tag in tagsToTagDb) {
+        if (tagBox.get(tag) == null) {
+          tagBox.put(tag, "");
         }
       }
     });

@@ -27,13 +27,14 @@ class InstaryAdapter extends TypeAdapter<Instary> {
       (fields[7] as List).cast<String>(),
       fields[8] as DateTime?,
       fields[9] as DateTime?,
+      (fields[10] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Instary obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -53,7 +54,9 @@ class InstaryAdapter extends TypeAdapter<Instary> {
       ..writeByte(8)
       ..write(obj.bedTime)
       ..writeByte(9)
-      ..write(obj.wakeUpTime);
+      ..write(obj.wakeUpTime)
+      ..writeByte(10)
+      ..write(obj.tags);
   }
 
   @override

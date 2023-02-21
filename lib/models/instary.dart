@@ -28,6 +28,8 @@ class Instary {
   DateTime? bedTime;
   @HiveField(9)
   DateTime? wakeUpTime;
+  @HiveField(10)
+  List<String>? tags;
 
   Instary(
       this.id,
@@ -39,7 +41,8 @@ class Instary {
       this.stressfulnessLv,
       this.mediaPaths,
       this.bedTime,
-      this.wakeUpTime);
+      this.wakeUpTime,
+      this.tags);
 
   Instary.fromJson(Map<String, dynamic> json)
       : id = json["id"],
@@ -56,7 +59,8 @@ class Instary {
             : null,
         wakeUpTime = json["wakeUpTime"] != null
             ? new DateTime.fromMillisecondsSinceEpoch(json["wakeUpTime"])
-            : null;
+            : null,
+        tags = json["tags"]?.cast<String>();
 
   Map<String, dynamic> toJson() {
     return {
@@ -69,7 +73,8 @@ class Instary {
       "stressfulnessLv": this.stressfulnessLv,
       "mediaPaths": this.mediaPaths,
       "bedTime": this.bedTime?.millisecondsSinceEpoch,
-      "wakeUpTime": this.wakeUpTime?.millisecondsSinceEpoch
+      "wakeUpTime": this.wakeUpTime?.millisecondsSinceEpoch,
+      "tags": this.tags
     };
   }
 }

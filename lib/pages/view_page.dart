@@ -12,7 +12,6 @@ import 'edit_page.dart';
 
 class ViewPage extends StatelessWidget {
   final instary;
-  final List<String> temptags = ["apple", "orange", "asdf"];
 
   ViewPage({this.instary});
 
@@ -92,7 +91,7 @@ class ViewPage extends StatelessWidget {
                     alignment: WrapAlignment.center,
                     spacing: 5.0,
                     children: List<Widget>.generate(
-                      temptags.length,
+                      instary.tags.length,
                       (int index) {
                         return Chip(
                           shape: RoundedRectangleBorder(
@@ -100,7 +99,7 @@ class ViewPage extends StatelessWidget {
                               Radius.circular(8),
                             ),
                           ),
-                          label: Text('${temptags.elementAt(index)}'),
+                          label: Text('${instary.tags.elementAt(index)}'),
                         );
                       },
                     ).toList(),

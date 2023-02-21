@@ -129,7 +129,12 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
     // need to await to make sure search listener is disposed as well
     // if not we might get memory leak
-    await Hive.close(); // close all boxes when leave page
+    _filter.dispose();
+    // no need to close boxes if we just swipe to stats page
+    if (widget.mainPageController.page != 0) {
+      await Hive.close(); // close all boxes when leave page
+      print("Hive Box Closed");
+    }
   }
 
   Future<void> _getInstary() async {

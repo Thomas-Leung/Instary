@@ -7,6 +7,7 @@ import 'package:instary/models/feelings_level.dart';
 import 'package:instary/widgets/feelings_card.dart';
 import 'package:instary/widgets/media_card.dart';
 import 'package:instary/widgets/sleep_card.dart';
+import 'package:instary/widgets/tags_card.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:mime/mime.dart';
@@ -42,6 +43,8 @@ class _EditPageState extends State<EditPage> {
   DateTime? _bedTime;
   DateTime? _wakeUpTime;
   Object redrawSleepCard = Object();
+  List<String> dbTags = [];
+  List<String> _selectedTags = [];
 
   @override
   void initState() {
@@ -56,7 +59,9 @@ class _EditPageState extends State<EditPage> {
     }
     _bedTime = widget.instary.bedTime;
     _wakeUpTime = widget.instary.wakeUpTime;
+    _selectedTags = widget.instary.tags;
     setAppDocumentDirPath();
+    getExistingTagsFromDb();
     super.initState();
   }
 
@@ -64,6 +69,13 @@ class _EditPageState extends State<EditPage> {
     await path_provider
         .getApplicationDocumentsDirectory()
         .then((value) => appDocumentDirPath = value.path);
+  }
+
+  Future<void> getExistingTagsFromDb() async {
+    final tagBox = Hive.box('tag');
+    setState(() {
+      dbTags = tagBox.keys.cast<String>().toList();
+    });
   }
 
   @override
@@ -269,6 +281,15 @@ class _EditPageState extends State<EditPage> {
               Container(
                 height: 20.0,
               ),
+              TagsCard(
+                  autocompleteTags: dbTags,
+                  existingTags: _selectedTags,
+                  onTagsChanged: (List<String> selectedTags) {
+                    _selectedTags = selectedTags;
+                  }),
+              Container(
+                height: 20.0,
+              ),
               MediaCard(
                   existingMediaPaths: _selectedMedia,
                   onSelectedMediaChanged: (List<File> selectedMedia) {
@@ -312,17 +333,18 @@ class _EditPageState extends State<EditPage> {
                     List<String> mediaPaths = _updateMediaPaths();
                     if (_formKey.currentState!.validate()) {
                       final newInstary = Instary(
-                        this.widget.instary.id,
-                        dateTime,
-                        titleController.text,
-                        contentController.text,
-                        _level.happinessLv,
-                        _level.tirednessLv,
-                        _level.stressfulnessLv,
-                        mediaPaths,
-                        _bedTime,
-                        _wakeUpTime,
-                      );
+                          this.widget.instary.id,
+                          dateTime,
+                          titleController.text,
+                          contentController.text,
+                          _level.happinessLv,
+                          _level.tirednessLv,
+                          _level.stressfulnessLv,
+                          mediaPaths,
+                          _bedTime,
+                          _wakeUpTime,
+                          _selectedTags);
+                      updateTagDb();
                       updateInstary(newInstary);
                     }
                   },
@@ -336,6 +358,15 @@ class _EditPageState extends State<EditPage> {
         ),
       ),
     );
+  }
+
+  void updateTagDb() {
+    final tagBox = Hive.box('tag');
+    _selectedTags.forEach((tag) {
+      if (!dbTags.contains(tag)) {
+        tagBox.put(tag, "");
+      }
+    });
   }
 
   void updateInstary(Instary instary) {

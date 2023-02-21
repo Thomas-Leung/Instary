@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 
 class TagsCard extends StatefulWidget {
-  const TagsCard({Key? key}) : super(key: key);
+  final List<String> autocompleteTags;
+  final List<String> existingTags;
+  final Function(List<String>) onTagsChanged;
+
+  const TagsCard(
+      {Key? key,
+      required this.autocompleteTags,
+      required this.existingTags,
+      required this.onTagsChanged})
+      : super(key: key);
 
   @override
   State<TagsCard> createState() => _TagsCardState();
@@ -9,8 +18,13 @@ class TagsCard extends StatefulWidget {
 
 class _TagsCardState extends State<TagsCard> {
   late TextEditingController textEditingController;
-  List<String> database = ["apple", "orange"];
   List<String> tags = [];
+
+  @override
+  void initState() {
+    super.initState();
+    tags = widget.existingTags;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +51,7 @@ class _TagsCardState extends State<TagsCard> {
                 (int index) {
                   return InputChip(
                     backgroundColor:
-                        MediaQuery.of(context).platformBrightness ==
-                                Brightness.light
+                        Theme.of(context).brightness == Brightness.light
                             ? Colors.blueGrey[50]
                             : Colors.grey[850],
                     shape: RoundedRectangleBorder(
@@ -51,6 +64,7 @@ class _TagsCardState extends State<TagsCard> {
                       setState(() {
                         tags.removeAt(index);
                       });
+                      widget.onTagsChanged(tags);
                     },
                   );
                 },
@@ -66,7 +80,7 @@ class _TagsCardState extends State<TagsCard> {
                       if (textEditingValue.text == '') {
                         return const Iterable<String>.empty();
                       }
-                      return database.where(
+                      return widget.autocompleteTags.where(
                         (String option) {
                           return option
                               .toLowerCase()
@@ -80,6 +94,7 @@ class _TagsCardState extends State<TagsCard> {
                       setState(() {
                         tags.add(selection);
                       });
+                      widget.onTagsChanged(tags);
                     },
                     // customize textfield, Ref: https://medium.flutterdevs.com/explore-autocomplete-widget-in-flutter-70d3478bacc4
                     fieldViewBuilder: (BuildContext context,
@@ -101,6 +116,7 @@ class _TagsCardState extends State<TagsCard> {
                             setState(() {
                               tags.add(value);
                             });
+                            widget.onTagsChanged(tags);
                             textEditingController.text = '';
                           }
                         },
@@ -149,6 +165,7 @@ class _TagsCardState extends State<TagsCard> {
                       setState(() {
                         tags.add(textEditingController.text);
                       });
+                      widget.onTagsChanged(tags);
                       textEditingController.text = '';
                     }
                   },

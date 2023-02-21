@@ -22,6 +22,7 @@ void main() async {
   final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
   Hive.init(appDocumentDir.path);
   Hive.registerAdapter(InstaryAdapter());
+  await Hive.openBox('tag');
   runApp(
     FutureBuilder(
       // use future builder to open hive boxes
@@ -60,6 +61,7 @@ void callbackDispatcher() {
             body:
                 "Exported file will be in Downloads folder once app restarts.");
     }
+    cleanUpForWorkmanager();
     return Future.value(true);
   });
 }
@@ -70,6 +72,10 @@ Future<void> setUpForWorkmanager() async {
   Hive.init(appDocumentDir.path);
   Hive.registerAdapter(InstaryAdapter());
   await Hive.openBox('instary');
+}
+
+void cleanUpForWorkmanager() {
+  Hive.close();
 }
 
 class HomeApp extends StatelessWidget {

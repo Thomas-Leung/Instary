@@ -39,17 +39,27 @@ class _CreatePageState extends State<CreatePage> {
   DateTime? _bedTime;
   DateTime? _wakeUpTime;
   Object redrawSleepCard = Object();
+  List<String> dbTags = [];
+  List<String> _selectedTags = [];
 
   @override
   void initState() {
     super.initState();
     setAppDocumentDirPath();
+    getExistingTagsFromDb();
   }
 
   Future<void> setAppDocumentDirPath() async {
     await path_provider
         .getApplicationDocumentsDirectory()
         .then((value) => appDocumentDirPath = value.path);
+  }
+
+  Future<void> getExistingTagsFromDb() async {
+    final tagBox = Hive.box('tag');
+    setState(() {
+      dbTags = tagBox.keys.cast<String>().toList();
+    });
   }
 
   @override
@@ -209,7 +219,12 @@ class _CreatePageState extends State<CreatePage> {
               Container(
                 height: 20.0,
               ),
-              TagsCard(),
+              TagsCard(
+                  autocompleteTags: dbTags,
+                  existingTags: _selectedTags,
+                  onTagsChanged: (List<String> selectedTags) {
+                    _selectedTags = selectedTags;
+                  }),
               Container(
                 height: 20.0,
               ),
@@ -257,17 +272,18 @@ class _CreatePageState extends State<CreatePage> {
                       String id = uuid.v1();
                       List<String> mediaPaths = _createMediaPaths();
                       final newInstary = Instary(
-                        id,
-                        dateTime,
-                        titleController.text,
-                        contentController.text,
-                        _level.happinessLv,
-                        _level.tirednessLv,
-                        _level.stressfulnessLv,
-                        mediaPaths,
-                        _bedTime,
-                        _wakeUpTime,
-                      );
+                          id,
+                          dateTime,
+                          titleController.text,
+                          contentController.text,
+                          _level.happinessLv,
+                          _level.tirednessLv,
+                          _level.stressfulnessLv,
+                          mediaPaths,
+                          _bedTime,
+                          _wakeUpTime,
+                          _selectedTags);
+                      updateTagDb();
                       addInstary(newInstary);
                     }
                   },
@@ -283,6 +299,16 @@ class _CreatePageState extends State<CreatePage> {
         ),
       ),
     );
+  }
+
+  void updateTagDb() {
+    final tagBox = Hive.box('tag');
+    _selectedTags.forEach((tag) {
+      if (!dbTags.contains(tag)) {
+        // empty value for now as we only store strings
+        tagBox.put(tag, "");
+      }
+    });
   }
 
   void addInstary(Instary instary) {

@@ -30,6 +30,8 @@ class _StatsPageState extends State<StatsPage> {
     super.initState();
     initializeDateFormatting(); // for showing month string in LineChart
     _getInstary();
+    // hide device keyboard if exist
+    FocusManager.instance.primaryFocus?.unfocus();
   }
 
   @override

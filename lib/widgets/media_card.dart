@@ -46,7 +46,7 @@ class _MediaCardState extends State<MediaCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('Your captures of the day: ',
+            Text('Your captures of the day',
                 style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20)),
             Container(
               height: 8,

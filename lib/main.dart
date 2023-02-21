@@ -10,6 +10,7 @@ import 'package:workmanager/workmanager.dart';
 import 'file_import_export.dart';
 import 'pages/create_page.dart';
 import 'pages/settings_page.dart';
+import 'pages/tags_page.dart';
 import 'package:provider/provider.dart';
 
 import 'models/instary.dart';
@@ -92,7 +93,8 @@ class HomeApp extends StatelessWidget {
             home: MainPage(),
             routes: {
               '/createPage': (context) => CreatePage(),
-              '/settingsPage': (context) => SettingsPage()
+              '/settingsPage': (context) => SettingsPage(),
+              '/tagsPage': (context) => TagsPage()
             },
             debugShowCheckedModeBanner: false,
           );

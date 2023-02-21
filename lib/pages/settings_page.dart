@@ -45,7 +45,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 completeStatus: "Import Complete!",
                 errorStatus: "Cancelled or wrong file type.",
               ),
-              // We are now using workManager for backup, process/errorStatus are basically useless.
               // Tell user to not close the app, otherwise task will take too long to run in Android.
               ListTile(
                 leading: Icon(Icons.drive_folder_upload_outlined),
@@ -55,6 +54,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   showCustomSnackbar(context,
                       "Don't close the app. Export is running, you can keep using the app.");
                 },
+              ),
+              ListTile(
+                leading: Icon(Icons.label_outline_rounded),
+                title: Text("Manage Tags"),
+                onTap: () => Navigator.pushNamed(context, '/tagsPage'),
               )
             ],
           ),

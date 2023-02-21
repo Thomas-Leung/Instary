@@ -60,7 +60,8 @@ class Instary {
         wakeUpTime = json["wakeUpTime"] != null
             ? new DateTime.fromMillisecondsSinceEpoch(json["wakeUpTime"])
             : null,
-        tags = json["tags"]?.cast<String>();
+        tags = json["tags"]?.cast<String>() ??
+            []; // if tags are null then assign empty list instead
 
   Map<String, dynamic> toJson() {
     return {

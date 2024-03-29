@@ -19,6 +19,10 @@ p.s. Android version is in beta, iOS version is still in development
 | :---: | :---: | :---: |
 | Create Page | View Page | View Page with details |
 
+|<img src="Screenshots/DarkMode.png" />|<img src="Screenshots/StatsPage.png" />|<img src="Screenshots/SettingsPage.png" />|
+| :---: | :---: | :---: |
+| Dark Mode | Statistics Page | Settings |
+
 ## Usage
 **Instary** is an item that includes a picture, a description, and how you feel of the day.
 
@@ -38,13 +42,13 @@ Tap on the instary you want to edit, on the view page, click on the pen icon loc
 - [x] Add picture with camera option
 - [x] Show your list is empty when there is no instary
 - [ ] Sort by date
-- [ ] Dark Mode
+- [x] Dark Mode
 - [ ] Star to save special instary
-- [ ] Save multiple pictures for a day
+- [x] Save multiple pictures for a day
 
 ### Instary 1.2
 - [ ] Search by date
-- [ ] Import/ Export Instary
-- [ ] Add chart to view progress
-- [ ] Add video option
+- [x] Import/ Export Instary
+- [x] Add chart to view progress
+- [x] Add video option
 - [ ] Add security like password/ fingerprint lock the app

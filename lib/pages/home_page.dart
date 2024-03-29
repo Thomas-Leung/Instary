@@ -137,6 +137,14 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  @override
+  void setState(VoidCallback fn) {
+    // fixes issue for setState in _getInstary() after create an Instary
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   Future<void> _getInstary() async {
     List tempList = [];
     if (!Hive.isBoxOpen('instary')) {

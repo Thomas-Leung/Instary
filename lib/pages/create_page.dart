@@ -9,10 +9,11 @@ import 'package:instary/widgets/media_card.dart';
 import 'package:instary/widgets/sleep_card.dart';
 import 'package:instary/widgets/tags_card.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
+    as picker;
 
 import '../models/instary.dart';
 
@@ -140,7 +141,7 @@ class _CreatePageState extends State<CreatePage> {
                     padding: EdgeInsets.zero,
                   ),
                   onPressed: () {
-                    DatePicker.showDatePicker(context,
+                    picker.DatePicker.showDatePicker(context,
                         showTitleActions: true,
                         onChanged: (date) {}, onConfirm: (date) {
                       setState(() {
